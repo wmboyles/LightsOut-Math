@@ -1,0 +1,8 @@
+# Python
+__pycache__/
+
+# TeX intermediate build files
+*.aux
+*.out
+*.synctex.gz
+*.log
