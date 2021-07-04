@@ -1,0 +1,69 @@
+AE      BDF     EG      BFH	    E	    BDH	    CE	    DFH	    ACG
+ABDEF	ABDFG	DEGH	BFGH	DEF	    BCDH	BCEF	ADEFGH	ACDFGH
+AG	    BFH	    A	    FH	    CG	    BD	    ACEG	BDH	    AEG
+DEGH	ADH	    ABDEGH	ABC	    BCEGH	ACEH	ABFGH	ABCEFG	BCEF
+E	    DF	    CEG	    BDFH	U	    BDFH	CEG	    DF	    E
+FGH	    ACFGH	ACD	    ADEFGH	BCEGH	ABDFG	ACEF	ABDE	BCD
+ACE	    F	    ACG	    DH	    CG	    BF	    AE	    D	    AC
+ACEGH	ACEH	FGH	    EFG	    DEF	    CDE	    BCD	    ABC	    AB
+ACEG	H	    G	    F	    E	    D	    C	    B	    A
+
+Above are the combinations of the 8 null vectors. U is unused by all of them.
+There are 55 (incl. unused) different strings of combos of null vectors present.
+They are:
+1   ABFGH
+2   B
+3   ABDEF
+4   ACEGH
+5   ACG
+6   BCD
+7   BFGH
+8   ACDFGH
+9   AG
+10  ACEH
+11  DEGH
+12  D
+13  ABDE
+14  BFH
+15  BD
+16  C
+17  FH
+18  DFH
+19  BCEGH
+20  ACFGH
+21  BDF
+22  CE
+23  BDH
+24  ADEFGH
+25  EFG
+26  ACD
+27  BF
+29  H
+29  ACE
+30  E
+31  ACEG
+32  CEG
+33  ABDEGH
+34  AEG
+35  U
+36  A
+37  ABCEFG
+38  ABC
+39  ABDFG
+40  BCDH
+41  BCEF
+42  DEF
+43  EG
+44  AC
+45  BDFH
+46  AB
+47  CDE
+48  CG
+49  FGH
+50  DF
+51  F
+51  ACEF
+52  ADH
+53  AE
+54  DH
+55  G
