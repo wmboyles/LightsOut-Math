@@ -31,13 +31,13 @@
 	\begin{proof}
 		Below are the three non-trivial quiet patterns for the $5 \times 5$ board.
 		\begin{center}
-			\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/5x5/full/5x5_kernel_full_1.png}
-			\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/5x5/full/5x5_kernel_full_2.png}
-			\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/5x5/full/5x5_kernel_full_3.png}
+			\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_1.png}
+			\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_2.png}
+			\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_3.png}
 		\end{center}
 		We can divide the squares of the $5 \times 5$ board into four regions based on which quiet patterns they are a part of.
 		\begin{center}
-			\includegraphics[width=0.49\textwidth]{../code/serialization/regions/5x5_regions.png}
+			\includegraphics[width=0.49\textwidth]{../../code/serialization/regions/5x5_regions.png}
 		\end{center}
 		Region 1 is the intersection of quiet patterns 2 and 3; region 2 is the intersection of quiet patterns 1 and 2; region 3 is the intersection of quiet patterns 1 and 3;
 		region 4 is in non of the quiet patterns.
@@ -122,9 +122,9 @@
 	The $5 \times 5$ kernel patterns have a nice property that because that the same buttons are pushed on the top/bottom and left/right edges, they tile to make kernel patterns on larger boards, specifically those of size $6k + 5 \times 6k + 5$, where $k$ is an integer at least 0.
 	For example, notice how the kernel patterns on the $17 \times 17$ board ($k = 2$) are the same patterns from the $5 \times 5$ board repeated 3 times in the vertical and horizontal directions.
 	\begin{center}
-		\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/17x17/full/17x17_kernel_full_1.png}
-		\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/17x17/full/17x17_kernel_full_2.png}
-		\includegraphics[width=0.49\textwidth]{../code/serialization/kernels/17x17/full/17x17_kernel_full_3.png}
+		\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_1.png}
+		\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_2.png}
+		\includegraphics[width=0.49\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_3.png}
 	\end{center}
 	Thus, we can apply the same proof technique from the $5 \time 5$ board to get an upper bound of all boards of size $6k + 5 \times 6k + 5$.
 	
@@ -189,6 +189,20 @@
 
 	The $5 \times 5$, $17 \times 17$, $41 \times 41$, $53 \times 53$, $77 \times 77$, and $113 \times 113$ boards are the boards of size $6k+5$ with nullity 2.
 	Thus applying the corollary, they can be solved in no more than 15, 199, 1191, 1999, 4239, and 9159 clicks.
+	
+	\begin{corollary}
+		Let $d(n)$ be the nullity of an $n \times n$ board.
+		Then for all integers $a \geq 2$ and $k \geq 0$,
+		\begin{equation*}
+			d(ak + a - 1) \geq d(a-1).
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		Choose any quiet pattern on an $a-1 \times a-1$ board.
+		Reflect the pattern $k$ times horizontally and vertically, adding width one spaces between each reflected board.
+		This will form a quiet pattern of size $ak + a-1 \times ak + a-1$.
+		We can do this reflection operation with all $d(a-1)$ independent quiet patterns to form $d(a-1)$ independent quiet patterns on the larger boards.
+	\end{proof}
 	
 	\section{Conjectures}
 	\begin{conjecture}
