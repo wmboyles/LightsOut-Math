@@ -35,6 +35,10 @@ def regions(n: int) -> dict[tuple, list[int]]:
 
 
 def regions_as_array(n: int) -> np.ndarray:
+    """
+    Transform the output of the regions function into an ndarray more suitable for display as an image.
+    """
+
     regs = regions(n)
 
     reg_map = np.zeros(n ** 2, dtype=int)
