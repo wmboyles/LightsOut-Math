@@ -1,7 +1,3 @@
-import pickle
-from os import makedirs
-
-import matplotlib.pyplot as plt
 import numpy as np
 
 from kernel_generator import kernel
@@ -38,19 +34,8 @@ def regions(n: int) -> dict[tuple, list[int]]:
     return regions2
 
 
-def serialize_regions(n: int, show: bool = False):
+def regions_as_array(n: int) -> np.ndarray:
     regs = regions(n)
-
-    # Create folder if it doesn't exist
-    folder_path = f"./serialization/regions"
-    try:
-        makedirs(folder_path)
-    except FileExistsError:
-        pass
-
-    # Serialize REGIONS via pickle
-    with open(f"{folder_path}/{n}x{n}_regions.p", "wb") as regions_file:
-        pickle.dump(regs, regions_file)
 
     reg_map = np.zeros(n ** 2, dtype=int)
     for i, square_list in enumerate(regs.values()):
@@ -58,18 +43,7 @@ def serialize_regions(n: int, show: bool = False):
             reg_map[square] = i + 1
     reg_map = reg_map.reshape((n, n))
 
-    plt.imshow(reg_map, cmap="binary")
-    plt.title(f"{n}x{n} regions")
-    # for r in range(len(reg_map)):
-    #     for c in range(len(reg_map[r])):
-    #         plt.text(r, c, reg_map[r, c], ha="center", va="center", color="red")
-
-    plt.xticks(range(0))
-    plt.yticks(range(0))
-    plt.savefig(f"{folder_path}/{n}x{n}_regions.png", bbox_inches="tight")
-
-    if show:
-        plt.show()
+    return reg_map
 
 
 def region_transform(n: int) -> np.ndarray:

@@ -1,10 +1,7 @@
-import pickle
 from functools import reduce
 from itertools import chain, combinations
 from operator import xor
-from os import makedirs
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from board_operations import click, lightchase
@@ -89,32 +86,6 @@ def pseudoinverse(n: int) -> np.ndarray:
     return lightchase_results
 
 
-def serialize_pseudoinverse(n: int, show: bool = False):
-    pinv = pseudoinverse(n)
-    pinv = np.insert(pinv, n, 0.25, axis=1)
-
-    # Create folder if it doesn't exist
-    folder_path = f"./serialization/pseudoinverses"
-    try:
-        makedirs(folder_path)
-    except FileExistsError:
-        pass
-
-    # Serialize kernel via pickle
-    with open(f"{folder_path}/{n}x{n}_pseudoinverse.p", "wb") as pinv_file:
-        pickle.dump(pinv, pinv_file)
-
-    plt.figure(0)
-    plt.title(f"{n}x{n} Pseudoinverse 'Cheatsheet'")
-    plt.xticks(range(0))
-    plt.yticks(range(0))
-    plt.imshow(pinv, cmap="binary")
-    plt.savefig(f"{folder_path}/{n}x{n}_pseudoinverse.png", bbox_inches="tight")
-
-    if show:
-        plt.show()
-
-
 def kernel_basis(n: int) -> list[np.ndarray]:
     """
     Finds a basis for all n x n quiet boards.
@@ -161,45 +132,6 @@ def kernel(n: int) -> list[np.ndarray]:
     return [reduce(xor, boards, np.zeros(n * n, dtype=int)) for boards in space]
 
 
-def serialize_kernel(n: int, basis_only=False, show: bool = False):
-    """
-    Serialize every vector in the kernel of the n x n lights out board.
-    This can be just the vectors that form a basis for the kernel or the entire space.
-    Vectors are serialized as a list of vectors and as png images.
-    Optionally, show the png images.
-    """
-
-    ker = kernel_basis(n) if basis_only else kernel(n)
-    basis_or_full = "basis" if basis_only else "full"
-
-    # Create folder if it doesn't exist
-    folder_path = f"./serialization/kernels/{n}x{n}/{basis_or_full}"
-    try:
-        makedirs(folder_path)
-    except FileExistsError:
-        pass
-
-    # Serialize kernel via pickle
-    with open(f"{folder_path}/{n}x{n}_kernel_{basis_or_full}.p", "wb") as kernel_file:
-        pickle.dump(ker, kernel_file)
-
-    for i, k in enumerate(ker):
-        plt.figure(i)
-        plt.title(f"{n}x{n} {basis_or_full} kernel pattern {i}")
-        plt.xticks(range(0))
-        plt.yticks(range(0))
-        plt.imshow(k.reshape((n, n)), cmap="binary")
-        plt.savefig(
-            f"{folder_path}/{n}x{n}_kernel_{basis_or_full}_{i}.png", bbox_inches="tight"
-        )
-
-        if not show:
-            plt.close()
-
-    if show:
-        plt.show()
-
-
 def all_ones_solution(n: int) -> np.ndarray:
     """
     Find the set of clicks that inverts the state of every light,
@@ -230,28 +162,3 @@ def all_ones_solution(n: int) -> np.ndarray:
 
     assert np.all(mat == np.zeros((n, n), dtype=int))
     return inv
-
-
-def serialize_all_ones_solution(n: int, show: bool = False):
-    inv = all_ones_solution(n)
-
-    # Create folder if it doesn't exist
-    folder_path = f"./serialization/allOnes"
-    try:
-        makedirs(folder_path)
-    except FileExistsError:
-        pass
-
-    # Serialize all ones via pickle
-    with open(f"{folder_path}/{n}x{n}_allOnes.p", "wb") as inv_file:
-        pickle.dump(inv, inv_file)
-
-    plt.figure(0)
-    plt.title(f"{n}x{n} (unoptimized) All Ones")
-    plt.xticks(range(0))
-    plt.yticks(range(0))
-    plt.imshow(inv, cmap="binary")
-    plt.savefig(f"{folder_path}/{n}x{n}_allOnes.png", bbox_inches="tight")
-
-    if show:
-        plt.show()
