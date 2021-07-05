@@ -8,15 +8,15 @@ def click(mat: np.ndarray, r: int, c: int):
 
     n = len(mat)
 
-    mat[r, c] = (mat[r, c] + 1) % 2
+    mat[r, c] ^= 1
     if r > 0:
-        mat[r - 1, c] = (mat[r - 1, c] + 1) % 2
+        mat[r - 1, c] ^= 1
     if r < n - 1:
-        mat[r + 1, c] = (mat[r + 1, c] + 1) % 2
+        mat[r + 1, c] ^= 1
     if c > 0:
-        mat[r, c - 1] = (mat[r, c - 1] + 1) % 2
+        mat[r, c - 1] ^= 1
     if c < n - 1:
-        mat[r, c + 1] = (mat[r, c + 1] + 1) % 2
+        mat[r, c + 1] ^= 1
 
 
 def lightchase(mat: np.ndarray) -> np.ndarray:
