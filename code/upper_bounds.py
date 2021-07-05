@@ -18,6 +18,7 @@ def max_kernel_upper_bound(n: int) -> int:
     """
     Gives an upper bound to what min_clicks could output using a theorem involving the maximum number of clicks in the kernel.
 
+    This function can be slow for large n, taking at least O(n^3) time.
     This function can be very slow if the dimension of the kernel for an n x n board is ~O(n)
     """
 
