@@ -1,4 +1,4 @@
-from kernel_generator import kernel
+from board_linalg import kernel
 
 
 def five_mod_six_upper_bound(n: int) -> int:

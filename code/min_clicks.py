@@ -1,6 +1,6 @@
 import numpy as np
 
-from kernel_generator import kernel
+from board_linalg import kernel
 from region_separator import region_transform
 
 
