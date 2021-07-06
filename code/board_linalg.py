@@ -1,5 +1,6 @@
-from functools import reduce
+from functools import cache, reduce
 from itertools import chain, combinations
+from math import isclose
 from operator import xor
 
 import numpy as np
@@ -50,6 +51,29 @@ def rref_mod2(mat: np.ndarray):
         for j in range(i):
             mat[j] += -mat[j, pivot_col] * mat[i]
             mat[j] %= 2
+
+
+def poly_gcd_mod2(f, g):
+    """
+    Polynomial GCD modulo 2.
+    Assumes f and g are coefficient lists (only 0's and 1's b/c mod 2) with highest degree terms first.
+
+    Adapted from https://gist.github.com/unc0mm0n/117617351ecd67cea8b3ac81fa0e02a8
+    """
+
+    n, m = len(f), len(g)
+
+    if n < m:
+        return poly_gcd_mod2(g, f)
+
+    r = [(f[i] ^ g[i]) if i < m else f[i] for i in range(n)]
+
+    while isclose(r[0], 0):
+        r.pop(0)
+        if len(r) == 0:
+            return g
+
+    return poly_gcd_mod2(r, g)
 
 
 def pseudoinverse(n: int) -> np.ndarray:
@@ -162,3 +186,53 @@ def all_ones_solution(n: int) -> np.ndarray:
 
     assert np.all(mat == np.zeros((n, n), dtype=int))
     return inv
+
+
+def nullity(n: int) -> int:
+    """
+    Returns the nullity of an n x n board.
+
+    This uses the following result.
+    Let U(n,x) be the degree n Chebyshev polynomial of the second kind over GF(2).
+    So, U(0,x) = 1, U(1,x) = 2x, and U(n+1,x) = 2x*U(n,x) - U(n-1,x).
+    Let f(n,x) = U(n,x/2).
+    Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
+    """
+
+    # TODO: Make iterative instead of recursive
+    @cache
+    def chebyshev_f1(n: int) -> list[int]:
+        """
+        Returns coefficient list of f(n,x), with highest degree terms first.
+        """
+
+        if n == 0:
+            return [1]
+        elif n == 1:
+            return [1, 0]
+
+        other1 = chebyshev_f1(n - 1) + [0]
+        other2 = [0, 0] + chebyshev_f1(n - 2)
+
+        return [o1 ^ o2 for o1, o2 in zip(other1, other2)]
+
+    # TODO: Make iterative instead of recursive
+    @cache
+    def chebyshev_f2(n: int) -> list[int]:
+        """
+        Returns coefficient list of f(n,1+x), with highest degree terms first.
+        """
+
+        if n == 0:
+            return [1]
+        elif n == 1:
+            return [1, 1]
+
+        cf2 = chebyshev_f2(n - 1)
+        other1 = [s1 ^ s2 for s1, s2 in zip(cf2 + [0], [0] + cf2)]
+        other2 = [0, 0] + chebyshev_f2(n - 2)
+
+        return [o1 ^ o2 for o1, o2 in zip(other1, other2)]
+
+    f1, f2 = chebyshev_f1(n), chebyshev_f2(n)
+    return len(poly_gcd_mod2(f1, f2)) - 1
