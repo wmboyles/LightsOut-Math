@@ -188,6 +188,45 @@ def all_ones_solution(n: int) -> np.ndarray:
     return inv
 
 
+# TODO: Make iterative instead of recursive
+@cache
+def chebyshev_f1(n: int) -> np.ndarray:
+    """
+    Helper for nullity function.
+    Returns coefficient list of f(n,x), with highest degree terms first.
+    """
+
+    if n == 0:
+        return np.array([1], dtype=int)
+    elif n == 1:
+        return np.array([1, 0], dtype=int)
+
+    other1 = np.append(chebyshev_f1(n - 1), [0])
+    other2 = np.append([0, 0], chebyshev_f1(n - 2))
+
+    return other1 ^ other2
+
+
+# TODO: Make iterative instead of recursive
+@cache
+def chebyshev_f2(n: int) -> np.ndarray:
+    """
+    Helper for nullity function.
+    Returns coefficient list of f(n,1+x), with highest degree terms first.
+    """
+
+    if n == 0:
+        return np.array([1], dtype=int)
+    elif n == 1:
+        return np.array([1, 1], dtype=int)
+
+    cf2 = chebyshev_f2(n - 1)
+    other1 = np.append(cf2, [0]) ^ np.append([0], cf2)
+    other2 = np.append([0, 0], chebyshev_f2(n - 2))
+
+    return other1 ^ other2
+
+
 def nullity(n: int) -> int:
     """
     Returns the nullity of an n x n board.
@@ -198,41 +237,6 @@ def nullity(n: int) -> int:
     Let f(n,x) = U(n,x/2).
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
-
-    # TODO: Make iterative instead of recursive
-    @cache
-    def chebyshev_f1(n: int) -> list[int]:
-        """
-        Returns coefficient list of f(n,x), with highest degree terms first.
-        """
-
-        if n == 0:
-            return [1]
-        elif n == 1:
-            return [1, 0]
-
-        other1 = chebyshev_f1(n - 1) + [0]
-        other2 = [0, 0] + chebyshev_f1(n - 2)
-
-        return [o1 ^ o2 for o1, o2 in zip(other1, other2)]
-
-    # TODO: Make iterative instead of recursive
-    @cache
-    def chebyshev_f2(n: int) -> list[int]:
-        """
-        Returns coefficient list of f(n,1+x), with highest degree terms first.
-        """
-
-        if n == 0:
-            return [1]
-        elif n == 1:
-            return [1, 1]
-
-        cf2 = chebyshev_f2(n - 1)
-        other1 = [s1 ^ s2 for s1, s2 in zip(cf2 + [0], [0] + cf2)]
-        other2 = [0, 0] + chebyshev_f2(n - 2)
-
-        return [o1 ^ o2 for o1, o2 in zip(other1, other2)]
 
     f1, f2 = chebyshev_f1(n), chebyshev_f2(n)
     return len(poly_gcd_mod2(f1, f2)) - 1
