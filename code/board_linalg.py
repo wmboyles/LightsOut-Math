@@ -1,6 +1,6 @@
 from functools import cache, reduce
 from itertools import chain, combinations
-from math import isclose
+from math import isclose, ceil, log2
 from operator import xor
 
 import numpy as np
@@ -188,23 +188,32 @@ def all_ones_solution(n: int) -> np.ndarray:
     return inv
 
 
-# TODO: Make iterative instead of recursive
-@cache
 def chebyshev_f1(n: int) -> np.ndarray:
     """
     Helper for nullity function.
     Returns coefficient list of f(n,x), with highest degree terms first.
     """
 
-    if n == 0:
-        return np.array([1], dtype=int)
-    elif n == 1:
-        return np.array([1, 0], dtype=int)
+    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
+    k = (1 << ceil(log2(n + 1))) - 1
+    start = 2 * (k - n)
 
-    other1 = np.append(chebyshev_f1(n - 1), [0])
-    other2 = np.append([0, 0], chebyshev_f1(n - 2))
+    def binomial_parity(a: int, b: int) -> int:
+        """
+        Returns the parity of binomial coefficient a choose b.
+        0 if even, 1 if odd.
 
-    return other1 ^ other2
+        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(a,b) is the number of carries when adding (a-b) and b in base 2.
+        The number of carries is exactly the number of 1's in (a-b) & b.
+        If the number of carries is 0 (i.e. (a-b) & b == 0), then C(a,b) is odd.
+        """
+
+        return 0 if ((a - b) & b) else 1
+
+    # Build the coefficient list
+    return np.array(
+        [binomial_parity(2 * i + start, start + i) for i in range(n + 1)], dtype=int
+    )
 
 
 # TODO: Make iterative instead of recursive
