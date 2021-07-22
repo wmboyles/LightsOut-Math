@@ -235,6 +235,7 @@ def nullity(n: int) -> int:
     Let U(n,x) be the degree n Chebyshev polynomial of the second kind over GF(2).
     So, U(0,x) = 1, U(1,x) = 2x, and U(n+1,x) = 2x*U(n,x) - U(n-1,x).
     Let f(n,x) = U(n,x/2).
+    So, f(0,x) = 1, f(1,x) = x, and f(n+1,x) = x*f(n,x) - f(n-1,x).
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
 
