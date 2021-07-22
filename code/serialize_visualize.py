@@ -47,6 +47,7 @@ def visualize_gf2_polynomials(
     file_name: str,
     title: str,
     show: bool = False,
+    align_left=True,
 ):
     """
     Given a list of polynomials in GF(2), where each polynomials is a numpy array of coefficients in GF(2)
@@ -61,24 +62,25 @@ def visualize_gf2_polynomials(
 
     # Convert list of arrays of different lengths into a single array, missing values padded with 0.5s
     max_length = max([len(poly) for poly in polynomials])
-    polynomial_matrix = (
-        np.array(
-            [
-                np.pad(
-                    2 * poly,
-                    (0, max(0, max_length - len(poly))),
-                    "constant",
-                    constant_values=(0, 1),
-                )
-                for poly in polynomials
-            ],
-            dtype=float,
-        )
-        / 2
+    pad_width = (
+        lambda poly: (0, max(0, max_length - len(poly)))
+        if align_left
+        else (max(0, max_length - len(poly)), 0)
+    )
+
+    polynomial_matrix = np.array(
+        [
+            np.pad(array=poly, pad_width=pad_width(poly), mode="constant")
+            for poly in polynomials
+        ],
+        dtype=int,
     )
 
     # Plot polynomial matrix
-    plt.figure(None, figsize=(8, 8), dpi=300)
+    # powers of 2 for figsize and dpi enforces all dots are the same size
+    fig = plt.figure(None, figsize=(8, 8), dpi=512, frameon=False)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.axis("off")
     plt.title(title)
     plt.xticks(range(0))
     plt.yticks(range(0))
