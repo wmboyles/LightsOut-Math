@@ -1,0 +1,131 @@
+\documentclass{article}
+
+\usepackage{amsthm, amsfonts, amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+
+\usepackage{xcolor}
+\definecolor{commentsColor}{rgb}{0.497495, 0.497587, 0.497464}
+\definecolor{keywordsColor}{rgb}{0.000000, 0.000000, 0.635294}
+\definecolor{stringColor}{rgb}{0.558215, 0.000000, 0.135316}
+\usepackage{listings}
+\lstset{ %
+	backgroundcolor=\color{white},   				% choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+	basicstyle=\footnotesize\ttfamily,				% the size of the fonts that are used for the code
+	breakatwhitespace=false,         				% sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 				% sets automatic line breaking
+	captionpos=b,                    				% sets the caption-position to bottom
+	commentstyle=\color{commentsColor}\textit,		% comment style
+	frame=tb,	                   	   				% adds a frame around the code
+	keywordstyle=\color{keywordsColor}\bfseries,	% keyword style
+	language=Python,                 				% the language of the code (can be overrided per snippet)
+	otherkeywords={*,...},           				% if you want to add more keywords to the set
+	rulecolor=\color{black},         				% if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	stringstyle=\color{stringColor}, 				% string literal style
+	title=\lstname,                  				% show the filename of files included with \lstinputlisting; also try caption instead of title
+	columns=fixed                   				% Using fixed column width (for e.g. nice alignment)
+}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{definition}{Definition}
+
+\renewcommand{\O}{\mathcal{O}}
+
+\begin{document}
+	\title{A Better Chebyshev Algorithm}
+	\author{William Boyles}
+	\date{\today}
+	\maketitle
+	
+	\section{Definitions}
+	\begin{definition}
+		$U(n,x)$ is the degree $n$ Chebyshev polynomial of the second kind and is defined by the following recurrence relation:
+		\begin{equation*}
+			U(n,x) = \begin{cases}
+				1 & n = 0 \\
+				2x & n = 1 \\
+				2x U(n-1,x) - U(n-2,x) & n \geq 2
+			\end{cases}.
+		\end{equation*}
+	\end{definition}
+	\begin{definition}
+		$f(n,x)$ is $U(x/2)$ over the field $GF(2)$.
+		So, it is defined by the following recurrence relation where all operations happen mod 2:
+		\begin{equation*}
+			f(n,x) = \begin{cases}
+				1 & n = 0 \\
+				x & n = 1 \\
+				x f(n-1,x) - f(n-2,x) & n \geq 2
+			\end{cases}.
+		\end{equation*}
+	\end{definition}
+	It's known that the nullity, $d(n)$ of an $n \times n$ \textit{Lights Out} board is the degree of $\gcd(f(n,x), f(n,1+x))$.
+	So, one needs to be able to calculate $f(n,x)$ efficiently to calculate $d(n)$ efficiently.
+	Ideally, the algorithm to calculate $f(n,x)$ would not require also calculating $f(0,x) \dots f(n-1,x)$.
+	We present such an algorithm which takes $\O(n)$ time and space.
+	
+	\section{Investigating Patterns}
+	Since $f(n,x)$ is a polynomial over $GF(2)$, all of its coefficients are either 1 or 0.
+	So, a sensible way to visualize $f(n,x)$ would be to color squares black or white to represent the coefficients.
+	For example,
+	\begin{equation*}
+		f(5,x) = 1x^5 + 0x^4 + 0x^3 + 0x^2 + 1x + 0 = \blacksquare\square\square\square\square\blacksquare\square.
+	\end{equation*}
+	If we plot out $f(0,n)$ through $f(128,n)$ in the same way, aligning coefficients of the same degree, we get the following image.
+	
+	\begin{center}
+		\includegraphics[width=.8\textwidth]{../../code/serialization/chebyshev/chebyshev1_right_128.png}	
+	\end{center}
+
+	This looks exactly like the right half of a Sierpinski Triangle rotated a counter-clockwise quarter-turn.
+	However, the the length of each row in the Sierpinski Triangle grows by 1, and in our image, lengths grow by 2.
+	So, we might suspect we are only seeing the even indexed rows of the triangle.
+	It's well-known that the odd values of Pascal's Triangle form Sierpinski's Triangle.
+	So, we might suspect that we can calculate coefficients of $f(n,x)$ by looking at the parity of binomial coefficients.
+	
+	\begin{conjecture}
+		Let $f(n,x)_i$ be the $i$th entry in the coefficient list of $f(n,x)$ so $f(n,x)_0$ is the highest degree term and $f(n,x)_n$ is the units term.
+		Let $K$ be the integer such that $2^k - 1 \geq n$ and $S = 2(n-K)$.
+		Then
+		\begin{equation*}
+			f(n,x)_i = \begin{cases}
+				1 & \binom{2i + S}{i + S} \text{ is odd} \\
+				0 & \text{otherwise}
+			\end{cases}.
+		\end{equation*}
+	\end{conjecture}
+
+	\section{Parity of Binomial Coefficients}
+	Here's a neat fact about the divisibility of binomial coefficients.
+	\begin{theorem}[Kummer]
+		Let $p$ be a prime, $n$ and $m$ positive integers.
+		Then the highest power of $p$ that divides $\binom{n+m}{m}$ is the number of carry operations when adding $n$ and $m$ in base $p$.
+	\end{theorem}
+
+	Since we're concerned with base 2, we can give a more specific version of this result.
+	\begin{corollary}
+		$\binom{n+m}{m}$ is odd if and only if the bitwise AND of $n$ and $m$, is 0.
+	\end{corollary}
+	This is an $\O(1)$ divisibility test, so we have an $\O(1)$ to calculate $f(n,x)_i$.
+
+	\section{The Algorithm}
+	Putting all the pieces together, here is the algorithm to calculate the coefficient list of $f(n,x)$.
+	
+	\begin{center}
+	\begin{verbatim}
+	from math import ceil, log2
+		
+	def binomial_parity(n: int, m: int) -> int:
+	    return 0 if ((n-m) & m) else 1
+		
+	def f(n: int) -> list[int]:
+	    K = (1 << ceil(log2(n + 1))) - 1
+	    S = 2*(K - n)
+	    
+	    return [binomial_parity(2*i + S, i + S) for i in range(n+1)]
+	\end{verbatim}
+	\end{center}
+\end{document}
