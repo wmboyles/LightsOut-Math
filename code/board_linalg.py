@@ -216,24 +216,45 @@ def chebyshev_f1(n: int) -> np.ndarray:
     )
 
 
-# TODO: Make iterative instead of recursive
-@cache
 def chebyshev_f2(n: int) -> np.ndarray:
     """
     Helper for nullity function.
     Returns coefficient list of f(n,1+x), with highest degree terms first.
     """
 
-    if n == 0:
-        return np.array([1], dtype=int)
-    elif n == 1:
-        return np.array([1, 1], dtype=int)
+    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
+    k = (1 << ceil(log2(n + 1))) - 1
+    start = k - n
 
-    cf2 = chebyshev_f2(n - 1)
-    other1 = np.append(cf2, [0]) ^ np.append([0], cf2)
-    other2 = np.append([0, 0], chebyshev_f2(n - 2))
+    def trinomial_parity(a: int, b: int) -> int:
+        """
+        Returns the parity of the trinomial coefficient a choose b.
+        0 if even, 1 if odd.
 
-    return other1 ^ other2
+        For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
+        For info on this algorithm, see https://stackoverflow.com/a/43698262.
+        """
+
+        x, y = 1, 0
+        while b:
+            a1, a = a & 1, a >> 1
+            b1, b = b & 1, b >> 1
+
+            if a1:
+                if b1:
+                    x, y = x ^ y, y
+                else:
+                    x, y = x, x ^ y
+            elif b1:
+                x, y = y, 0
+            else:
+                x, y = x, 0
+
+        return x
+
+    return np.array(
+        [trinomial_parity(start + i, 2 * start + i) for i in range(n + 1)], dtype=int
+    )
 
 
 def nullity(n: int) -> int:
