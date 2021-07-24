@@ -241,16 +241,7 @@ def chebyshev_f2(n: int) -> np.ndarray:
         while b:
             a1, a = a & 1, a >> 1
             b1, b = b & 1, b >> 1
-
-            if a1:
-                if b1:
-                    x, y = x ^ y, y
-                else:
-                    x, y = x, x ^ y
-            elif b1:
-                x, y = y, 0
-            else:
-                x, y = x, 0
+            x, y = ((a1 | ~b1) & x) ^ (b1 & y), ((a1 & ~b1) & x) ^ (a1 & y)
 
         return x
 
