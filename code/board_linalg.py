@@ -53,27 +53,29 @@ def rref_mod2(mat: np.ndarray):
             mat[j] %= 2
 
 
-def poly_gcd_mod2(f, g):
+def poly_gcd_mod2(f: np.ndarray, g: np.ndarray) -> np.ndarray:
     """
     Polynomial GCD modulo 2.
     Assumes f and g are coefficient lists (only 0's and 1's b/c mod 2) with highest degree terms first.
 
-    Adapted from https://gist.github.com/unc0mm0n/117617351ecd67cea8b3ac81fa0e02a8
+    Adapted from https://gist.github.com/unc0mm0n/117617351ecd67cea8b3ac81fa0e02a8 and made iterative instead of recursive.
     """
 
-    n, m = len(f), len(g)
+    while True:
+        n, m = len(f), len(g)
 
-    if n < m:
-        return poly_gcd_mod2(g, f)
+        if n < m:
+            f, g = g, f
+            continue
 
-    r = [(f[i] ^ g[i]) if i < m else f[i] for i in range(n)]
+        r = [(f[i] ^ g[i]) if i < m else f[i] for i in range(n)]
 
-    while isclose(r[0], 0):
-        r.pop(0)
-        if len(r) == 0:
-            return g
+        while isclose(r[0], 0):
+            r.pop(0)
+            if len(r) == 0:
+                return g
 
-    return poly_gcd_mod2(r, g)
+        f, g = r, g
 
 
 def pseudoinverse(n: int) -> np.ndarray:
