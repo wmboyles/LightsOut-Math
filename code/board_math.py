@@ -53,7 +53,7 @@ def rref_mod2(mat: np.ndarray):
             mat[j] %= 2
 
 
-def poly_gcd_mod2(f: np.ndarray, g: np.ndarray) -> np.ndarray:
+def poly_gcd_mod2(f: list or np.ndarray, g: list or np.ndarray) -> list or np.ndarray:
     """
     Polynomial GCD modulo 2.
     Assumes f and g are coefficient lists (only 0's and 1's b/c mod 2) with highest degree terms first.
