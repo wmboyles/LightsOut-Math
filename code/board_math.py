@@ -1,6 +1,6 @@
-from functools import cache, reduce
+from functools import reduce
 from itertools import chain, combinations
-from math import isclose, ceil, log2
+from math import ceil, isclose, log2
 from operator import xor
 
 import numpy as np
@@ -66,16 +66,17 @@ def poly_gcd_mod2(f: list or np.ndarray, g: list or np.ndarray) -> list or np.nd
 
         if n < m:
             f, g = g, f
-            continue
+            n, m = m, n
 
         r = [(f[i] ^ g[i]) if i < m else f[i] for i in range(n)]
 
-        while isclose(r[0], 0):
-            r.pop(0)
-            if len(r) == 0:
+        i = 0
+        while isclose(r[i], 0):
+            i += 1
+            if i == len(r):
                 return g
 
-        f, g = r, g
+        f, g = r[i:], g
 
 
 def pseudoinverse(n: int) -> np.ndarray:
@@ -190,6 +191,37 @@ def all_ones_solution(n: int) -> np.ndarray:
     return inv
 
 
+def binomial_parity(n: int, m: int) -> int:
+    """
+    Returns the parity of binomial coefficient n choose m.
+    0 if even, 1 if odd.
+
+    Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base 2.
+    The number of carries is exactly the number of 1's in (n-m) & m.
+    If the number of carries is 0 (i.e. (a-b) & b == 0), then C(a,b) is odd.
+    """
+
+    return 0 if ((n - m) & m) else 1
+
+
+def trinomial_parity(n: int, m: int) -> int:
+    """
+    Returns the parity of the trinomial coefficient n choose m.
+    0 if even, 1 if odd.
+
+    For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
+    For info on this algorithm, see https://stackoverflow.com/a/43698262.
+    """
+
+    a, b = 1, 0
+    while m:
+        n1, n = n & 1, n >> 1
+        m1, m = m & 1, m >> 1
+        a, b = ((n1 | ~m1) & a) ^ (m1 & b), ((n1 & ~m1) & a) ^ (n1 & b)
+
+    return a
+
+
 def chebyshev_f1(n: int) -> np.ndarray:
     """
     Helper for nullity function.
@@ -200,22 +232,8 @@ def chebyshev_f1(n: int) -> np.ndarray:
     k = (1 << ceil(log2(n + 1))) - 1
     start = 2 * (k - n)
 
-    def binomial_parity(a: int, b: int) -> int:
-        """
-        Returns the parity of binomial coefficient a choose b.
-        0 if even, 1 if odd.
-
-        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(a,b) is the number of carries when adding (a-b) and b in base 2.
-        The number of carries is exactly the number of 1's in (a-b) & b.
-        If the number of carries is 0 (i.e. (a-b) & b == 0), then C(a,b) is odd.
-        """
-
-        return 0 if ((a - b) & b) else 1
-
     # Build the coefficient list
-    return np.array(
-        [binomial_parity(2 * i + start, start + i) for i in range(n + 1)], dtype=int
-    )
+    return np.array([binomial_parity(2 * i + start, start + i) for i in range(n + 1)])
 
 
 def chebyshev_f2(n: int) -> np.ndarray:
@@ -228,26 +246,7 @@ def chebyshev_f2(n: int) -> np.ndarray:
     k = (1 << ceil(log2(n + 1))) - 1
     start = k - n
 
-    def trinomial_parity(a: int, b: int) -> int:
-        """
-        Returns the parity of the trinomial coefficient a choose b.
-        0 if even, 1 if odd.
-
-        For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
-        For info on this algorithm, see https://stackoverflow.com/a/43698262.
-        """
-
-        x, y = 1, 0
-        while b:
-            a1, a = a & 1, a >> 1
-            b1, b = b & 1, b >> 1
-            x, y = ((a1 | ~b1) & x) ^ (b1 & y), ((a1 & ~b1) & x) ^ (a1 & y)
-
-        return x
-
-    return np.array(
-        [trinomial_parity(start + i, 2 * start + i) for i in range(n + 1)], dtype=int
-    )
+    return np.array([trinomial_parity(start + i, 2 * start + i) for i in range(n + 1)])
 
 
 def nullity(n: int) -> int:
