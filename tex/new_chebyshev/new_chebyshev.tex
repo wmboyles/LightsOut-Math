@@ -34,15 +34,18 @@
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{definition}{Definition}
 
+\setlength{\parindent}{0em}
+
 \renewcommand{\O}{\mathcal{O}}
+\newcommand{\xor}{\oplus}
 
 \begin{document}
-	\title{A Better Chebyshev Algorithm}
+	\title{A Fast, Iterative Way to Compute Chebyshev Polynomials related to \textit{Lights Out} over GF(2)}
 	\author{William Boyles}
 	\date{\today}
 	\maketitle
 	
-	\section{Definitions}
+	\section{Introduction \& Definitions}
 	\begin{definition}
 		$U(n,x)$ is the degree $n$ Chebyshev polynomial of the second kind and is defined by the following recurrence relation:
 		\begin{equation*}
@@ -55,19 +58,20 @@
 	\end{definition}
 	\begin{definition}
 		$f(n,x)$ is $U(x/2)$ over the field $GF(2)$.
-		So, it is defined by the following recurrence relation where all operations happen mod 2:
+		So, it is defined by the following recurrence relation:
 		\begin{equation*}
 			f(n,x) = \begin{cases}
 				1 & n = 0 \\
 				x & n = 1 \\
-				x f(n-1,x) - f(n-2,x) & n \geq 2
-			\end{cases}.
+				x f(n-1,x) \xor f(n-2,x) & n \geq 2
+			\end{cases},
 		\end{equation*}
+		where $\xor$ is the addition operator over GF(2) (aka XOR).
 	\end{definition}
-	It's known that the nullity, $d(n)$ of an $n \times n$ \textit{Lights Out} board is the degree of $\gcd(f(n,x), f(n,1+x))$.
+	It's known that the nullity, $d(n)$ of an $n \times n$ \textit{Lights Out} board is the degree of $\gcd(f(n,x), f(n,x+1))$.
 	So, one needs to be able to calculate $f(n,x)$ and $f(n,x+1)$ efficiently to calculate $d(n)$ efficiently.
 	Ideally, the algorithm would not require calculating all of $f(0,x) \dots f(n-1,x)$ and $f(0,x+1) \dots f(n-1,x+1)$.
-	We present such an algorithm which takes $\O(n)$ time and $\O(1)$ extra space.
+	We present such algorithms to calculate $f(n,x)$ and $f(n,x+1)$ in $O(n)$ and $O(n\log{n})$ time respectively, both with $O(1)$ extra space.
 	
 	\section{Investigating Patterns}
 	\subsection{Patterns in $f(n,x)$}
@@ -77,19 +81,50 @@
 	\begin{equation*}
 		f(5,x) = 1x^5 + 0x^4 + 0x^3 + 0x^2 + 1x + 0 = \blacksquare\square\square\square\square\blacksquare\square.
 	\end{equation*}
-	If we plot out $f(0,x)$ through $f(128,x)$ in the same way, aligning terms of the same degree, we get the following image.
+	We'll also enumerate the list of in the following way:
+	Let $f(n,x)_i$ be the $i$th entry in the coefficient list of $f(n,x)$ so that $f(n,x)_0$ is the highest degree term and $f(n,x)_n$ is the units term.
+	So, $f(5,x)_0 = 1$, $f(5,x)_1 = 0$, and $f(5,x)_5 = 0$.
+	
+	If we plot out $f(0,x)$ through $f(128,x)$ in the same way, aligning terms of the same degree (the degree any square represents is $n-i$), we get the following image:
 	
 	\begin{center}
 		\includegraphics[width=.8\textwidth]{../../code/serialization/chebyshev/chebyshev1_right_128.png}	
 	\end{center}
-
-	This looks exactly like the right half of a Sierpinski Triangle rotated a counter-clockwise quarter-turn.
-	However, the the length of each row in the Sierpinski Triangle grows by 1, and in our image, lengths grow by 2.
-	So, we might suspect we are only seeing the even indexed rows of the triangle.
-	It's well-known that the odd values of Pascal's Triangle form Sierpinski's Triangle.
-	So, we might suspect that we can calculate coefficients of $f(n,x)$ by looking at the parity of binomial coefficients.
 	
-	\begin{conjecture}
+	If one is familiar with elementary cellular automaton, then they will recognize this pattern as rule 90.
+
+	\begin{center}
+		\includegraphics[width=0.8\textwidth]{rule90.png}
+	\end{center}
+
+	\begin{theorem}
+		For any positive integer $k$, plotting $f(0,x)$ through $f(2^k - 1,x)$ inclusive yields the right half of rule 90. 
+	\end{theorem}
+	\begin{proof}
+		First, note that the first two rows in our image are equal to the last two columns produced by rule 90 after $2^k - 1$ steps.
+		So, for $n \leq 2$, our relationships holds.
+		
+		Assume $n > 2$.
+		By the definitions of $f(n,x)$,
+		\begin{equation*}
+			f(n,x) = xf(n-1,x) \xor f(n-2,x).
+		\end{equation*}
+		For a particular cell,
+		\begin{equation*}
+			f(n,x)_i = f(n-1,x)_i \xor f(n-2)_{i-2}.
+		\end{equation*}
+		Rearranging,
+		\begin{equation*}
+			f(n-1,x)_i = f(n,x)_i \xor f(n-2)_{i-2}.
+		\end{equation*}
+		This is exactly what rule 90 tells us: The state of a cell in a subsequent row (column in our image) is the XOR of the two cells to the left and right in the above row, and that the cell immediately above does not affect the outcome.
+	\end{proof}
+
+	\subsection{Rule 90 and Binomial Coefficients}
+	It's well-known that the value of a cell in rule 90 can be found via the parity of binomial coefficients.
+	We can write this knowledge in terms of $f(n,x)$.
+	
+	\begin{lemma}
 		Let $f(n,x)_i$ be the $i$th entry in the coefficient list of $f(n,x)$ so that $f(n,x)_0$ is the highest degree term and $f(n,x)_n$ is the units term.
 		Let $K = 2^k - 1$ where $k$ is the smallest integer such that $K \geq n$.
 		Let $S = 2(K-n)$.
@@ -99,24 +134,24 @@
 				1 & \binom{2i + S}{S + i} \text{ is odd} \\
 				0 & \text{otherwise}
 			\end{cases}.
-		\end{equation*}
-	\end{conjecture}
+		\end{equation*}	
+	\end{lemma}
 
-	Those familiar with cellular automaton might also recognize the above image as half of the symmetrical pattern formed by rule 90 with a starting condition of one black cell.
+	So, we just need a quick way to calculate the parity of binomial coefficients.
+	
 
-	\subsection{Parity of Binomial Coefficients}
 	Here's a neat fact about the divisibility of binomial coefficients.
+	
 	\begin{theorem}[Kummer's Theorem]
 		Let $p$ be a prime, $n$ and $m$ positive integers.
 		Then the highest power of $p$ that divides $\binom{n+m}{m}$ is the number of carry operations when adding $n$ and $m$ in base $p$.
 	\end{theorem}
 	
 	Since we're concerned with base 2, we can give a more specific version of this result.
+	
 	\begin{corollary}
 		$\binom{n+m}{m}$ is odd if and only if the bitwise AND of $n$ and $m$, is 0.
 	\end{corollary}
-	This is an $\O(1)$ divisibility test, so we have an $\O(1)$ to calculate $f(n,x)_i$.
-	
 	
 	\subsection{Patterns in $f(n,x+1)$}
 	$f(n,x+1)$ is also a polynomial over $GF(2)$, so all of its coefficients are 1 or 0.
@@ -131,7 +166,40 @@
 		\includegraphics[width=.8\textwidth]{../../code/serialization/chebyshev/chebyshev2_right_128.png}	
 	\end{center}
 
-	Although perhaps not as familiar as the Sierpinski Triangle, this is easily recognizable to those familiar with cellular automaton as half of the symmetrical pattern formed by rule 150.
+	Again, if one is familiar with elementary cellular automaton, then they will recognize this pattern as rule 150.
+	
+	\begin{center}
+		\includegraphics[width=0.8\textwidth]{rule150.png}
+	\end{center}
+
+	\begin{theorem}
+		For any positive integer $k$, plotting $f(0,x+1)$ through $f(2^n - 1,x+1)$ inclusive, yields the right half of rule 150.
+	\end{theorem}
+	\begin{proof}
+		We will prove that our rule for determining a value of a certain ``cell'' in the image above is equivalent to rule 150.
+		
+		First, note that the first two rows in our image are equal to the last two columns produced by rule 150 after $2^k - 1$ steps.
+		So, for $n \leq 2$, our relationship holds.
+		
+		Assume $n > 2$.
+		By the definition of $f(n,x+1)$,
+		\begin{align*}
+			f(n,x+1) &= (x+1)f(n-1,x+1) \xor f(n-2,x+1) \\
+			&= xf(n-1,x+1) \xor f(n-1,x+1) \xor f(n-2,x+1).
+		\end{align*}
+		For a particular cell,
+		\begin{equation*}
+			f(n,x+1)_i = f(n-1,x+1)_i \xor f(n-1,x+1)_{i-1} \xor f(n-2,x+1)_{i-2}.
+		\end{equation*}
+		Rearranging,
+		\begin{equation*}
+			f(n-1,x+1)_{i-1}  = f(n,x+1)_{i} \xor f(n-1,x+1)_{i} \xor f(n-2,x+1)_{i-2}.
+		\end{equation*}
+		This is exactly what rule 150 tells us: The state of a cell in a subsequent row (column in our image) is the XOR of the three closest above cells in the previous row.
+	\end{proof}
+	
+	
+	\subsection{Rule 150 and Trinomial Coefficients}
 	Much like how one can obtain the pattern formed by rule 90 from odd numbers in the triangle of binomial coefficients (i.e. Pascal's Triangle), one can obtain the pattern formed by rule 150 from odd numbers in the triangle of trinomial coefficients known as the Trinomial Triangle, where each subsequent row has 2 more entries than the previous.
 	
 	\begin{definition}
@@ -141,28 +209,13 @@
 				0 & k < 0 \text{ or } k > 2n + 1 \\
 				0 & n < 0 \\
 				1 & k = 0 \text{ and } n = 0 \\
- 				\binom{n-1}{k-1}_2 + \binom{n-1}{k}_2 + \binom{n-1}{k+1}_2 & \text{otherwise}
+				\binom{n-1}{k-1}_2 + \binom{n-1}{k}_2 + \binom{n-1}{k+1}_2 & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-	
-		Equivalently, $\binom{n}{k}_2$ is the coefficient of the degree $k$ term in $(x^2 + x + 1)^n$.
 	\end{definition}
 
-	\begin{conjecture}
-		Let $f(n,x+1)_i$ be the $i$th entry in the coefficient list of $f(n,x+1)$ so that $f(n,x+1)_0$ is the highest degree term and $f(n,x+1)_n$ is the units term.
-		Let $K = 2^k - 1$ where $k$ is the smallest integer such that $K \geq n$.
-		Let $S = K - n$.
-		Then
-		\begin{equation*}
-			f(n,x+1)_i = \begin{cases}
-				1 & \binom{S + i}{2S + i}_2 \text{ is odd} \\
-				0 & \text{otherwise}
-			\end{cases}.
-		\end{equation*}
-	\end{conjecture}
-	
-	
-	\subsection{Parity of Trinomial Coefficients}
+	Note the similarity in the definition to that of rule 150. \\
+
 	Here's another fact similar to Kummer's Theorem about the divisibility of binomial coefficients.
 	\begin{theorem}[Lucas's Theorem]
 		Let $p$ be a prime, $n$ and $m$ positive integers.
@@ -178,10 +231,11 @@
 		the base $p$ expansion of $m$ and $n$ respectively.
 	\end{theorem}
 
-	We'll work out a trinomial analog for $p=2$.
-	This is taken directly from \href{https://stackoverflow.com/a/43698262}{https://stackoverflow.com/a/43698262}.
-	[TODO: I don't really understand the details of this answer.]
-	[Alternate way may just be to do sum(binom*binom) modulos].
+	\begin{corollary}
+		TODO: I don't really understand what's going on in this answer, but it provides us with an algorithm for the parity of a trinomial in $\O(log n)$ time. \\
+		
+		\href{https://stackoverflow.com/a/43698262}{https://stackoverflow.com/a/43698262} gives us the trinomial analog for $p=2$.
+	\end{corollary}
 
 	\section{The Algorithms}
 	\subsection{Algorithm for $f(n,x)$}
@@ -201,6 +255,9 @@
 	    return [binomial_parity(2*i + S, i + S) for i in range(n+1)]
 	\end{verbatim}
 	\end{center}
+
+	To compute \texttt{f(n)}, this algorithm makes $\O(n)$ calls to \texttt{binomial\_parity}.
+	Assuming operations like comparison, subtraction, and bitwise AND between 2 integers takes $\O(1)$ time, computing \texttt{f(n)} takes $\O(n)$ time.
 
 	\subsection{Algorithm for $f(n,x+1)$}
 	Putting all the pieces together, there is the algorithm to calculate the coefficient list of $f(n,x+1)$.
@@ -225,4 +282,9 @@
 	    return [trinomial_parity(S + i, 2*S + i) for i in range(n+1)]
 	\end{verbatim}
 	\end{center}
+
+	To compute \texttt{f2(n)}, this algorithm makes $\O(n)$ calls to \texttt{trinomial\_parity}.
+	Each iteration of the while loop in \texttt{trinomial\_parity} halves \texttt{m}, so \texttt{trinomial\_parity} runs in $\O(\log{m})$ time.
+	The \texttt{m} parameter passed in by \texttt{f2} is $\O(n)$, so each call to \texttt{trinomial\_parity} in \texttt{f2} takes $O(\log{n})$ time.
+	So, \texttt{f2(n)} runs in $O(n\log{n})$ time.
 \end{document}
