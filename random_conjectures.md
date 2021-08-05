@@ -16,26 +16,26 @@
 
 4. Let `d(n)` be the nullity of an n x n board. Then for all integers `n >= 0`, `d(n) >= d(n mod 30)`.
 
-- **PARTIALLY TRUE**.
-  Can use tiling lemma: (`d(ij + i - 1) >= d(i)`) to show true for all remainders except `{11,16,19,23}`.
-  - `d(n + 30) >= d(n)` is **false**.
-    Counterexample: `d(94) = 4` and `d(64) = 28`.
-  - `d(30k + r) >= d(r)` is true for r not in `{4,5,9,11,14,16,19,23,24,29}` b/c `d(r) = 0`.
-  - Above **true** for `r+1` is a divisor of 30 b/c we know that `d((r+1)j + r) >= d(r)`.
-    We can then substitute `30k/(r+1)` for `j`.
-    This leaves `r` in `{11,16,19,23,24}` to deal with.
-  - Above **false** for r = 11.
-    `d(11) = 6` and `d(41) = 2`.
-  - Above **false** for r = 16.
-    `d(16) = 8` and `d(46) = 0`.
-  - Above **false** for r = 19.
-    `d(19) = 16` and `d(49) = 8`.
-  - Above **false** for r = 23.
-    `d(23) = 14` and `d(53) = 2`.
-  - Above **true** for r = 24.
-    We know that `d(5j + 4) >= d(4) = d(24)`.
-    Substituting `6k+4` for `j` gives `d(30k + 24) >= d(24)`.
-- We can take away a general corollary of the tiling lemma from this: For integers k and 0 <= r < h, `d(hk + r) >= d(r)` if `r+1` is a divisor of `h`.
+   - **PARTIALLY TRUE**.
+     Can use tiling lemma: (`d(ij + i - 1) >= d(i)`) to show true for all remainders except `{11,16,19,23}`.
+     - `d(n + 30) >= d(n)` is **false**.
+       Counterexample: `d(94) = 4` and `d(64) = 28`.
+     - `d(30k + r) >= d(r)` is true for r not in `{4,5,9,11,14,16,19,23,24,29}` b/c `d(r) = 0`.
+     - Above **true** for `r+1` is a divisor of 30 b/c we know that `d((r+1)j + r) >= d(r)`.
+       We can then substitute `30k/(r+1)` for `j`.
+       This leaves `r` in `{11,16,19,23,24}` to deal with.
+     - Above **false** for r = 11.
+       `d(11) = 6` and `d(41) = 2`.
+     - Above **false** for r = 16.
+       `d(16) = 8` and `d(46) = 0`.
+     - Above **false** for r = 19.
+       `d(19) = 16` and `d(49) = 8`.
+     - Above **false** for r = 23.
+       `d(23) = 14` and `d(53) = 2`.
+     - Above **true** for r = 24.
+       We know that `d(5j + 4) >= d(4) = d(24)`.
+       Substituting `6k+4` for `j` gives `d(30k + 24) >= d(24)`.
+   - We can take away a general corollary of the tiling lemma from this: For integers k and 0 <= r < h, `d(hk + r) >= d(r)` if `r+1` is a divisor of `h`.
 
 5. Number pattern follows the following pattern:
    `((s+1)*2^n -2)/2`
