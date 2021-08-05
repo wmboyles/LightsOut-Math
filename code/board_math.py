@@ -196,9 +196,9 @@ def binomial_parity(n: int, m: int) -> int:
     Returns the parity of binomial coefficient n choose m.
     0 if even, 1 if odd.
 
-    Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base 2.
+    Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
     The number of carries is exactly the number of 1's in (n-m) & m.
-    If the number of carries is 0 (i.e. (a-b) & b == 0), then C(a,b) is odd.
+    If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
     """
 
     return 0 if ((n - m) & m) else 1
