@@ -17,12 +17,17 @@
    - **Subconjecture 1:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `chebyshev_f1(n) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1, (2^(k-1) - 1 0's)]`.
 
+     - Note this this polynomial is `x^(n - 2^(k+2))(x^(2^(k+1)) + x^(2^k) + 1)`.
+
    - **Subconjecture 2:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
-     Then `chebyshev_f2(n) = [(2^k 1's), (2^k 0's), (2^k 1's), (2^k 0's), (2^k 1's)]`.
+     Then `chebyshev_f2(n) = [(2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's)]`.
+
+     - Note that this polynomial is `(x^(2^(k+1)) + x^(2^k) + 1)(x^3 + x^2 + x + 1)`.
 
    - **Subconjecture 3:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `poly_gcd_mod2(chebyshev_f1(n), chebyshev_f2(n)) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1]`.
      - Notice that our conjectured result here is just our result from subconjecture 1 with the last `(2^(k-1) - 1)` 0's removed.
+     - If both subconjectures 1 and 2 are true, then this conjecture is true.
 
 4. Let `d(n)` be the nullity of an n x n board. Then for all integers `n >= 0`, `d(n) >= d(n mod 30)`.
 
