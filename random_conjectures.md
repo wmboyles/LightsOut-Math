@@ -8,11 +8,21 @@
 
    - This might already be proven
 
-3. The n x n boards with the greatest rank deficiency and index <= n are: n(rank deficiency)
+3. The n x n boards with the greatest rank deficiency and index <= n are: [n](rank deficiency)
 
    ```
-   4(4), 9(8), 19(16), 39(32), ... , (5 * 2^k - 2)/2 (2^(k+1))
+   [4](4), [9](8), [19](16), [39](32), ... , [2^(k+1) + 2^(k-1) - 1](2^(k+1))
    ```
+
+   - **Subconjecture 1:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
+     Then `chebyshev_f1(n) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1, (2^(k-1) - 1 0's)]`.
+
+   - **Subconjecture 2:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
+     Then `chebyshev_f2(n) = [(2^k 1's), (2^k 0's), (2^k 1's), (2^k 0's), (2^k 1's)]`.
+
+   - **Subconjecture 3:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
+     Then `poly_gcd_mod2(chebyshev_f1(n), chebyshev_f2(n)) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1]`.
+     - Notice that our conjectured result here is just our result from subconjecture 1 with the last `(2^(k-1) - 1)` 0's removed.
 
 4. Let `d(n)` be the nullity of an n x n board. Then for all integers `n >= 0`, `d(n) >= d(n mod 30)`.
 
