@@ -22,7 +22,7 @@
    - **Subconjecture 2:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `chebyshev_f2(n) = [(2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's)]`.
 
-     - Note that this polynomial is `(x^(2^(k+1)) + x^(2^k) + 1)(x^3 + x^2 + x + 1)`.
+     - Note that this polynomial is `(x^(2^(k+1)) + x^(2^k) + 1)(x^(2^(k-1)-1) + ... + x + 1) = (x^(2^(k+1)) + x^(2^k) + 1)((1-x^(2^(k-1)))/(1-x))`.
 
    - **Subconjecture 3:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `poly_gcd_mod2(chebyshev_f1(n), chebyshev_f2(n)) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1]`.
