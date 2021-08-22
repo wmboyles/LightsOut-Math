@@ -60,6 +60,55 @@
 			f(g(k), x) = x^{2^{k-1}-1}\left(x^{2^{k+1}}+x^{2^k}+1\right).
 		\end{equation*}
 	\end{conjecture}
+	\begin{proof}
+		Recall how we determine the coefficients of $f(n,x)$ using the parity of binomial coefficients.
+		First, we need to find a value $K = 2^{k} - 1$ where $k$ is the smallest integer $K \geq n$.
+		Second, we find $S = (K - n)$.
+		Finally, we find that the $i$th coefficient is 1 if and only if $\binom{2i+S}{S+i}$ is odd. Equivalently, it's 1 if and only if $i \texttt{ \& } S+i$ is zero.
+		
+		$K = 2^{k+2} - 1$ for $g(k) = 2^{k+1} + 2^{k-1} - 1$.
+		So,
+		\begin{align*}
+			S &= 2(K - g(k)) \\
+			&= 2\left((2^{k+2}-1) - (2^{k+1} + 2^{k-1} - 1)\right) \\
+			&= 2\left(2^{k+2} - 2^{k+1} - 2^{k-1}\right) \\
+			&= 2\left(8\cdot2^{k-1} - 4\cdot2^{k-1} - 2^{k-1}\right) \\
+			&= 2\left(3\cdot2^{k-1}\right) \\
+			&= 3\cdot2^k.
+		\end{align*}
+		In binary this is $S = 11\underbrace{0 \dots 0}_{k}$. \\
+		
+		Let's think about what happens when we do $i \texttt{ \& } S + i$ for various values of $i$.
+		\begin{itemize}
+			\item
+				In $i = 0$, we see that the left side of the \texttt{\&} is 0, so the entire result is 0. Therefore, the leading coefficient is a 1, as desired.
+			\item
+				In $i = 1 \dots 2^k - 1$, the trailing $k$ 0's in $S$ will match whatever is in $i$'s binary representation in $S + i$.
+				So, the result of the \texttt{\&} will be nonzero.
+				Therefore, there will be $2^k - 1$ 0 coefficients following the leading 1, as desired.
+			\item
+				In $i = 2^k$, $S + i = 100\underbrace{0 \dots 0}_{k}$.
+				So, the \texttt{\&} will result in a 0, meaning we get a coefficient of 1, as desired.
+			\item
+				In $i = 2^k + 1 \dots 2^{k+1} - 1$, we see a combination of the previous two cases.
+				We can write $i = 2^k + j$, where $1 \leq j \leq 2^{k} - 1$.
+				As we saw in the previous case, $S + 2^k = 100\underbrace{0 \dots 0}_{k}$ in binary.
+				As in two cases ago, the trailing $k$ 0's in $S + 2^k$ will match whatever is in $j$'s binary representation in $S + 2^k + j$.
+				So, the result of the \texttt{\&} operation will be nonzero.
+				Therefore, the second 1 coefficient will be followed by $2^k - 1$ 0 coefficients, as desired.
+			\item
+				In $i = 2^{k+1}$, $S + i = 101\underbrace{0 \dots 0}_{k}$.
+				Since $i$ does not have a $2^k$ or a $2^{k+2}$ in its binary representation, $i \texttt{ \& } S+i \texttt{ == } 0$.
+				So, we get a coefficient of 1, as desired.
+			\item
+				In $i = 2^{k+1} + 1 \dots 2^{k+1} + 2^{k-1} - 1$, we again see a combination of previous cases.
+				We can write $i = 2^{k+1} + j$, where $1 \leq j \leq 2^{k-1} - 1$.
+				As we saw in the previous case, $S + 2^{k+1} = 101\underbrace{0 \dots 0}_{k}$.
+				As in two cases ago, the trailing $k$ 0's in $S + 2^{k+1}$ will match whatever is in $j$'s binary representation in $S + 2^{k+1} + j$.
+				So, the result of the \texttt{\&} operation will be nonzero.
+				Therefore, the third 1 coefficient will be floowed by $2^{k-1} - 1$ 0 coefficients, as desired.
+		\end{itemize}	
+	\end{proof}
 
 	\begin{conjecture}
 		\label{conj2}
@@ -71,7 +120,7 @@
 	\end{conjecture}
 	
 	\section{Main Result}
-	The following relies on \ref{conj1} and \ref{conj2} being true.
+	The following relies on conjecture \ref{conj1} and conjecture \ref{conj2} being true.
 	\begin{theorem}
 		Let $k \in \N$.
 		Then
