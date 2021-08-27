@@ -6,3 +6,7 @@ __pycache__/
 *.out
 *.synctex.gz
 *.log
+*.run.xml
+*blx.bib
+*.blg
+*.bbl
