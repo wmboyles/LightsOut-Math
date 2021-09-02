@@ -4,29 +4,6 @@
 \usepackage{graphicx}
 \usepackage{fullpage}
 \usepackage{float}
-
-\usepackage{xcolor}
-\definecolor{commentsColor}{rgb}{0.497495, 0.497587, 0.497464}
-\definecolor{keywordsColor}{rgb}{0.000000, 0.000000, 0.635294}
-\definecolor{stringColor}{rgb}{0.558215, 0.000000, 0.135316}
-\usepackage{listings}
-\lstset{ %
-	backgroundcolor=\color{white},   				% choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-	basicstyle=\footnotesize\ttfamily,				% the size of the fonts that are used for the code
-	breakatwhitespace=false,         				% sets if automatic breaks should only happen at whitespace
-	breaklines=true,                 				% sets automatic line breaking
-	captionpos=b,                    				% sets the caption-position to bottom
-	commentstyle=\color{commentsColor}\textit,		% comment style
-	frame=tb,	                   	   				% adds a frame around the code
-	keywordstyle=\color{keywordsColor}\bfseries,	% keyword style
-	language=Python,                 				% the language of the code (can be overrided per snippet)
-	otherkeywords={*,...},           				% if you want to add more keywords to the set
-	rulecolor=\color{black},         				% if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-	stringstyle=\color{stringColor}, 				% string literal style
-	title=\lstname,                  				% show the filename of files included with \lstinputlisting; also try caption instead of title
-	columns=fixed                   				% Using fixed column width (for e.g. nice alignment)
-}
-
 \usepackage{hyperref}
 
 \newtheorem{lemma}{Lemma}
@@ -47,25 +24,24 @@
 	\date{\today}
 	\maketitle
 	
-	\section{Intro Conjectures}
+	\section{Intro Lemmas}
 	Let $f(n,x)$ be the Chebyshev polynomial over $GF(2)$ that we defined previously.
 	Recall that the rank deficiency of an $n \times n$ \textit{Lights Out} board, $d(n)$, is the degree of $\gcd(f(n,x), f(n,x+1))$.
 	Let $g: \N \to \N$ where $g(k) = 2^{k+1} + 2^{k-1} - 1$.
 
-	\begin{conjecture}
+	\begin{lemma}
 		\label{conj1}
 		Let $k \in \N$.
 		Then
 		\begin{equation*}
 			f(g(k), x) = x^{2^{k-1}-1}\left(x^{2^{k+1}}+x^{2^k}+1\right).
 		\end{equation*}
-	\end{conjecture}
+	\end{lemma}
 	\begin{proof}
 		Recall how we determine the coefficients of $f(n,x)$ using the parity of binomial coefficients.
 		First, we need to find a value $K = 2^{k} - 1$ where $k$ is the smallest integer $K \geq n$.
-		Second, we find $S = (K - n)$.
+		Second, we find $S = 2(K - n)$.
 		Finally, we find that the $i$th coefficient is 1 if and only if $\binom{2i+S}{S+i}$ is odd. Equivalently, it's 1 if and only if $i \texttt{ \& } S+i$ is zero.
-		
 		$K = 2^{k+2} - 1$ for $g(k) = 2^{k+1} + 2^{k-1} - 1$.
 		So,
 		\begin{align*}
@@ -110,17 +86,30 @@
 		\end{itemize}	
 	\end{proof}
 
-	\begin{conjecture}
+	\begin{lemma}
 		\label{conj2}
 		Let $k \in \N$.
 		Then
 		\begin{equation*}
 			f(g(k), x+1) = \left(x^{2^{k+1}}+x^{2^k}+1\right)\left(x^{2^{k-1}-1}+\dots+1\right).
 		\end{equation*}
-	\end{conjecture}
+	\end{lemma}
+	\begin{proof}
+		In lemma \ref{conj1}, we showed that
+		\begin{equation*}
+			f(g(k),x) = \left(x^{2^{k-1}-1}\right)\left(x^{2^{k+1}} + x^{2^{k}} + 1\right).
+		\end{equation*}
+		Substituting $x+1$ for $x$ and using mod 2 arithmetic (i.e. $(a+b)^c = a^c + b^c$ where $c$ is a power of 2; $1 = -1$),
+		\begin{align*}
+			f(g(x), x+1) &= \left((x+1)^{2^{k-1}-1}\right)\left((x+1)^{2^{k+1}} + (x+1)^{2^k} + 1\right) \\
+			&= \left(x^{2^{k-1}}+1\right)\frac{1}{x+1}\left(x^{2^{k+1}} + 1 + x^{2^k} + 1 + 1\right) \\
+			&= \left(x^{2^{k+1}} + x^{2^k} + 1\right)\frac{x^{2^{k-1}}-1}{x-1} \\
+			&= \left(x^{2^{k+1}} + x^{2^k} + 1\right)\left(x^{2^{k-1}-1} + x^{2^{k-1}-2} + \dots + 1\right).
+		\end{align*}
+	\end{proof}
 	
 	\section{Main Result}
-	The following relies on conjecture \ref{conj1} and conjecture \ref{conj2} being true.
+	Now that we have lemmas \ref{conj1} and \ref{conj2}, we can prove our main result.
 	\begin{theorem}
 		Let $k \in \N$.
 		Then
@@ -129,7 +118,8 @@
 		\end{equation*}
 	\end{theorem}
 	\begin{proof}
-		We can see from conjectures 1 and 2 that the desired gcd is a common factor of both polynomials.
+		We can see from lemmas 
+		\ref{conj1} and \ref{conj2} that the desired gcd is a common factor of both polynomials.
 		So, we just need to show that over $GF(2)$ that the remaining factors of both polynomials have no common factors.
 		This result is easily verified by a computer.
 		
@@ -156,7 +146,9 @@
 			\max \{d(m) \mid 1 \leq m \leq n\} = d(h(n)).
 		\end{equation*}
 	\end{conjecture}
+	In other words, if we list the board sizes and their rank deficiencies, noting each time we encounter a rank deficiency higher than any other we've seen before, we will have noted exactly the board sizes described by $g$. \\
 	
+	The following corollary relies on conjecture \ref{conj3}.
 	\begin{corollary}
 		$d(n) = n$ only for $n=4$.
 		Otherwise, $d(n) < n$.
