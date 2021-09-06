@@ -79,19 +79,16 @@ def poly_gcd_mod2(f: list or np.ndarray, g: list or np.ndarray) -> list or np.nd
         f, g = r[i:], g
 
 
-def pseudoinverse(n: int) -> np.ndarray:
+def top_bottom_matrix(n: int) -> np.ndarray:
     """
-    Generates a "cheatsheet" for solving n x n lights out boards.
-    These answer the question: "If I see this pattern on the bottom row after light chasing, which buttons do I need to press in the top row?"
-    This is exactly what the psuedoinverse will tell us.
-
-    This algorithm takes O(n^3) time.
+    Generates a n x n matrix that answers the question: "If I click these
+    lights in the top row, which lights will be lit in the bottom row?"
     """
 
-    # Matrix we'll use to simulate boards
+    # Matrix we'll use the simulate boards
     mat = np.zeros((n, n), dtype=int)
 
-    # Click each light in the top row one by one
+    # Clight each light in the top row one by one
     # Lightchase down until lights are only in bottom row
     # Save result in lightchase_results
     lightchase_results = np.zeros((n, n), dtype=int)
@@ -104,7 +101,22 @@ def pseudoinverse(n: int) -> np.ndarray:
         # Clear botton row so mat is now all 0's
         mat[-1] = np.zeros(n, dtype=int)
 
-    # Find the pseudoinverse of lightchase_results
+    return lightchase_results
+
+
+def pseudoinverse(n: int) -> np.ndarray:
+    """
+    Generates a "cheatsheet" for solving n x n lights out boards.
+    These answer the question: "If I see this pattern on the bottom row after light chasing, which buttons do I need to press in the top row?"
+    This is exactly what the psuedoinverse will tell us.
+
+    This algorithm takes O(n^3) time.
+    """
+
+    # Get matrix that maps top to bottom
+    lightchase_results = top_bottom_matrix(n)
+
+    # Find its psuedoinverse
     lightchase_results = np.append(
         lightchase_results, np.identity(n, dtype=int), axis=1
     )
