@@ -37,6 +37,8 @@ def serialize_board(
     plt.imshow(board, cmap="binary")
     plt.savefig(f"{folder_path}/{file_name}.png", bbox_inches="tight")
 
+    plt.close()
+
     if show:
         plt.show()
 
