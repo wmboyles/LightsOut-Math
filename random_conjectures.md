@@ -7,6 +7,7 @@
 2. The 4x4 board the the only n x n lights out board with rank deficiency n.
 
    - This might already be proven
+   - Conjecture 3 being true implies this.
 
 3. The n x n boards with the greatest rank deficiency and index <= n are: [n](rank deficiency)
 
@@ -18,16 +19,19 @@
      Then `chebyshev_f1(n) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1, (2^(k-1) - 1 0's)]`.
 
      - Note this this polynomial is `x^(n - 2^(k+2))(x^(2^(k+1)) + x^(2^k) + 1)`.
+     - **TRUE** I proved this by looking at how the polynomial is created from binomial coefficients.
 
    - **Subconjecture 2:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `chebyshev_f2(n) = [(2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's), (2^(k-1) 0's), (2^(k-1) 1's)]`.
 
      - Note that this polynomial is `(x^(2^(k+1)) + x^(2^k) + 1)(x^(2^(k-1)-1) + ... + x + 1) = (x^(2^(k+1)) + x^(2^k) + 1)((1-x^(2^(k-1)))/(1-x))`.
+     - **TRUE** Proven as a corollary of the previous subconjecture.
 
    - **Subconjecture 3:** Let `n = 2^(k+1) + 2^(k-1) - 1` for some natural number k.
      Then `poly_gcd_mod2(chebyshev_f1(n), chebyshev_f2(n)) = [1, (2^k - 1 0's), 1 (2^k - 1 0's), 1]`.
      - Notice that our conjectured result here is just our result from subconjecture 1 with the last `(2^(k-1) - 1)` 0's removed.
      - If both subconjectures 1 and 2 are true, then this conjecture is true.
+     - **TRUE**, since both subconjectures 1 and 2 are true.
 
 4. Let `d(n)` be the nullity of an n x n board. Then for all integers `n >= 0`, `d(n) >= d(n mod 30)`.
 
