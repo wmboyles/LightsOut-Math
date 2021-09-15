@@ -449,6 +449,7 @@
 	\end{figure}
 
 	\begin{conjecture}
+		Choose any $b \in \N$ odd and $k \in \N$.
 		Let
 		\begin{equation*}
 			f(g(b,k),x+1) = x^{n_1} + x^{n_2} + \dots + x^{n_m}.
@@ -462,7 +463,7 @@
 	
 	Like previously, we can establish a corollary about the number of non-zero terms.
 	\begin{corollary}
-		Choose any odd $b$.
+		Choose any $b \in \N$ odd and $k \in \N$.
 		Then the number of non-zero terms in $f(g(b,k),x+1)$ is $2^{k-1}$ times as many non-zero terms as in $f(g(b,1),x+1)$.
 	\end{corollary}
 	Notice that means we can write the number of non-zero terms in $f(g(b,k),x+1)$ as $g(b',k)$, where $b'$ is the number of non-zero terms in $f(g(b,1),x+1)$.
@@ -510,4 +511,13 @@
 	Particularly, it seems that \href{https://oeis.org/A283324}{A283324} is what we want.
 	However, we find that this sequence represents the cellular automaton that we already knew this sequence came from.
 
+	\begin{conjecture}
+		Let $b \in \N$ odd and $k \in \N$. 
+		Then the lowest degree term of $\gcd\left(f(g(b,k),x),f(g(b,k),x+1)\right)$ has a degree that is one less than a power of 2.
+	\end{conjecture}
+
+	\begin{conjecture}
+		Let $b \in \N$ odd and $k \in \N$.
+		If $\gcd\left(f(g(b,k),x),f(g(b,k),x+1)\right)$ has a varying amount of terms as $k$ varies with $b$ fixed, then the GCD is a geometric series with some power of 2 number of terms.
+	\end{conjecture}
 \end{document}
