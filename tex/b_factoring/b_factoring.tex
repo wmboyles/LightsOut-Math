@@ -386,6 +386,91 @@
 			f(g(b,k+1),x) = x^{2n_1 + 1} + x^{2n_2 + 1} + \dots + x^{2n_m + 1}.
 		\end{equation*}
 	\end{conjecture}
+	\begin{proof}
+		Consider how we calculate $f(n,x)$ in our code.
+		We say
+		\begin{align*}
+			l(n) &= 2^{\lceil \log_2{(n+1)} \rceil} - 1 \\
+			s(n) &= 2(l(n) - n).
+		\end{align*}
+		For $f(g(b,k),x)$,
+		\begin{align*}
+			l(g(b,k)) &= 2^{\lceil \log_2{\left(b\cdot2^{k-1}\right)} \rceil} - 1 \\
+			&= 2^{\lceil \log_2{\left(2^{k-1}\right)}+ \log_2{(b)} \rceil} - 1 \\
+			&= 2^{\lceil k-1 + \log_2{(b)} \rceil} - 1 \\
+			&= 2^{k + \lfloor \log_2{(b)} \rfloor} - 1. \\
+			s(g(b,k)) &= 2\left(2^{k+\lfloor\log_2{(b)}\rfloor} - 1 - b\cdot2^{k-1} + 1\right) \\
+			&= 2\left(2^{k + \lfloor \log_2{(b)} \rfloor} - b\cdot2^{k-1}\right) \\
+			&= 2^{k+1+\lfloor\log_2{(b)}\rfloor} - b\cdot2^{k} \\
+			&= 2^{k}\left(2^{\lceil \log_2{(b)}\rceil} - b\right).
+		\end{align*}
+		To calculate to polynomial as a list of coefficients,
+		\begin{equation*}
+			\left[\binom{s(n) + 2i}{s(n) + i} \mod 2 \texttt{ for i in range(n+1)} \right],
+		\end{equation*}
+		where
+		\begin{equation*}
+			\binom{n}{m} = \begin{cases}
+				0 & \texttt{((n-m) \& m) != 0} \\
+				1 & \text{otherwise}
+			\end{cases}.
+		\end{equation*}
+		For $f(g(b,k),x)$,
+		\begin{align*}
+			\binom{s(g(b,k))+2i}{s(g(b,k))+i} \mod 2 &= \binom{2^{k}\left(2^{\lceil \log_2{(b)}\rceil} - b\right) + 2i}{2^{k}\left(2^{\lceil \log_2{(b)}\rceil} - b\right) + i} \mod 2 \\
+			&= \begin{cases}
+				0 & \texttt{i \& }\left(2^{k}\left(2^{\lceil \log_2{(b)}\rceil} - b\right) \texttt{ + i}\right)\texttt{ != 0} \\
+				1 & \text{otherwise}
+			\end{cases}.
+		\end{align*}
+		Imagine that for some $i$, $b$, and $k$ that
+		\begin{align*}
+			\binom{s(g(b,k)) + 2i}{s(g(b,k)) + i} \mod 2 &= 0 \\
+			\texttt{i \& }\left(2^{k}\left(2^{\lceil\log_2{(b)}\rceil} - b\right)\texttt{+ i}\right) &\neq 0.
+		\end{align*}
+		Then
+		\begin{align*}
+			\texttt{2i \& }2\left(2^{k}\left(2^{\lceil\log_2{(b)}\rceil} - b\right)\texttt{+ i}\right) &\neq 0.
+		\end{align*}
+		Recall that our list of coefficients represents polynomials with the highest degree as the first term (i.e. index 0).
+		Thus, the sum of the index and the degree for $f(n,x)$ is always equal to $n$.
+		So, for $f(g(b,k),x)$,
+		\begin{align*}
+			\deg_{i,k} + i &= g(b,k) \\
+			\deg_{i,k} &= g(b,k) - i
+		\end{align*}
+		where $\deg_{i,k}$ is the corresponding degree of the coefficient at index $i$ in our representation of $f(g(b,k))$.
+		So, for $f(g(b,k+1),x)$,
+		\begin{align*}
+			\deg_{2i,k+1} + 2i &= g(b,k+1) \\
+			\deg_{2i,k+1} &= g(b,k+1) - 2i \\
+			&= b\cdot2^{k} - 1 - 2i \\
+			&= 2\left(b\cdot2^{k-1} - 1 - i\right) + 1 \\
+			&= 2\left(g(b,k) - i\right) + 1 \\
+			&= 2\deg_{i,k} + 1.
+		\end{align*}
+		So, we see that
+		\begin{equation*}
+			\binom{s(g(b,k)) + 2i}{s(g(b,k)) + i} \mod 2 = 0 \implies \binom{s(g(b,k+1)) + 4i}{s(g(b,k+1)) + 2i} \mod 2 = 0.
+		\end{equation*}
+		The same logic applies to show that both sides get the same result if the parity is odd. Thus,
+		\begin{equation*}
+			\binom{s(g(b,k)) + 2i}{s(g(b,k)) + i} \equiv \binom{s(g(b,k+1)) + 4i}{s(g(b,k+1)) + 2i} \mod 2.
+		\end{equation*}
+		Now we just need to consider odd indices $i$ in $f(g(b,k),x)$.
+		Recall that for any index $i$,
+		\begin{equation*}
+			\binom{s(g(b,k)) + 2i}{s(g(b,k)) + i} \mod 2 =\begin{cases}
+				0 & \texttt{i \& }\left(s(g(b,k)) + i\right) \neq 0 \\
+				1 & \text{otherwise}
+			\end{cases}.
+		\end{equation*}
+		Since $s(g(b,k)) = 2^k\left(2^{\lceil \log_2{(b)} \rceil} - b\right)$, and $k \in \N$,
+		$s(g(b,k))$ is always even.
+		Thus for odd $i$, both $i$ and $s(g(b,k)) + i$ will be odd.
+		Therefore, the result of their bitwise AND (i.e. \texttt{\&}) will be non-zero.
+		So, all odd indices $i$ in $f(g(b,k+1))$ will be 0 in our polynomial representation.
+	\end{proof}
 	This implies that if we know the exponents of $f(g(b,1),x)$, we can iteratively calculate them for any $f(g(b,k),x)$.
 	
 	We can also establish a corollary that seems to have an interesting connection to another part of mathematics.
