@@ -2,6 +2,8 @@ import numpy as np
 
 from board_math import kernel
 from region_separator import region_transform
+from scipy.optimize import linprog
+from math import ceil
 
 
 def brute_force_min_clicks(n: int) -> int:
@@ -25,22 +27,26 @@ def brute_force_min_clicks(n: int) -> int:
     return max(min(sum(board ^ quiet) for quiet in quiets) for board in all_boards)
 
 
-def tight_constraints_min_clicks(n: int) -> int or np.ndarray:
+def lp_min_clicks(n: int) -> np.ndarray:
     """
-    Attempts to find the minimum number of moves ever needed to solve any n x n board by assuming the constraints returned by region_transform are tight.
-    If no such solution exists because the tight constraints are singular, the constrains are returned instead.
+    Attempts to find the minimum number of moves ever needed to solve any n x n board by solving an integer program.
+    For nullity 0 boards, there is only one region of all buttons, so the answer is n^2.
+    For nullity 2 boards, it appears we can solve the lp by assuming all constraints are tight, and the integrality constraint seems to work out.
+    For nullity >2 boards, it appears the constrains we get are singular, with columns of 0's.
+
+    This will return the number of buttons per region in a max-min solution.
+    However, there may be some roundoff errors, since we are not enforcing integrality.
     """
 
     # [A|b], where Ax <= b and x is all positive integers.
     constraints = region_transform(n)
 
-    # Maximize 1*x where Ax <= b by assuming Ax = b is solvable
+    # Maximize 1*x where Ax <= b
+    # TODO: Handle case where there are columns of 0's. We probably need to be more specific about bounds.
     A, b = constraints[:, :-1], constraints[:, -1]
-    try:
-        solution = np.linalg.solve(A, b)
-        return int(sum(solution))
-    except np.linalg.LinAlgError:
-        return constraints
+    c = -np.ones(len(b))
+    lp_result = linprog(c, A_ub=A, b_ub=b)
+    return lp_result.x
 
 
 # These are the ones with nullity 2 we can prove
@@ -58,3 +64,7 @@ def tight_constraints_min_clicks(n: int) -> int or np.ndarray:
 233 39079
 245 43215
 """
+if __name__ == "__main__":
+    n = int(input("n: "))
+    ans = lp_min_clicks(n)
+    print(sum(ceil(x) for x in ans))
