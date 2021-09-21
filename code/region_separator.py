@@ -1,6 +1,6 @@
 import numpy as np
 
-from board_linalg import kernel
+from board_math import kernel
 
 
 def regions(n: int) -> dict[tuple, list[int]]:
