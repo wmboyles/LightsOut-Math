@@ -410,7 +410,7 @@
 		\end{equation*}
 		where
 		\begin{equation*}
-			\binom{n}{m} = \begin{cases}
+			\binom{n}{m} \mod 2 = \begin{cases}
 				0 & \texttt{((n-m) \& m) != 0} \\
 				1 & \text{otherwise}
 			\end{cases}.
@@ -527,6 +527,7 @@
 		\caption{Farey Tree in range [0,1]. Also known as Stern-Brocot Tree.}
 	\end{figure}
 
+	\newpage
 	\begin{conjecture}
 		Choose any $b \in \N$ odd and $k \in \N$.
 		Let
