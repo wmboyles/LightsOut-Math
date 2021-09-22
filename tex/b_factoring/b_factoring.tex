@@ -19,6 +19,7 @@
 \renewcommand{\O}{\mathcal{O}}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\xor}{\oplus}
+\renewcommand{\qedsymbol}{$\blacksquare$}
 
 \begin{document}
 	\title{A Generalized Approach to the Rank Deficiency of Certain Sized \textit{Lights Out} Boards}
@@ -373,10 +374,10 @@
 	The last grouping of terms in the $f(g(9,k),x+1)$ column are exactly the same terms as in the entire $f(g(3,k),x+1)$ column.
 
 	\newpage
-	\section{Meta-Conjectures}
-	Now that we've seen many examples of how these polynomials and their GCDs because for various values of $b$ and $k$, we'll make some conjectures concerning the more general behavior of such polynomials.
+	\section{Meta-Results}
+	Now that we've seen many examples of how these polynomials and their GCDs because for various values of $b$ and $k$, we'll prove some results about their behavior as $k$ varies.
 	
-	\begin{conjecture}
+	\begin{lemma}
 		Let
 		\begin{equation*}
 			f(g(b,k),x) = x^{n_1} + x^{n_2} + \dots + x^{n_m}.
@@ -385,7 +386,7 @@
 		\begin{equation*}
 			f(g(b,k+1),x) = x^{2n_1 + 1} + x^{2n_2 + 1} + \dots + x^{2n_m + 1}.
 		\end{equation*}
-	\end{conjecture}
+	\end{lemma}
 	\begin{proof}
 		Consider how we calculate $f(n,x)$ in our code.
 		We say
@@ -473,6 +474,54 @@
 	\end{proof}
 	This implies that if we know the exponents of $f(g(b,1),x)$, we can iteratively calculate them for any $f(g(b,k),x)$.
 	
+	\begin{corollary}
+		For all $k \in \N$, $x^{g(1,k)}$ divides $f(g(b,k),x)$.
+	\end{corollary}
+	\begin{proof}
+		By induction on $k$.
+		Notice that for $k=1$, $g(1,1) = 1\cdot2^{1-1} - 1 = 0$, and $x^0 = 1$ trivially divides everything.
+		Assume for some $k \in \N$ that $x^{g(1,k)}$ divides $f(g(b,k),x)$.
+		That is,
+		\begin{equation*}
+			f(g(b,k),x) = x^{a_1} + x^{a_2} + \dots + x^{a_n},
+		\end{equation*}
+		where $a_1 > a_2 > \dots > a_n \geq g(1,k)$.
+		Then
+		\begin{equation*}
+			f(g(b,k+1),x) = x^{2a_1 + 1} + x^{2a_2 + 1} + \dots + x^{2a_n + 1}.
+		\end{equation*} 
+		So, $2a_1 + 1 > 2a_2 + 1 > \dots > 2a_n + 1 \geq 2g(1,k)+1 = g(1,k+1),$ as desired.
+	\end{proof}
+	
+	\begin{corollary}
+		The following identity holds:
+		\begin{equation*}
+			f(g(b,k+1),x) = x\left(f(g(b,k),x)\right)^2.
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		Let
+		\begin{equation*}
+			f(g(b,k),x) = x^{a_1} + x^{a_2} + \dots + x^{a_n},
+		\end{equation*}
+		where $a_1 > a_2 > \dots > a_n \geq 0$.
+		Then
+		\begin{align*}
+			f(g(b,k+1),x) &= x^{2a_1 + 1} + x^{2a_2 + 1} + \dots + x^{2a_n+1} \\
+			&= x\left(x^{2a_1} + x^{2a_2} + \dots + x^{2a_n}\right) \\
+			&=\equiv x\left(x^{a_1} + x^{a_2} + \dots + x^{a_n}\right)^2 \\
+			&= x\left(f(g(b,k),x)\right)^2,
+		\end{align*}
+		as desired.
+	\end{proof}
+	
+	\begin{corollary}
+		The following identity holds:
+		\begin{equation*}
+			f(g(b,k+1),x+1) = (x+1)\left(f(g(b,k),x+1)\right)^2.
+		\end{equation*}
+	\end{corollary}
+	
 	We can also establish a corollary that seems to have an interesting connection to another part of mathematics.
 	\begin{corollary}
 		For a fixed value of $b$, the number of non-zero terms in $f(g(b,k),x)$ is the same for all $k$.
@@ -528,7 +577,7 @@
 	\end{figure}
 
 	\newpage
-	\begin{conjecture}
+	\begin{lemma}
 		Choose any $b \in \N$ odd and $k \in \N$.
 		Let
 		\begin{equation*}
@@ -538,7 +587,7 @@
 		\begin{equation*}
 			f(g(b,k+1),x+1) = x^{2n_1 + 1} + x^{2n_1} + x^{2n_2 + 1} + x^{2n_2} + \dots + x^{2n_m + 1} + x^{2n_m}.
 		\end{equation*}
-	\end{conjecture}
+	\end{lemma}
 	\begin{proof}
 		Notice that if
 		\begin{equation*}
@@ -556,7 +605,7 @@
 		\begin{align*}
 			f(g(b,k),x+1) &= (x+1)^{a_1} + (x+1)^{a_2} + \dots + (x+1)^{a_m} \\
 			f(g(b,k+1),x+1) &= (x+1)^{2a_1 + 1} + (x+1)^{2a_2 + 1} + \dots + (x+1)^{2a_m + 1} \\
-			&= (x+1)\left((x+1)^{2a_1} + (x+1)^{2a_2} + \dots + (x+1)^{a_m}\right) \\
+			&= (x+1)\left((x+1)^{2a_1} + (x+1)^{2a_2} + \dots + (x+1)^{2a_m}\right) \\
 			&\equiv (x+1)\left((x+1)^{a_1} + (x+1)^{a_2} + \dots + (x+1)^{a_m}\right)^2 \\
 			&= (x+1)\left(x^{b_1} + x^{b_2} + \dots + x^{b_n}\right)^2 \\
 			&\equiv (x+1)\left(x^{2b_1} + x^{2b_2} + \dots + x^{2b_n}\right) \\
@@ -564,8 +613,7 @@
 		\end{align*}
 		as desired.
 	\end{proof}
-
-	This implies that if we know the exponents of $f(g(b,1),x+1)$, we can iteratively calculate them for any $f(g(b,k),x+1)$.
+	This implies that if we know the exponents of $f(g(b,1),x+1)$, we can iteratively calculate them for any $f(g(b,k),x+1)$. \\
 	
 	Like previously, we can establish a corollary about the number of non-zero terms.
 	\begin{corollary}
@@ -618,8 +666,31 @@
 	However, we find that this sequence represents the cellular automaton that we already knew this sequence came from. \\
 	
 	Notice that the previous two proofs together imply we simply calculate $f(g(b,k),x)$ and $f(g(b,k),x+1)$ and iteratively find the polynomials for any $k$.
+	
+	\begin{corollary}
+		If $x$ divides $f(g(b,1),x+1)$, then for all $k \geq 2$, $x^{g(1,k)}$ divides $f(g(b,k),x+1)$.
+	\end{corollary}
+	\begin{proof}
+		We'll show by induction on $k$.
+		For $k=1$, assume $x$ divides $f(g(b,1),x+1)$.
+		Assume for some $k \in \N$ that $x^{2^{k-1}}$ divides $f(g(b,k),x+1)$.
+		That is,
+		\begin{equation*}
+			f(g(b,k),x+1) = x^{a_1} + x^{a_2} + \dots + x^{a_n},
+		\end{equation*}
+		where $a_1 > a_2 > \dots > a_n \geq 2^{k-1} > g(1,k)$.
+		Then
+		\begin{equation*}
+			f(g(b,k+1),x+1) = x^{2a_1+1} + x^{2a_1} + x^{2a_2+1} + x^{2a_2} + \dots + x^{2a_n+1} + x^{2a_n}.
+		\end{equation*}
+		So, $2a_1 + 1 > 2a_1 > 2a_2 + 1 > 2a_2 > \dots > 2a_n + 1 > 2a_n \geq 2^{k} > g(1,k+1)$, as desired.
+	\end{proof}
+	We know from a previous result that $x^{g(1,k)}$ always divides $f(g(b,k),x)$.
+	Thus, if $x$ divides $f(g(b,1),x+1)$, then $x^{g(1,k)}$ divides both polynomials and therefore appears in their GCD.
 
 	\newpage
+	\section{Meta-Conjectures}
+	Now we'll make some conjectures concerning the more general behavior of such polynomials, especially their GCDs.
 	\begin{conjecture}
 		Let $b \in \N$ odd and $k \in \N$. 
 		Then the lowest degree term of $\gcd\left(f(g(b,k),x),f(g(b,k),x+1)\right)$ has a degree that is one less than a power of 2.
