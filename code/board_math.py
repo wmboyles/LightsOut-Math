@@ -261,6 +261,32 @@ def chebyshev_f2(n: int) -> np.ndarray:
     return np.array([trinomial_parity(start + i, 2 * start + i) for i in range(n + 1)])
 
 
+def g(b: int, k: int) -> int:
+    """
+    Helper function for certain-sized boards.
+
+    g(b,k) = b*2^(k-1) - 1, where b,k are naturals, b is odd.
+    """
+
+    if b <= 0 or k <= 0:
+        raise ValueError("b and k must be positive")
+    if b % 2 == 0:
+        raise ValueError("b must be odd")
+
+    return b * (1 << (k - 1)) - 1
+
+
+def chebyshev_gcd(n: int) -> np.ndarray:
+    """
+    Returns the polynomial representing the greatest common divisor of the
+    polynomials f(n,x) and f(n,1+x). The degree of this polynomial is the
+    nullity of an n x n Lights Out board.
+    """
+
+    f1, f2 = chebyshev_f1(n), chebyshev_f2(n)
+    return poly_gcd_mod2(f1, f2)
+
+
 def nullity(n: int) -> int:
     """
     Returns the nullity of an n x n board.
@@ -273,5 +299,16 @@ def nullity(n: int) -> int:
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
 
-    f1, f2 = chebyshev_f1(n), chebyshev_f2(n)
-    return len(poly_gcd_mod2(f1, f2)) - 1
+    return len(chebyshev_gcd(n)) - 1
+
+
+def full_rank_b(N: int, test_length=2) -> set:
+    """
+    Finds b in [1,N] such that for all k >= 1, nullity(g(n,k)) == 0.
+    """
+
+    return {
+        b
+        for b in range(1, N + 1, 2)
+        if all([nullity(g(b, k)) == 0 for k in range(1, test_length + 1)])
+    }
