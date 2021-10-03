@@ -15,6 +15,7 @@
 \newtheorem{definition}{Definition}
 
 \setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
 
 \renewcommand{\O}{\mathcal{O}}
 \newcommand{\N}{\mathbb{N}}
@@ -38,7 +39,7 @@
 	In the $b=5$ case, we were able to prove a general form of the Chebyshev polynomials for these board sizes and find the degree of their gcd.
 	Thus, we were able to derive the rank deficiency of boards sized $g(5,k) \times g(5,k)$.
 	We also conjectured that these boards represented exactly the highest rank deficiencies.
-	In the next sections, we will investigate different values of $b$ and make conjectures about the corresponding Chebyshev polynomials and the rank deficiencies. \\
+	In the next sections, we will investigate different values of $b$ and make conjectures about the corresponding Chebyshev polynomials and the rank deficiencies.
 	
 	First, we'll notice that every natural number can be represented in this form.
 	\begin{lemma}
@@ -80,6 +81,7 @@
 			8 & $x^{127}$ & $x^{127} + x^{126} + \dots + x + 1$ & $1$ \\
 			\hline  
 		\end{tabular}
+		\caption{Polynomials and their GCD for $b=1$}
 	\end{table}
 	Thus, we conjecture
 	\begin{conjecture}
@@ -101,9 +103,9 @@
 		\end{enumerate}
 	\end{conjecture}
 	This conjecture implies that the nullity of all boards of size $g(1,k) \times g(1,k)$ is $0$.
-	This is consistent with computer results. \\
+	This is consistent with computer results.
 	
-	Notice that 1 implies 2 because
+	Notice that statement 1 implies statement 2 because
 	\begin{align*}
 		f(g(1,k),x) &= x^{g(1,k)} \\
 		f(g(1,k),x+1) &= (x+1)^{g(1,k)} \\
@@ -146,6 +148,7 @@
 			8 & $x^{383} + x^{127}$ & $x^{383} + \dots + x^{256}$ & $x^{254} + \dots + x^{127}$ \\
 			\hline  
 		\end{tabular}
+		\caption{Polynomials and their GCD for $b=3$}
 	\end{table}
 	Thus, we conjecture
 	\begin{conjecture}
@@ -167,9 +170,9 @@
 		\end{enumerate}
 	\end{conjecture}
 	This conjecture implies that the nullity of all boards of size $g(3,k) \times g(3,k)$ is $2g(1,k)$.
-	This is consistent with computer results. \\
+	This is consistent with computer results.
 	
-	Notice that 1 implies 2 because
+	Notice that statement 1 implies statement 2 because
 	\begin{align*}
 		f(g(3,k),x) &= x^{g(3,k)} + x^{g(1,k)} \\
 		f(g(3,k),x+1) &= (x+1)^{g(3,k)} + (x+1)^{g(1,k)} \\
@@ -212,6 +215,7 @@
 			8 & $x^{639} + x^{383} + x^{127}$ & $\left(x^{639}+\dots+x^{512}\right)+\left(x^{383}+\dots+x^{256}\right)+\left(x^{127}+\dots+1\right)$ & $x^{512} + x^{256} + 1$ \\
 			\hline
 		\end{tabular}
+		\caption{Polynomials and their GCD for $b=5$}
 	\end{table}
 
 	Thus, we've conjecture (and subsequently proved)
@@ -233,7 +237,7 @@
 			\end{equation*}
 		\end{enumerate}
 	\end{lemma}
-	This lemma implies implies that the nullity of all boards of size $g(5,k) \times g(5,k)$ is $2^{k+1}$.
+	This lemma implies that the nullity of all boards of size $g(5,k) \times g(5,k)$ is $2^{k+1}$.
 	This is consistent (as it must be if proven true) with computer result.
 	
 	\newpage
@@ -265,6 +269,7 @@
 			8 & $x^{895} + x^{639} + x^{127}$ & $\left(x^{895}+\dots+x^{768}\right)+\left(x^{463}+\dots+x^{256}\right)+\left(x^{127}+\dots+1\right)$ & $1$ \\
 			\hline
 		\end{tabular}
+		\caption{Polynomials and their GCD for $b=7$}
 	\end{table}
 
 	Thus, we conjecture
@@ -287,7 +292,7 @@
 		\end{enumerate}
 	\end{conjecture}
 	This conjecture implies that the nullity of all boards of size $g(7,k) \times g(7,k)$ is 0.
-	This is consistent with computer results. \\
+	This is consistent with computer results.
 	
 	Notice that statement 1 implies statement 2 because
 	\begin{align*}
@@ -311,6 +316,7 @@
 	
 	\begin{table}[H]
 		\renewcommand{\arraystretch}{1.5}
+		\centering
 		\begin{tabular}{|l||l|l|l|}
 			\hline
 			$k$ & $f(g(9,k),x)$ & $f(g(9,k),x+1)$ & $\gcd$ \\
@@ -332,6 +338,7 @@
 			8 & $x^{1515} + x^{895} + x^{639} + x^{127}$ & $\left(x^{1515}+\dots+x^{1024}\right)+\left(x^{895}+\dots+x^{768}\right)+\left(x^{463}+\dots+x^{256}\right)$ & $x^{254} + \dots + x^{127}$ \\
 			\hline
 		\end{tabular}
+		\caption{Polynomials and their GCD for $b=9$}
 	\end{table}
 
 	Thus, we conjecture
@@ -354,7 +361,7 @@
 		\end{enumerate}
 	\end{conjecture}
 	This conjecture implies that the nullity of all boards of size $g(9,k) \times g(9,k)$ is $2g(1,k)$.
-	This is consistent with computer results. \\
+	This is consistent with computer results.
 	
 	Notice that statement 1 implies statement 2 because
 	\begin{align*}
@@ -493,7 +500,7 @@
 		So, $2a_1 + 1 > 2a_2 + 1 > \dots > 2a_n + 1 \geq 2g(1,k)+1 = g(1,k+1),$ as desired.
 	\end{proof}
 	
-	\begin{corollary}
+	\begin{corollary}\label{fx-iterative-col}
 		The following identity holds:
 		\begin{equation*}
 			f(g(b,k+1),x) = x\left(f(g(b,k),x)\right)^2.
@@ -515,7 +522,7 @@
 		as desired.
 	\end{proof}
 	
-	\begin{corollary}
+	\begin{corollary}\label{fx1-iterative-col}
 		The following identity holds:
 		\begin{equation*}
 			f(g(b,k+1),x+1) = (x+1)\left(f(g(b,k),x+1)\right)^2.
@@ -565,6 +572,7 @@
 			29 & 7 \\
 			\hline
 		\end{tabular}
+		\caption{Number of non-zero terms in $f(g(b,k),x)$.}
 	\end{table}
 	
 	Putting this sequence into the OEIS, we see that it matches with \href{https://oeis.org/A007306}{A007306}, which are the denominators of Farey tree fractions, which is pictured below.
@@ -627,7 +635,7 @@
 		\centering
 		\begin{tabular}{|l||l|}
 			\hline
-			$b$ & Number of Non-Zero Terms in $f(g(b,1),x+1)$ \\
+			$b$ & Non-Zero Terms in $f(g(b,1),x+1)$ \\
 			\hline\hline
 			1 & 1 \\
 			\hline
@@ -660,6 +668,7 @@
 			29 & 11 \\
 			\hline
 		\end{tabular}
+		\caption{Number of non-zero terms in $f(g(b,1),x+1)$.}
 	\end{table}
 	Although just taking the list of these terms doesn't yield anything in the OEIS, we can find something if we look for sequences whose odd terms are in our table.
 	Particularly, it seems that \href{https://oeis.org/A283324}{A283324} is what we want.
@@ -691,13 +700,99 @@
 	\newpage
 	\section{Meta-Conjectures}
 	Now we'll make some conjectures concerning the more general behavior of such polynomials, especially their GCDs.
-	\begin{conjecture}
+	\begin{conjecture}\label{gcd-lowest-deg-term-conj}
 		Let $b \in \N$ odd and $k \in \N$. 
 		Then the lowest degree term of $\gcd\left(f(g(b,k),x),f(g(b,k),x+1)\right)$ has a degree that is one less than a power of 2.
 	\end{conjecture}
 
-	\begin{conjecture}
+	\begin{conjecture}\label{gcd-num-terms-conj}
 		Let $b \in \N$ odd and $k \in \N$.
 		If $\gcd\left(f(g(b,k),x),f(g(b,k),x+1)\right)$ has a varying amount of terms as $k$ varies with $b$ fixed, then the GCD is a geometric series with some power of 2 number of terms.
 	\end{conjecture}
+	
+	Conjectures \ref{gcd-lowest-deg-term-conj} and \ref{gcd-num-terms-conj} together imply that the GCD is always a finite geometric series.
+	Conjecture \ref{gcd-lowest-deg-term-conj} tells us the starting term, while \ref{gcd-num-terms-conj} tells us the number of terms.
+
+	\begin{conjecture}
+		For all odd $b \in \N$, if
+		\begin{equation*}
+			\gcd\left(f(g(b,k_0),x), f(g(b,k_0),x+1)\right) = 1,
+		\end{equation*}
+		for some $k_0 \geq 2$, then
+		\begin{equation*}
+			\gcd\left(f(g(b,k),x), f(g(b,k),x+1)\right) = 1
+		\end{equation*}
+		for all $k \in \N$.
+	\end{conjecture}
+
+	Corollaries \ref{fx-iterative-col} and \ref{fx1-iterative-col} already tell us that once the GCD is not 1 for some $k_0$, then it will always be not 1 for all $k \geq k_0$.
+	
+	Below is a table of each $b$ and the nullity for the first few values of $k$.
+	Values of $b$ where every entry in the row is 0 have been bolded.
+	
+	\begin{table}[H]
+		\renewcommand{\arraystretch}{1.5}
+		\centering
+		\begin{tabular}{|c||c|c|c|c|}
+			\hline
+			$b$ & $k=1$ & $k=2$ & $k=3$ & $k=4$ \\
+			\hline\hline
+			\textbf{1} & 0 & 0 & 0 & 0 \\
+			\hline
+			3 & 0 & 2 & 6 & 14 \\
+			\hline
+			5 & 4 & 8 & 16 & 32 \\
+			\hline
+			\textbf{7} & 0 & 0 & 0 & 0 \\
+			\hline
+			9 & 0 & 2 & 6 & 14 \\
+			\hline
+			\textbf{11} & 0 & 0 & 0 & 0  \\
+			\hline
+			\textbf{13} & 0 & 0 & 0 & 0 \\
+			\hline
+			15 & 4 & 10 & 22 & 46 \\
+			\hline
+			17 & 8 & 16 & 32 & 64 \\
+			\hline
+			\textbf{19} & 0 & 0 & 0 & 0 \\
+			\hline
+			21 & 0 & 2 & 6 & 14 \\
+			\hline
+			\textbf{23} & 0 & 0 & 0 & 0 \\
+			\hline
+			25 & 4 & 8 & 16 & 32 \\
+			\hline
+		\end{tabular}
+		\caption{Tables of nullity of $g(b,k) \times g(b,k)$ boards.}
+	\end{table}
+	
+	We can now make a conjecture about the behavior of this table.
+	
+	\begin{conjecture}
+		Let $d(b,k)$ be the degree of the GCD of $f(g(b,k),x)$ and $f(g(b,k),x+1)$.
+		If $d(b,k)$ is non-zero, then
+		\begin{equation*}
+			d(b,k+1) = 2d(b,k) \text{ or } 2d(b,k)+2.
+		\end{equation*}
+		For fixed $b$, this relationship will always be the same across $k$.
+	\end{conjecture}
+
+	The values of $b$ such that the entire row of $k$ gives 0 (bolded in the table) are:
+	1, 7, 11, 13, 17, 19, 23, 29, 37, 41, 43, 47, \textbf{49}, 53, 59, 61, 67, 71, 73, \textbf{77}, 79, 83, 89, \textbf{91}, 97, 101, 103, 107, 109, 113, \textbf{121}, 131, \textbf{133}, 137, 139, \textbf{143},$\dots$.
+	Notice that this list seems to have a great deal of prime numbers.
+	In fact, the only prime numbers less than 1000 that are not in this list are: 3, 5, 17, 31, 127, 257, and 683.
+	We can also see that the composite numbers (bolded) in this list can all be factored into primes that do appear on this list.
+	However, not every number that whose prime factors are in this list are on the list.
+	We see that $511 = 7 \cdot 73$, and while 7 and 73 are elements of the list, 511 is not.
+	Thus, it makes sense to extend our list that originally contained primes not in our list to include 511.
+	This gives the sequence 3, 5, 17, 31, 127, 257, 511, 683,$\dots$.
+	This is sequence \href{https://oeis.org/A007802}{A007802} in the OEIS.
+	According to the sequence comments, it can be shown that this sequence is infinite, contains all Mersenne primes greater than 7 and all Fermat primes.
+	Andries E. Brouwer discusses these and calls the ``mad'' numbers on \href{https://www.win.tue.nl/~aeb/ca/madness/madrect.html}{his webpage}.
+	
+	If we have a fast way to compute elements in this sequence of primitive elements, we have a fast way to see if the nullity of a board is 0.
+	Given a board size $n$, we first find odd $b_n$ such that for some $k$, $g(b_n,k)=n$.
+	Next, simply check if any divisors of $b_n$ appear on this list of primitives.
+	If not, the nullity is zero; otherwise, the nullity is non-zero.
 \end{document}
