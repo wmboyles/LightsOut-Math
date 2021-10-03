@@ -148,29 +148,29 @@
 	\end{conjecture}
 	In other words, if we list the board sizes and their rank deficiencies, noting each time we encounter a rank deficiency higher than any other we've seen before, we will have noted exactly the board sizes described by $g$. \\
 	
-	The following corollary relies on conjecture \ref{conj3}.
-	\begin{corollary}
-		$d(n) = n$ only for $n=4$.
-		Otherwise, $d(n) < n$.
-	\end{corollary}
-	\begin{proof}
-		Observe that $d(1) = d(2) = d(3) = 0$, and $d(g(1)) = d(4) = 4$. \\
-		
-		Assume for contradiction that there exists some $n > 4$ such that $d(n) \geq n$.
-		
-		Notice that for $k > 1$,
-		\begin{equation*}
-			d(g(k)) = 2^{k+1} < g(k) = 2^{k+1} + 2^{k-1} - 1.
-		\end{equation*}
-		So,
-		\begin{equation*}
-			d(h(n)) < h(n) \leq n = d(n).
-		\end{equation*}
-	
+	Unfortunately, this isn't always true
+	\begin{proof}[Disproof.]
+		Notice that for $n=30$,
+		\begin{align*}
+			h(30) &= \max\{g(m) \mid n \in \N, g(m) \leq 30\}
+			&= \max\{g(1), g(2), g(3)\} \\
+			&= \max\{4, 9, 19\} \\
+			&= 19,
+		\end{align*}
+		and
+		\begin{align*}
+			\max\{d(m) \mid 1 \leq m \leq 30\} &= \max\{d(1),d(2),\dots,d(29),d(30)\} \\
+			&= \max\{0,0,\dots,10,20\} \\
+			&= 20.
+		\end{align*}
 		However,
 		\begin{equation*}
-			\max \{d(m) \mid 1 \leq m \leq n\} = d(n) > d(h(n)),
+			20 \neq d(19) = 16.
 		\end{equation*}
-		which contradicts conjecture \ref{conj3}.
 	\end{proof}
+
+	\begin{conjecture}
+		For all $n \in \N$, $d(n) \leq n$, and $d(n) = n$ only when $n=4$.
+	\end{conjecture}
+	This conjecture may be proven by others using different methods.
 \end{document}
