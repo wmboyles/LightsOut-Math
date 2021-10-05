@@ -31,13 +31,7 @@ def brute_force_min_clicks(n: int) -> int:
 
 def lp_min_clicks(n: int) -> LpProblem:
     """
-    Attempts to find the minimum number of moves ever needed to solve any n x n board by solving an integer program.
-    For nullity 0 boards, there is only one region of all buttons, so the answer is n^2.
-    For nullity 2 boards, it appears we can solve the lp by assuming all constraints are tight, and the integrality constraint seems to work out.
-    For nullity >2 boards, it appears the constrains we get are singular, with columns of 0's.
-
-    This will return the number of buttons per region in a max-min solution.
-    However, there may be some roundoff errors, since we are not enforcing integrality.
+    Creates an integer program to find the minimum number of clicks needed to optimally solve any n x n board.
     """
 
     # [A|b], where Ax <= b and x is all positive integers.
@@ -67,7 +61,7 @@ def lp_min_clicks(n: int) -> LpProblem:
     for i, squares in enumerate(regs.values()):
         prob += vars[i] <= len(squares)
 
-    return prob, regs
+    return prob
 
 
 # These are the ones with nullity 2 we can prove
