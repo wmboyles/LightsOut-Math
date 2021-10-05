@@ -64,7 +64,7 @@ def region_transform(n: int) -> np.ndarray:
     quiet_patterns = {quiet for region in r.keys() for quiet in region} - {0}
     m = len(quiet_patterns) + 1
 
-    # Array of constraints [A|b] where we want to minimize 1x subject to Ax <= b.
+    # Array of constraints [A|b] where we want to maximize L^1(x) subject to Ax <= b; elements of x are non-negative integers.
     constraints = np.zeros((m, m + 1), int)
 
     for i, quiet_pattern in enumerate(quiet_patterns):

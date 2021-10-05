@@ -41,7 +41,7 @@ def lp_min_clicks(n: int) -> np.ndarray:
     # [A|b], where Ax <= b and x is all positive integers.
     constraints = region_transform(n)
 
-    # Maximize 1*x where Ax <= b
+    # Maximize L^1(x) where Ax <= b, elements of x are non-negative integers.
     # TODO: Handle case where there are columns of 0's. We probably need to be more specific about bounds.
     A, b = constraints[:, :-1], constraints[:, -1]
     c = -np.ones(len(b))

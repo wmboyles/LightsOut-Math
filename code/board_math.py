@@ -53,7 +53,7 @@ def rref_mod2(mat: np.ndarray):
             mat[j] %= 2
 
 
-def poly_gcd_mod2(f: list or np.ndarray, g: list or np.ndarray) -> list or np.ndarray:
+def poly_gcd_mod2(f: list | np.ndarray, g: list | np.ndarray) -> list | np.ndarray:
     """
     Polynomial GCD modulo 2.
     Assumes f and g are coefficient lists (only 0's and 1's b/c mod 2) with highest degree terms first.
@@ -302,13 +302,26 @@ def nullity(n: int) -> int:
     return len(chebyshev_gcd(n)) - 1
 
 
-def full_rank_b(N: int, test_length=2) -> set:
+def full_rank_b(N: int, test_length: int = 2) -> list:
     """
-    Finds b in [1,N] such that for all k >= 1, nullity(g(n,k)) == 0.
+    Finds odd b in [1,N] such that for all k >= 1, nullity(g(n,k)) == 0.
+
+    Assumes the that if nullity(g(b,1)) == ... == nullity(g(b,test_length)) == 0, then nullity(g(b,k)) == 0 for all k.
+    We conjecture that it is sufficient to set test_length = 2.
+
+    Let B be the set of all b in [1,N] such that for all k >= 1, nullity(g(b,k)) == 0.
+    * If x is a number such that x is in B, but all proper divisors of x are not in B, then x is a primitive element of B.
+        - It seems that all primitive elements of B are prime.
+    * If x is a number such that x is not in B, but all proper divisors of x are in B, then x is a primitive elemment of the complement of B.
+        - The first few primitive elements of the complement of B are: 3, 5, 17, 31, 127, 257, 511, 683, ...
+            - This is sequence [A007802](https://oeis.org/A007802) in the OEIS
+        - It seems that most primitive elements of the complement of B are prime.
+          However, 511 = 7 * 73, 7 and 73 are both in B, but 511 is not, as nullity(g(511,1)) == 252.
+            - Notice that this means that if x and y are in B, we can't say for sure if xy is in B, as xy may be a composite but primitive element of the complement of B.
     """
 
-    return {
+    return [
         b
         for b in range(1, N + 1, 2)
         if all([nullity(g(b, k)) == 0 for k in range(1, test_length + 1)])
-    }
+    ]
