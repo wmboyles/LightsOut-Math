@@ -50,33 +50,31 @@ def regions_as_array(n: int) -> np.ndarray:
     return reg_map
 
 
-def region_transform(n: int) -> np.ndarray:
+def region_transform(regs: dict[tuple, list[int]]) -> np.ndarray:
     """
     Apply every quiet pattern to generate a set of constraints about a board that an board that uses the maximum number of clicks when solved optimally must satisfy.
     """
 
-    r = regions(n)
-
     # Maps regions to indices in constraint matrix
-    region_dict = {region: i for i, region in enumerate(r.keys())}
+    region_dict = {region: i for i, region in enumerate(regs.keys())}
 
     # We shouldn't include the trivial 0 quiet pattern
-    quiet_patterns = {quiet for region in r.keys() for quiet in region} - {0}
+    quiet_patterns = {quiet for region in regs.keys() for quiet in region} - {0}
     m = len(quiet_patterns) + 1
 
     # Array of constraints [A|b] where we want to maximize L^1(x) subject to Ax <= b; elements of x are non-negative integers.
     constraints = np.zeros((m, m + 1), int)
 
     for i, quiet_pattern in enumerate(quiet_patterns):
-        quiet_pattern_regions = [region for region in r if quiet_pattern in region]
+        quiet_pattern_regions = [region for region in regs if quiet_pattern in region]
         total = 0
         for quiet_pattern_region in quiet_pattern_regions:
             constraints[i, region_dict[quiet_pattern_region]] = 1
-            total += len(r[quiet_pattern_region])
+            total += len(regs[quiet_pattern_region])
         total //= 2
         constraints[i, -1] = total
 
     constraints[-1, -2] = 1
-    constraints[-1, -1] = len(r.get((0,), []))
+    constraints[-1, -1] = len(regs.get((0,), []))
 
     return constraints
