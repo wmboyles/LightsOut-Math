@@ -3,9 +3,7 @@ import numpy as np
 from board_math import kernel
 from region_separator import regions, region_transform
 
-# from scipy.optimize import linprog
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum
-from math import ceil
 
 
 def brute_force_min_clicks(n: int) -> int:
@@ -62,62 +60,3 @@ def lp_min_clicks(n: int) -> LpProblem:
         prob += vars[i] <= len(squares)
 
     return prob
-
-
-# These are the ones with nullity 2 we can prove
-"""
-5 15
-17 199
-41 1191
-53 1999
-77 4239
-113 9159
-137 13479
-161 18631
-173 21519
-221 35151
-233 39079
-245 43215
-"""
-
-# Here are the others of non-zero nullity <= 100 that seem to get answers from our code:
-"""
-4 7 (this is definitely correct)
-9 37 (the code gives this, we have examples of boards that require 37 clicks)
-11 65 (the code gives this, we haven't looked for any examples of boards that require 65 clicks)
-14 123 (the code gives this, we haven't looked for any examples of boards that require 123 clicks)
-16 124 (the code gives this, we haven't looked for any examples of boards that require 124 clicks)
-19 ??
-23 ??
-24 375 (the code gives this, we haven't looked for any examples of boards that require 375 clicks)
-29 ??
-30 ??
-32 ??
-33 ??
-34 763 (the code gives this, we haven't looked for any examples of boards that require 763 clicks)
-35 721 (the code gives this, we haven't looked for any examples of boards that require 721 clicks)
-39 ??
-44 1287 (the code gives this, we haven't looked for any examples of boards that require 1287 clicks)
-47 ??
-49 ??
-50 ??
-54 ??
-59 ??
-61 ??
-62 ??
-64 ??
-65 ??
-67 ??
-69 ??
-71 ??
-74 ??
-79 ??
-83 ??
-84 ??
-89 ??
-92 ??
-94 5947 (the code gives this, we haven't looked for any examples of boards that require 5947 clicks)
-95 ??
-98 ??
-99 ??
-"""
