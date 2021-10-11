@@ -1,4 +1,4 @@
 matplotlib==3.4.3
+matplotlib==3.4.3
 numpy==1.21.2
-#scipy==1.7.1
 PuLP==2.5.1
