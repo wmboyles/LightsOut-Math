@@ -211,7 +211,15 @@ def binomial_parity(n: int, m: int) -> int:
     Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
     The number of carries is exactly the number of 1's in (n-m) & m.
     If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+
+    Raises:
+        ValueError: if n or m < 0, or m > n.
     """
+
+    if n < 0:
+        raise ValueError("n must be positive")
+    if m < 0 or n < m:
+        raise ValueError("m must be non-negative and less than n")
 
     return 0 if ((n - m) & m) else 1
 
@@ -223,7 +231,16 @@ def trinomial_parity(n: int, m: int) -> int:
 
     For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
     For info on this algorithm, see https://stackoverflow.com/a/43698262.
+
+    Raises:
+        ValueError: if n or m < 0, or m is greater than 2n.
     """
+
+    if n < 0:
+        raise ValueError("n must be > 0")
+    if m < 0 or 2 * n < m:
+        print(n, m)
+        raise ValueError("m must be non-negative and less than 2*n")
 
     a, b = 1, 0
     while m:
@@ -238,7 +255,13 @@ def chebyshev_f1(n: int) -> np.ndarray:
     """
     Helper for nullity function.
     Returns coefficient list of f(n,x), with highest degree terms first.
+
+    Raises:
+        ValueError: if n < 0
     """
+
+    if n < 0:
+        raise ValueError("n must be positive")
 
     # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
     k = (1 << ceil(log2(n + 1))) - 1
@@ -252,7 +275,13 @@ def chebyshev_f2(n: int) -> np.ndarray:
     """
     Helper for nullity function.
     Returns coefficient list of f(n,1+x), with highest degree terms first.
+
+    Raises:
+        ValueError: if n < 0
     """
+
+    if n < 0:
+        raise ValueError("n must be positive")
 
     # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
     k = (1 << ceil(log2(n + 1))) - 1
@@ -266,6 +295,9 @@ def g(b: int, k: int) -> int:
     Helper function for certain-sized boards.
 
     g(b,k) = b*2^(k-1) - 1, where b,k are naturals, b is odd.
+
+    Raises:
+        ValueError: if b or k are not natural or b is not odd.
     """
 
     if b <= 0 or k <= 0:
