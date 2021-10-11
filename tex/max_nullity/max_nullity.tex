@@ -1,0 +1,161 @@
+\documentclass{article}
+
+\usepackage{amsthm, amsfonts, amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{float}
+\usepackage{hyperref}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{conjecture}{Conjecture}
+\newtheorem{definition}{Definition}
+
+\setlength{\parindent}{0em}
+
+\renewcommand{\O}{\mathcal{O}}
+\newcommand{\N}{\mathbb{N}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+\begin{document}
+	\title{The Maximum Nullity \textit{Lights Out} Boards}
+	\author{William Boyles}
+	\date{\today}
+	\maketitle
+	
+	\section{Intro}
+	In previous works, we introduced $d(n)$, the nullity of an $n \times n$ \textit{Lights Out} board.
+	We will observe which boards have the maximum nullities and make some conjectures.
+	
+	\section{Observations of Maximum Nullities}
+	Below is a table of the maximum nullities and which $b$ family the board size belongs to.
+	We have checked these results with a computer.
+	The next row in the table will have $n > 5950$.
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|l|}
+			\hline
+			$n$ & $d(n)$ & $(b,k)$ \\
+			\hline\hline
+			4 & 4 & $(5,1)$ \\ 
+			\hline
+			9 & 8 & $(5,2)$ \\
+			\hline
+			19 & 16 & $(5,3)$ \\
+			\hline
+			30 & 20 & $(31,1)$ \\
+			\hline
+			39 & 32 & $(5,4)$ \\
+			\hline
+			61 & 40 & $(31,2)$ \\
+			\hline
+			65 & 42 & $(33,2)$ \\
+			\hline
+			79 & 64 & $(5,5)$ \\
+			\hline
+			123 & 80 & $(31,3)$ \\
+			\hline
+			131 & 86 & $(33,3)$ \\
+			\hline
+			159 & 128 & $(5,6)$ \\
+			\hline
+			247 & 160 & $(31,4)$ \\
+			\hline
+			263 & 174 & $(33,4)$ \\
+			\hline
+			319 & 256 & $(5,7)$ \\
+			\hline
+			495 & 320 & $(31,5)$ \\
+			\hline
+			527 & 350 & $(33,5)$ \\
+			\hline
+			639 & 512 & $(5,8)$ \\
+			\hline
+			991 & 640 & $(31,6)$ \\
+			\hline
+			1055 & 702 & $(33,6)$ \\
+			\hline
+			1279 & 1024 & $(5,9)$ \\
+			\hline
+			1983 & 1280 & $(31,7)$ \\
+			\hline
+			2111 & 1406 & $(33,7)$ \\
+			\hline
+			2559 & 2048 & $(5,10)$ \\
+			\hline
+			3967 & 2560 & $(31,8)$ \\
+			\hline
+			4223 & 2814 & $(33,8)$ \\
+			\hline
+			5119 & 4096 & $(5,11)$ \\
+			\hline
+		\end{tabular}
+		\caption{Board Sizes with Maximum Nullity}
+	\end{table}
+	We can see that all of $b=5$ is present.
+	In a previous work, we have proven that $d(g(5,k)) = 2^{k+1}$.
+	We can see that all of $b=31$ is present.
+	It seems that $d(g(31,k)) = 5\cdot2^{k+1}$.
+	We can see that all of $b=33$ is present, except $k=1$.
+	In fact, $d(g(33,1)) = 20$, the same nullity as the smaller $g(31,1)$.
+	It seems that $d(g(33,k)) = 11\cdot2^{k} - 2$.
+	It seems that $b=5,31,33$ are the only $b$ values that occur.
+	
+	\section{Conjectures}
+	\begin{conjecture}
+		For all $k \in \N$,
+		\begin{equation*}
+			d(g(31,k)) = 5\cdot2^{k+1}.
+		\end{equation*}
+	\end{conjecture}
+
+	\begin{conjecture}
+		For all $k \in \N$,
+		\begin{equation*}
+			d(g(33,k)) = 11\cdot2^{k} - 2.
+		\end{equation*}
+	\end{conjecture}
+
+	\begin{conjecture}
+		Let
+		\begin{equation*}
+			m(n) = \min\left\{\argmax_{1 \leq j \leq n} d(j)\right\}.
+		\end{equation*}
+		That is, the board size at most $n$ with the greatest nullity, where ties are broken by taking the smallest board.
+		Let
+		\begin{equation*}
+			M = \left\{m(i) \mid i \in \N \right\}.
+		\end{equation*}
+		That is, the set of all maximum-nullity board sizes.
+		Let $x \in \N$.
+		Then $x \in M$ if and only if $x = g(b,k)$, where $b \in \{5,31,33\}$ and $k \in \N$, except for $b=33$ and $k=1$.
+	\end{conjecture}
+
+	Combining these conjectures together, we can predict the next few rows of our table.
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|l|l|l|}
+			\hline
+			$n$ & $d(n)$ & $(b,k)$ \\
+			\hline\hline
+			7935 & 5120 & $(31,9)$ \\
+			\hline
+			8447 & 5630 & $(33,9)$ \\
+			\hline
+			10239 & 8192 & $(5,12)$ \\
+			\hline
+			15871 & 10240 & $(31,10)$ \\
+			\hline
+			16895 & 11262 & $(33,10)$ \\
+			\hline
+			20479 & 16384 & $(5,13)$ \\
+			\hline
+			31743 & 20480 & $(31,11)$ \\
+			\hline
+			33791 & 22526 & $(33,11)$ \\
+			\hline
+		\end{tabular}
+		\caption{Conjectured Board Sizes with Maximum Nullity}
+	\end{table}	
+\end{document}
