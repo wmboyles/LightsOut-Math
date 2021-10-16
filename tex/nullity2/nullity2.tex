@@ -38,7 +38,7 @@
 		For $G$, what is the most number of vertices needed to solve any solvable initial configuration?
 	\end{quote}
 	Eriksson, Eriksson, and Sjöstrand show in \cite{ERIKSSON2001357} that the answer to the MMP is $\abs{V}$ if and only $G$ the number of perfect matchings in $G$ is odd.
-	Focusing their attention to when $G$ is an $n \times n$ grid graph, Anderson and Feil show in \cite{anderson_feil} that the function $\Phi: P(V) \to P(V)$ that maps which buttons are pressed to which lights turn on can be described as a $\abs{V} \times \abs{V}$ matrix, and when $\Phi$ is a bijection (i.e. ``nullity'' $\dim{\ker{\Phi}}$ is 0), the answer to the MMP is $\abs{V}$.
+	Focusing their attention to when $G$ is an $n \times n$ grid graph, Anderson and Feil show in \cite{anderson_feil} that the function $\Phi: P(V) \to P(V)$ that maps which buttons are pressed to which lights turn on can be described as a $\abs{V} \times \abs{V}$ matrix, and if and only if $\Phi$ is a bijection (i.e. ``nullity'' $\dim{\ker{\Phi}}$ is 0), the answer to the MMP is $\abs{V}$.
 	
 	Generalizing a technique provided by Scherphuis in \cite{jaap} to solve the MMP for a $5 \times 5$ grid, we provide a solution to the MMP for all grids of size $(6k-1) \times (6k-1)$ with nullity 2.
 	We conjecture that this solves the MMP for all nullity 2 grids.
@@ -50,24 +50,24 @@
 	\begin{equation*}
 		N(v) = \{u \in V \mid u=v \text{ or } (u,v) \in E\}.
 	\end{equation*}
-	If we have $V' \subset V$ such that for all $v \in V$, $\abs{V' \cap N(v)}$ is even, then we say $V'$ is an even parity cover of $G$.
+	If we have $V' \subseteq V$ such that for all $v \in V$, $\abs{V' \cap N(v)}$ is even, then we say $V'$ is an even parity cover of $G$.
 	We can analogously define odd parity covers.
 	Sutner proved in \cite{Sutner1989} that every graph has an odd parity cover.
-	However, not every graph has an even parity cover other than the empty set.
+	However, not every graph has an even parity cover other than the trivial $V' = \emptyset$.
 	
 	\begin{lemma}
-		Let $V' \subseteq V$ and $V' \neq \emptyset$.
+		Let $V' \subseteq V$.
 		Then $V'$ even parity cover of $G$ if and only if $\Phi(V') = \emptyset$.
 	\end{lemma}
 	\begin{proof}
 		We know from \cite{anderson_feil} that the state of each light depends only on how often (even or odd) it and its neighbors have been clicked.
-		So, for $V' \subset V$, $\Phi(V') = \emptyset$ is equivalent to every vertex containing an even number of elements from $V'$, the definition of an even parity cover.
+		So, for $V' \subseteq V$, $\Phi(V') = \emptyset$ is equivalent to every vertex containing an even number of elements from $V'$, the definition of an even parity cover.
 	\end{proof}
 	Equivalently, even parity covers are the elements of $\ker{\Phi}$.
 	We can also think of this result in terms of solutions to an initial configuration.
 	
 	\begin{lemma}
-		Let $V'$ be an even parity cover of $G$, and let $V_1 \subset V$.
+		Let $V'$ be an even parity cover of $G$, and let $V_1 \subseteq V$.
 		If $V_1$ is the solution to some initial configuration, then so is $V_1 \triangle V'$, where $\triangle$ is symmetric difference.
 	\end{lemma}
 	\begin{proof}
@@ -86,15 +86,15 @@
 		
 	\section{MMP for $5 \times 5$ Grid}
 	The $5 \times 5$ grid is the first where $\dim{\ker{\Phi}} = 2$.
-	Although this means the work above does not apply directly, we can examine the even parity covers to solve the MMP.
-	The following theorem is from \cite{jaap}.
+	We will examine the even parity covers to solve the MMP.
+	The following result is from \cite{jaap}.
 	\begin{theorem}[Scherphuis]\label{min-moves-problem-5x5}
 		The answer to the Min Moves Problem for a $5 \times 5$ grid graph is 15.
 	\end{theorem}
 	\begin{proof}
 		Since $\dim{\ker{\Phi}} = 2$, there are $2^2 = 4$ even parity covers of a $5 \times 5$ grid.
-		Below are the three non-empty even parity covers of a $5 \times 5$ grid.
-		A black square represents a 1, while a white square represents a 0.
+		Below are the three non-trivial even parity covers of a $5 \times 5$ grid.
+		A black square at a square means the corresponding vertex is an element of the even parity cover.
 		
 		\begin{figure}[H]
 			\centering
@@ -104,7 +104,7 @@
 			\caption{Non-zero elements of $\ker{\Phi}$ for a $5 \times 5$ grid}
 		\end{figure}
 	
-		We can partition the squares of the $5 \times 5$ grid to one of four regions based on which quiet patterns they are a part of.
+		As we see below, we can partition the squares of the $5 \times 5$ grid to one of four regions based on which even parity covers they are a part of.
 		
 		\begin{figure}[H]
 			\centering
@@ -113,14 +113,14 @@
 		\end{figure}
 	
 		Region 1 is the intersection of covers 2 and 3; region 2 is the intersection of  covers 1 and 2; region 3 is the intersection of covers 1 and 3;
-		region 4 is the intersection of the complements.
+		region 4 is the intersection of all the complements.
 		
-		Let $Y$ be an initial configuration that requires the maximum number of clicks to solve.
-		Let $X$ be a solution to $Y$ that uses the fewest clicks.
+		Let $Y$ be an initial configuration that requires the maximum number of moves of all $5 \times 5 $ grids to solve.
+		Let $X$ be a solution to $Y$ that uses the fewest moves of all solutions to $Y$.
 		Let $A$ be the number of vertices in $X$ in region 1, $B$ in region 2, $C$ in region 3, and $D$ in region 4.
 		Then the solution uses $\abs{X} = A + B + C + D$ moves.
 		
-		If we apply quiet pattern 1, we obtain another solution that uses $A + (8 - B) + (8 - C) + D$ moves.
+		If we apply even parity cover 1 to $X$, we obtain another solution that uses $A + (8 - B) + (8 - C) + D$ moves.
 		Since we assumed $X$ was a minimal solution,
 		\begin{equation*}
 			A + B + C + D \leq A + (8 - B) + (8 - C) + D.
@@ -130,7 +130,7 @@
 			B + C \leq 8.
 		\end{equation}
 	
-		If we apply quiet pattern 2, we obtain another solution that uses $(4 - A) + (8 - B) + C + D$ moves.
+		If we apply even parity cover 2 to $X$, we obtain another solution that uses $(4 - A) + (8 - B) + C + D$ moves.
 		Since we assumed $X$ was a minimal solution,
 		\begin{equation*}
 			A + B + C + D \leq (4 - A) + (8 - B) + C + D.
@@ -140,7 +140,7 @@
 			A + B \leq 6.
 		\end{equation}
 	
-		If we apply quiet pattern 3, we obtain another solution that uses $(4 - A) + B + (8 - C) + D$ moves.
+		If we apply even parity cover 3 to $X$, we obtain another solution that uses $(4 - A) + B + (8 - C) + D$ moves.
 		Since we assumed $X$ was already a minimal solution,
 		\begin{equation*}
 			A + B + C + D \leq (4 - A) + B + (8 - C) + D.
@@ -150,11 +150,12 @@
 			A + C \leq 6.
 		\end{equation}
 	
+		Since we have applied all even parity covers, we can be sure we considered all solutions to $Y$.
 		None of \eqref{5x5_constr1}, \eqref{5x5_constr2}, or \eqref{5x5_constr3} affect $D$.
 		Thus, $D$ is not constrained beyond the fact that region 4 contains five vertices.
-		Since we assumed the solution to $Y$ required as many clicks as possible, $D = 5$.
+		Since we assumed the solution to $Y$ required the most moves of all $5 \times 5$ grids, $D = 5$.
 	
-		Putting \eqref{5x5_constr1}, \eqref{5x5_constr2}, and \eqref{5x5_constr3} in matrix form,
+		Combining \eqref{5x5_constr1}, \eqref{5x5_constr2}, and \eqref{5x5_constr3} into matrix form,
 		\begin{equation}\label{5x5_ilp}
 			\begin{bmatrix}
 				0 & 1 & 1 \\
@@ -173,7 +174,7 @@
 				6
 			\end{bmatrix}.
 		\end{equation}
-		Thus, we need to solve this integer linear program (ILP), maximizing the $L^1$-norm $A + B + C$.
+		Thus, because we assumed $Y$ required the most moves to solve of all $5 \times 5$ boards, we need to solve this integer linear program (ILP), maximizing the $L^1$-norm $A + B + C$.
 		
 		Since all entries in the constraint matrix of \eqref{5x5_ilp} are non-negative, finding an integer solution where the constraints are tight (i.e. replace the $\leq$ in \eqref{5x5_ilp} with $=$) would be the solution to the ILP.
 		
@@ -241,14 +242,15 @@
 	
 		We will show that $R$ is an even parity cover of an $(nk - 1) \times (nk - 1)$ grid.
 		Consider any vertex $v$ in the $(nk-1) \times (nk-1)$ grid.
-		If $v$ is one of the areas containing a reflection of $Q$, then $N(v) \cap R$ is even because $Q$ is an even parity cover.
-		If $v$ not one of these areas containing a reflection of $Q$, then $v \not\in Q$, and $N(v)$ contains either zero or two vertices that are in a reflection of $Q$.
+		If $v$ is in one of the areas containing a reflection of $Q$, then $N(v) \cap R$ is even because $Q$ is an even parity cover.
+		If $v$ is not in one of these areas containing a reflection of $Q$, then $v \not\in Q$, and $N(v)$ contains either zero or two vertices that are in a reflection of $Q$.
 		If $N(v)$ contains zero such vertices, then $\abs{N(v) \cap R} = 0$, which is even.
 		If $N(v)$ contains two such vertices, then these vertices are either both in $R$ or neither are in $R$.
 		Thus, $\abs{N(v) \cap R}$ is even.
 		So, $R$ is an even parity cover.
 		
 		So, each even parity cover of an $(n-1) \times (n-1)$ grid allows us to generate a unique even parity cover for an $(nk-1) \times (nk-1)$ grid.
+		Since these even parity covers are independent on a $(n-1) \times (n-1)$ grid, they are also independent on the larger $(nk-1) \times (nk-1)$ grid.
 		Thus,
 		\begin{equation*}
 			d(nk-1) \geq d(n-1),
@@ -287,8 +289,8 @@
 		Using the same numbering for even parity covers as in theorem \ref{min-moves-problem-5x5}, region 1 is the intersection of even parity covers 2 and 3; region 2 is the intersection of even parity covers 1 and 2; region 3 is the intersection of even parity covers 1 and 3; region 4 is the intersection of the complements.
 		Region 1 contains $4k^2$ vertices, regions 2 and 3 contain $8k^2$ vertices, and region 4 contains the remaining $16k^2 - 12k + 1$ vertices.
 		
-		Let $Y$ be an initial configuration that requires the maximum number of clicks to solve.
-		Let $X$ be a solution to $Y$ that uses the fewest clicks.
+		Let $Y$ be an initial configuration that requires the maximum number of moves to solve of all $(6k-1)\times(6k-1)$ grids.
+		Let $X$ be a solution to $Y$ that uses the fewest moves of all solutions to $Y$.
 		Let $A$ be the number of moves in $X$ in region 1, $B$ in region 2, $C$ in region 3, and $D$ in region 4.
 		Then the solution uses $\abs{X} = A + B + C + D$ moves.
 		
@@ -340,21 +342,13 @@
 	\begin{conjecture}\label{all-nullity2-conj}
 		If an $n \times n$ grid has nullity 2, then $n \equiv -1 \mod 6$.
 	\end{conjecture}
-	That is, the quiet patterns of all nullity 2 grids are tilings of the $5 \times 5$ quiet patterns.
+	That is, the even parity covers of all nullity 2 grids are tilings of the $5 \times 5$ even parity covers.
 	If true, this would mean that we have solved the MMP for all nullity 2 grids.
-
-	\begin{conjecture}\label{ilp-conj}
-		The proof technique of assuming our integer program can be solved with all constraints tight will only work for grids with nullity 2, none higher.
-	\end{conjecture}
-	That is, solving the ILP by assuming all constraints can be tightly satisfied does not work for grids with nullity greater than 2.
 	
 	\section{Future Work}
 	We'd like future work to focus on resolving conjecture \ref{all-nullity2-conj} and solving the MMP on grids with nullities greater than 2.
 	For any sized grid (in fact, any graph), we can apply the same technique as in theorems \ref{min-moves-problem-5x5} and \ref{min-moves-problem-6k-1x6k-1} of finding the solution to the Min Moves Problem as the solution to an ILP.
-	However, as we state in conjecture \ref{ilp-conj}, it seems the ILP for larger nullities cannot be solved with all constraints tight.
-	The $4 \times 4$ grid with nullity 4 (nullities are always even) is the smallest with nullity greater than 2.
-	We know via brute force that the answer to the Min Moves Problem in this case is 7.
-	Perhaps if we better understood how to solve the ILP for the $4 \times 4$ grid, we could generalize to larger grids.
+	However, it seems the ILP for larger nullities cannot be solved with all constraints tight.
 	
 	We'd also like future work to focus more on understanding the relationships between the nullities of different sized grids.
 	The inequality derived in theorem \ref{tiling-quiet-patterns} is a good start to this, but there seem to be many other patterns to discover.
