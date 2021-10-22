@@ -211,3 +211,33 @@ def full_rank_b(N: int, test_length: int = 2) -> list:
         for b in range(1, N + 1, 2)
         if all([nullity(g(b, k)) == 0 for k in range(1, test_length + 1)])
     ]
+
+
+def find_conj2_counterexample(M: int):
+    """
+    Searches for counterexamples to conjecture 2 of the nullity2 paper.
+    A counterexample would be a number n such that d(n) = 2, but 6 does not divide n+1.
+    """
+
+    # True means possible that index+1 is a counterexample
+    seive = [True] * M
+    for i in range(1, M + 1):
+        # print progreess
+        if i % 500 == 0:
+            print(i)
+
+        if not seive[i - 1]:
+            continue
+
+        d = nullity(i)
+
+        if d == 0:
+            continue
+        if d == 2:
+            if (i + 1) % 6 != 0:
+                print(f"{i} is a counterexample")
+
+            continue
+
+        for k in range(i, M, i + 1):
+            seive[k - 1] = False
