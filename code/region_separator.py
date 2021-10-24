@@ -3,7 +3,7 @@ import numpy as np
 from board_math import kernel
 
 
-def regions(n: int) -> dict[tuple, list[int]]:
+def regions(n: int, k=None) -> dict[tuple, list[int]]:
     """
     Group all squares in the n x n board into distinct regions based on which "quiet patterns" they are a part of.
     """
@@ -11,7 +11,10 @@ def regions(n: int) -> dict[tuple, list[int]]:
     # Key: square number, Value: list of kernel patterns
     regions = dict[int, list[int]]()
 
-    k = kernel(n)
+    # This is useful if we've already computed the kernel once
+    if k is None:
+        k = kernel(n)
+
     for i, quiet in enumerate(k):
         for j in range(len(quiet)):
             if quiet[j] == 1:
