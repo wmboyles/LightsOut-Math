@@ -2,8 +2,94 @@ import numpy as np
 
 from region_separator import regions, region_transform
 from kernel_size import nullity
+from board_math import kernel
 
 from pulp import LpProblem, LpMaximize, LpVariable, lpSum, PULP_CBC_CMD
+
+
+def random_search(n: int, lower_bound: int, upper_bound: int):
+    """
+    Randomly generate boards and find the number of moves needed to solve them optimally.
+    Avoids boards that can clearly be solved in more moves by having the region where no quiet patterns intersect have all 1's.
+    """
+
+    # Find all the regions
+    k = kernel(n)
+    regs = regions(n, k=k)
+
+    # Find all squares that are in none of the non-empty regions
+    empty_region = regs.get((0,), [])
+
+    # Max number of moves we've seen so far
+    max_overall_moves = max(len(empty_region), lower_bound)
+    print(max_overall_moves)
+
+    while max_overall_moves < upper_bound:
+        # Generate a random board
+        def generate_board():
+            board = np.random.randint(0, 2, size=n ** 2)
+
+            # In all the empty region indices, put a 1
+            for i in empty_region:
+                board[i] = 1
+
+            return board
+
+        # Generate a board with more than max_overall_moves 1's
+        while True:
+            board = generate_board()
+            best_moves = np.count_nonzero(board)
+
+            if best_moves > max_overall_moves:
+                break
+
+        # See if there's a way to solve it in max_overall_moves or fewer moves
+        best_kernel = k[0]
+        for kernel_board in k:
+            new_board = board ^ kernel_board
+            new_board_ones = np.count_nonzero(new_board)
+
+            # Otherwise, update the best solution
+            if new_board_ones < best_moves:
+                best_moves = new_board_ones
+                best_kernel = kernel_board
+
+            # If we already have a at least as hard board skip
+            if new_board_ones <= max_overall_moves:
+                break
+
+        # If so, update max_moves and print the worst-case board
+        if best_moves > max_overall_moves:
+            max_overall_moves = best_moves
+            print(max_overall_moves)
+            print(board ^ best_kernel)
+
+
+def min_clicks(board: np.ndarray, n: int = None) -> int:
+    """
+    Find the minimum number of clicks needed to solve a given board.
+
+    The board represents a one solution to the problem, this will find the smallest.
+    The board should either be a square array of 0's and 1's or be a flat array of 0's and 1's with parameter n provided.
+    """
+
+    # Reshape the board as a 1D array, if
+    if n is None:
+        n = board.shape[0]
+        board2 = board.flatten()
+    else:
+        board2 = board.copy()
+        assert len(board2) == n ** 2
+
+    # Get the kernel
+    k = kernel(n)
+
+    min_clicks = n ** 2
+    for kernel_board in k:
+        new_board = board2 ^ kernel_board
+        min_clicks = min(min_clicks, np.count_nonzero(new_board))
+
+    return min_clicks
 
 
 def min_clicks_lp(n: int) -> LpProblem:
@@ -41,6 +127,7 @@ def min_clicks_lp(n: int) -> LpProblem:
     return prob
 
 
+# NOTE: This method relies on a currently unproved conjecture
 def min_clicks_parabola(m: int, msg=0) -> np.ndarray:
     """
     This algorithm relies on the following conjecture:
