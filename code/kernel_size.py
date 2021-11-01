@@ -1,5 +1,6 @@
 from math import ceil, log2, isclose
 import numpy as np
+from functools import cache
 
 
 def poly_gcd_mod2(f: list | np.ndarray, g: list | np.ndarray) -> list | np.ndarray:
@@ -28,6 +29,7 @@ def poly_gcd_mod2(f: list | np.ndarray, g: list | np.ndarray) -> list | np.ndarr
         f, g = r[i:], g
 
 
+@cache
 def chebyshev_f1(n: int) -> np.ndarray:
     """
     Helper for nullity function.
@@ -68,6 +70,7 @@ def chebyshev_f1(n: int) -> np.ndarray:
     return np.array([binomial_parity(2 * i + start, start + i) for i in range(n + 1)])
 
 
+@cache
 def chebyshev_f2(n: int) -> np.ndarray:
     """
     Helper for nullity function.
@@ -144,6 +147,7 @@ def find_gbk(n: int) -> tuple[int, int]:
     return b, k
 
 
+@cache
 def nullity(n: int) -> int:
     """
     Returns the nullity of an n x n board.
