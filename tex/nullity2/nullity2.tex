@@ -32,10 +32,10 @@
 	Consider a game played on a simple graph $G=(V,E)$ where each vertex consists of a clickable light.
 	A move consists of clicking any vertex $v$, which toggles the on/off state of $v$ and its neighbors.
 	Starting from an initial configuration of lights, one wins the game by finding a solution: a sequence of moves that turns off all the lights.
-	This game is commercially available from Tiger Electronics as \textit{Lights Out} for $G$ a $5 \times 5$ grid. 
+	When $G$ is a $5 \times 5$ grid, this game is commercially available from Tiger Electronics as \textit{Lights Out}.
 	
 	Clicking a vertex twice is equivalent to not clicking it at all \cite{Sutner1989}.
-	Thus, solutions can be sets of vertices rather than a sequences.
+	Thus, solutions can be sets of vertices rather than sequences.
 	Some initial configurations cannot be solved, meaning some lights will always remain on \cite{anderson_feil}.
 	Further, Goldwasser and Klostermeyer show that determining if some initial configuration can be transformed through moves to a configuration with at least $k$ lights off, which they call the \textit{Maximizing Off Switches (MOS)} problem, is NP-complete.
 	However, the case where $k=\abs{V}$ is solvable in polynomial time, and the authors do not believe that MOS is NP-complete when $G$ is restricted to grid graphs \cite{Goldwasser2000}.
@@ -48,7 +48,7 @@
 	
 	Previous work determined when the answer to the MMP is the worst-case $\abs{V}$.
 	Eriksson, Eriksson, and Sjöstrand show that answer to the MMP is $\abs{V}$ if and only if the number of perfect matchings in $G$ is odd \cite{ERIKSSON2001357}.
-	Sutner shows that the function $\Phi_G: P(V) \to P(V)$, that maps which vertices are clicked to which vertices turn on is linear with respect to symmetric difference.
+	Sutner shows that the function $\Phi_G$ which maps which vertices are clicked to which vertices turn on is linear with respect to symmetric difference.
 	That is, for all $V_1, V_2 \subseteq V$,
 	\begin{equation*}
 		\Phi_G(V_1 \triangle V_2) = \Phi_G(V_1) \triangle \Phi_G(V_2).
@@ -58,16 +58,17 @@
 	
 	We review a technique from Scherphuis to solve the MMP for a $5 \times 5$ grid \cite{jaap}.
 	We generalize this approach to give an upper bound the MMP for all grids of size $(6k-1) \times (6k-1)$.
-	This upper bound exactly solves the MMP for all such nullity 2 grids, which we conjecture solves the MMP for all nullity 2 grids.
+	The value given by this upper bound exactly solves the MMP for all nullity 2 grids of this size.
+	We conjecture that all nullity 2 grids are of size $(6k-1) \times (6k-1)$, which would mean we solved the MMP for all nullity 2 grids.
 	
 	\section{Parity Covers}
-	For any vertex $v \in V$, let $N(v)$, the neighborhood of $v$ be all vertices that are affected when we click $v$.
+	For any $v \in V$, define $N(v)$, the neighborhood of $v$, to be all vertices that are affected when $v$ is clicked.
 	That is,
 	\begin{equation*}
 		N(v) = \{u \in V \mid u=v \text{ or } (u,v) \in E\}.
 	\end{equation*}
 	If we have $V' \subseteq V$ such that for all $v \in V$, $\abs{V' \cap N(v)}$ is even, then we say $V'$ is an even parity cover of $G$.
-	Similarly, if $\abs{V' \cap N(v)}$ is always odd, then $V'$ is an odd parity cover of $G$.
+	Similarly, if all $\abs{V' \cap N(v)}$ is odd, then $V'$ is an odd parity cover of $G$.
 	Every graph has an odd parity cover, but not every graph has an even parity cover other than the trivial $V' = \emptyset$ \cite{Sutner1989}.
 	
 	\begin{lemma}\label{empty-is-even}
@@ -76,7 +77,7 @@
 	\end{lemma}
 	\begin{proof}
 		The state of vertex $v$ depends only on how often (even or odd) elements of $N(v)$ have been clicked \cite{Sutner1989}.
-		So, $\Phi_G(V') = \emptyset$ if and only if every vertex in $V$ contains an even number of elements from $V'$ in its neighborhood, the definition of $V'$ being an even parity cover.
+		So, $\Phi_G(V') = \emptyset$ if and only if every vertex contains an even number of elements from $V'$ in its neighborhood, the definition of $V'$ being an even parity cover.
 	\end{proof}
 	
 	\begin{lemma}
@@ -84,12 +85,28 @@
 		If $V_1 \subseteq V$ is the solution to some initial configuration, then so is $V_1 \triangle V'$.
 	\end{lemma}
 	\begin{proof}
+		Two sets $A$ and $B$ are solutions to the same initial configuration if $\Phi_G(A) = \Phi_G(B)$.
 		Notice,
 		\begin{align*}
 			\Phi_G(V_1) &= \Phi_G(V_1) \triangle \emptyset \\
 			&= \Phi_G(V_1) \triangle \Phi_G(V') \\
 			&= \Phi_G(V_1 \triangle V').
 		\end{align*}
+		Thus, $V_1$ and $V_1 \triangle V'$ are solutions to the same initial configuration.
+	\end{proof}
+
+	\begin{lemma}
+		Let $V_1$ and $V_2$ be even parity covers of $G$.
+		Then $V_1 \triangle V_2$ is also an even parity cover of $G$
+	\end{lemma}
+	\begin{proof}
+		Notice,
+		\begin{align*}
+			\Phi_G(V_1 \triangle V_2) &= \Phi(V_1) \triangle \Phi(V_2) \\
+			&= \emptyset \triangle \emptyset \\
+			&= \emptyset.
+		\end{align*}
+		Thus, by Lemma \ref{empty-is-even}, $V_1 \triangle V_2$ is an even parity cover of $G$.
 	\end{proof}
 
 	\begin{lemma}
@@ -107,17 +124,19 @@
 		Thus, by Lemma \ref{empty-is-even}, $V_1 \triangle V_2$ is an even parity cover of $G$.
 	\end{proof}
 
-	These lemmas provide a way to the solution to a given initial configuration that uses the fewest moves.
-	Once we have any solution to the initial configuration, apply every even parity cover to generate all equivalent solutions and take whichever contains the fewest elements.
+	These lemmas provide a way to determine the solution to a given initial configuration that uses the fewest moves.
+	First, find any solution to the initial configuration.
+	Next, take the symmetric difference of this solution with each even parity cover of $G$ to generate all solutions to the initial configuration.
+	Finally, choose whichever solution is the smallest.
 		
 	\section{MMP for $5 \times 5$ Grid}
 	The $5 \times 5$ grid is smallest with $\dim{\ker{\Phi_G}} = 2$.
 	Since we will apply nearly the same techniques in the next section, we will restate Scherphuis's proof of solving the MMP for a $5 \times 5$ grid in our own notation.
 	\begin{theorem}[Scherphuis]\label{min-moves-problem-5x5}
-		The answer to the Min Moves Problem for a $5 \times 5$ grid graph is 15.
+		The answer to the Min Moves Problem for a $5 \times 5$ grid is 15.
 	\end{theorem}
 	\begin{proof}
-		Since $\dim{\ker{\Phi_G}} = 2$ for $G$ a $5 \times 5$ grid, there are $2^{\dim{\ker{\Phi_G}}} = 4$ even parity covers.
+		Since $\dim{\ker{\Phi_G}} = 2$ for a $5 \times 5$ grid, there are $2^{\dim{\ker{\Phi_G}}} = 4$ even parity covers.
 		One of these even parity covers is the trival empty set.
 		Below are the three non-trivial even parity covers.
 		A black square means the corresponding vertex is an element of the even parity cover.
