@@ -5,6 +5,14 @@ from functools import cache, reduce, cached_property
 from math import ceil, log2
 
 
+def is_power_of_2(n: int) -> bool:
+    """
+    Checks if an integer number is a power of 2
+    """
+
+    return (n != 0) and (n & (n - 1) == 0)
+
+
 @dataclass
 class GF2Polynomial:
     """
@@ -90,7 +98,7 @@ class GF2Polynomial:
             GF2Polynomial(),
         )
 
-    def _zero(self) -> bool:
+    def _is_zero(self) -> bool:
         """
         Checks if polynomial is the constant function 0.
         """
@@ -105,7 +113,7 @@ class GF2Polynomial:
         # Remainder and quotient
         r = GF2Polynomial(self.degrees)
         q = GF2Polynomial()
-        while (d_deg := r.degree - div.degree) >= 0 and not r._zero():
+        while (d_deg := r.degree - div.degree) >= 0 and not r._is_zero():
             # x^(d_deg) gives next term
             q += GF2Polynomial({d_deg})
 
@@ -130,13 +138,51 @@ class GF2Polynomial:
 
         return self.__divmod__(mod)[1]
 
+    def __distributive_pow(self, n: int) -> GF2Polynomial:
+        """
+        If self is x^a + x^b + ..., then this method returns x^(an) + x^(bn) + ... .
+        Since (x^a + x^b)^n =  x^(an) + x^(bn) + ... when n is a power of 2,
+        this method can help compute exponentiation usually faster than exponentiation by squaring.
+        """
+
+        return GF2Polynomial({n * deg for deg in self.degrees})
+
+    def __pow__(self, exp: int, mod: GF2Polynomial = None) -> GF2Polynomial:
+        """
+        Compute polynomial to some non-negative integer power, possibly modulo some polynomial.
+        Note: Here, 0**0 will give 1.
+
+        Raises:
+            ValueError: If exp is negative
+            ZeroDivisionError: If mod is 0
+        """
+
+        if exp < 0:
+            raise ValueError("Exponent cannot be negative")
+        if mod and mod._is_zero():
+            raise ZeroDivisionError("Modulus cannot be 0")
+
+        # If i is a power of 2, then (x^a ... + x^k)^i = x^(ai) + ... + x^(ki)
+        i = 1
+        poly_list = list[GF2Polynomial]()
+        while i <= exp:
+            if i & exp:
+                poly_list.append(self.__distributive_pow(i))
+            i <<= 1
+
+        prod = GF2Polynomial({0})
+        for poly in poly_list:
+            prod = (prod * poly) if not mod else (prod * poly) % mod
+
+        return prod
+
     @staticmethod
     def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
         """
         Compute the greatest common division of two polynomials
         """
 
-        while not g._zero():
+        while not g._is_zero():
             f, g = g, f % g
 
         return f
