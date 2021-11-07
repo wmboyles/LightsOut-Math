@@ -46,7 +46,7 @@ def nullity(n: int) -> int:
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
 
-    return GF2Polynomial.gcd(chebyshev_f1(n), chebyshev_f2(n)).degree()
+    return GF2Polynomial.gcd(chebyshev_f1(n), chebyshev_f2(n)).degree
 
 
 def conjectured_nullity(n: int) -> int:

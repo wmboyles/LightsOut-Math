@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from functools import cache, reduce
+from functools import cache, reduce, cached_property
 from math import ceil, log2
 
 
@@ -10,14 +10,15 @@ class GF2Polynomial:
     """
     Represents polynomials in Z_2[x].
     Implements operations that make sense in this field.
+
+    Args:
+        degrees (set[int]): Set of integers representing degrees of polynomial.
+            For example, __init__({2,0}) = x^2 + 1.
     """
 
     degrees: set[int] = field(default_factory=set)
-    """
-    Set of integers representing degrees of polynomial.
-    For example, __init__({2,0}) = x^2 + 1.
-    """
 
+    @cached_property
     def degree(self) -> int:
         """
         The largest non-zero term.
@@ -78,65 +79,64 @@ class GF2Polynomial:
 
         return GF2Polynomial({degree - n for degree in self.degrees if degree >= n})
 
-    def __mul__(self, multiplier: GF2Polynomial) -> GF2Polynomial:
+    def __mul__(self, mult: GF2Polynomial) -> GF2Polynomial:
         """
         Multiply two polynomials.
         """
 
         return reduce(
             GF2Polynomial.__add__,
-            [multiplier << multiplicand_term for multiplicand_term in self.degrees],
+            [mult << deg for deg in self.degrees],
             GF2Polynomial(),
         )
 
-    def _is_zero(self) -> bool:
+    def _zero(self) -> bool:
         """
         Checks if polynomial is the constant function 0.
         """
 
         return not self.degrees
 
-    def __divmod__(self, divisor: GF2Polynomial) -> tuple[GF2Polynomial, GF2Polynomial]:
+    def __divmod__(self, div: GF2Polynomial) -> tuple[GF2Polynomial, GF2Polynomial]:
         """
         Compute the floor quotient and remainder.
         """
 
-        remainder = GF2Polynomial(self.degrees)
+        # Remainder and quotient
+        r = GF2Polynomial(self.degrees)
+        q = GF2Polynomial()
+        while (d_deg := r.degree - div.degree) >= 0 and not r._zero():
+            # x^(d_deg) gives next term
+            q += GF2Polynomial({d_deg})
 
-        # Calculate quotient
-        quotient = GF2Polynomial()
-        while (
-            degree_difference := remainder.degree() - divisor.degree()
-        ) >= 0 and not remainder._is_zero():
-            # The difference between the degree of the current remainder and degree of divisor gives next term
-            quotient += GF2Polynomial({degree_difference})
+            # Our factor is x^(d_deg) * divisor
+            r -= div << d_deg
 
-            # Our factor is x^(degree_difference) * divisor
-            remainder -= divisor << degree_difference
+        return q, r
 
-        return quotient, remainder
-
-    def __mod__(self, modulus: GF2Polynomial) -> GF2Polynomial:
-        """
-        Compute the remainder on division.
-        Uses __divmod__.
-        """
-
-        _, remainder = self.__divmod__(modulus)
-        return remainder
-
-    def __floordiv__(self, divisor: GF2Polynomial) -> GF2Polynomial:
+    def __floordiv__(self, div: GF2Polynomial) -> GF2Polynomial:
         """
         Compute the result of floor division.
         Uses __divmod__.
         """
 
-        quotient, _ = self.__divmod__(divisor)
-        return quotient
+        return self.__divmod__(div)[0]
+
+    def __mod__(self, mod: GF2Polynomial) -> GF2Polynomial:
+        """
+        Compute the remainder on division.
+        Uses __divmod__.
+        """
+
+        return self.__divmod__(mod)[1]
 
     @staticmethod
-    def gcd(f: GF2Polynomial, g: GF2Polynomial):
-        while not g._is_zero():
+    def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
+        """
+        Compute the greatest common division of two polynomials
+        """
+
+        while not g._zero():
             f, g = g, f % g
 
         return f
