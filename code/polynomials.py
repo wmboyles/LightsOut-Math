@@ -5,14 +5,6 @@ from functools import cache, reduce, cached_property
 from math import ceil, log2
 
 
-def is_power_of_2(n: int) -> bool:
-    """
-    Checks if an integer number is a power of 2
-    """
-
-    return (n != 0) and (n & (n - 1) == 0)
-
-
 @dataclass
 class GF2Polynomial:
     """
@@ -20,8 +12,7 @@ class GF2Polynomial:
     Implements operations that make sense in this field.
 
     Args:
-        degrees (set[int]): Set of integers representing degrees of polynomial.
-            For example, __init__({2,0}) = x^2 + 1.
+        degrees (set[int]): Set of integers representing degrees of polynomial. For example, __init__({2,0}) = x^2 + 1.
     """
 
     degrees: set[int] = field(default_factory=set)
