@@ -1,119 +1,5 @@
-from math import ceil, log2, isclose
-import numpy as np
 from functools import cache
-
-
-def poly_gcd_mod2(f: list | np.ndarray, g: list | np.ndarray) -> list | np.ndarray:
-    """
-    Polynomial GCD modulo 2.
-    Assumes f and g are coefficient lists (only 0's and 1's b/c mod 2) with highest degree terms first.
-
-    Adapted from https://gist.github.com/unc0mm0n/117617351ecd67cea8b3ac81fa0e02a8 and made iterative instead of recursive.
-    """
-
-    while True:
-        n, m = len(f), len(g)
-
-        if n < m:
-            f, g = g, f
-            n, m = m, n
-
-        r = [(f[i] ^ g[i]) if i < m else f[i] for i in range(n)]
-
-        i = 0
-        while isclose(r[i], 0):
-            i += 1
-            if i == len(r):
-                return g
-
-        f, g = r[i:], g
-
-
-@cache
-def chebyshev_f1(n: int) -> np.ndarray:
-    """
-    Helper for nullity function.
-    Returns coefficient list of f(n,x), with highest degree terms first.
-
-    Raises:
-        ValueError: if n < 0
-    """
-
-    if n < 0:
-        raise ValueError("n must be positive")
-
-    def binomial_parity(n: int, m: int) -> int:
-        """
-        Returns the parity of binomial coefficient n choose m.
-        0 if even, 1 if odd.
-
-        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-        The number of carries is exactly the number of 1's in (n-m) & m.
-        If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
-
-        Raises:
-            ValueError: if n or m < 0, or m > n.
-        """
-
-        if n < 0:
-            raise ValueError("n must be positive")
-        if m < 0 or n < m:
-            raise ValueError("m must be non-negative and less than n")
-
-        return 0 if ((n - m) & m) else 1
-
-    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
-    k = (1 << ceil(log2(n + 1))) - 1
-    start = 2 * (k - n)
-
-    # Build the coefficient list
-    return np.array([binomial_parity(2 * i + start, start + i) for i in range(n + 1)])
-
-
-@cache
-def chebyshev_f2(n: int) -> np.ndarray:
-    """
-    Helper for nullity function.
-    Returns coefficient list of f(n,1+x), with highest degree terms first.
-
-    Raises:
-        ValueError: if n < 0
-    """
-
-    if n < 0:
-        raise ValueError("n must be positive")
-
-    def trinomial_parity(n: int, m: int) -> int:
-        """
-        Returns the parity of the trinomial coefficient n choose m.
-        0 if even, 1 if odd.
-
-        For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
-        For info on this algorithm, see https://stackoverflow.com/a/43698262.
-
-        Raises:
-            ValueError: if n or m < 0, or m is greater than 2n.
-        """
-
-        if n < 0:
-            raise ValueError("n must be > 0")
-        if m < 0 or 2 * n < m:
-            print(n, m)
-            raise ValueError("m must be non-negative and less than 2*n")
-
-        a, b = 1, 0
-        while m:
-            n1, n = n & 1, n >> 1
-            m1, m = m & 1, m >> 1
-            a, b = ((n1 | ~m1) & a) ^ (m1 & b), ((n1 & ~m1) & a) ^ (n1 & b)
-
-        return a
-
-    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
-    k = (1 << ceil(log2(n + 1))) - 1
-    start = k - n
-
-    return np.array([trinomial_parity(start + i, 2 * start + i) for i in range(n + 1)])
+from polynomials import chebyshev_f1, chebyshev_f2, GF2Polynomial
 
 
 def g(b: int, k: int) -> int:
@@ -160,10 +46,7 @@ def nullity(n: int) -> int:
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
 
-    f1, f2 = chebyshev_f1(n), chebyshev_f2(n)
-    gcd = poly_gcd_mod2(f1, f2)
-
-    return len(gcd) - 1
+    return GF2Polynomial.gcd(chebyshev_f1(n), chebyshev_f2(n)).degree()
 
 
 def conjectured_nullity(n: int) -> int:
