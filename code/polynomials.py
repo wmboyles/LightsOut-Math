@@ -181,73 +181,47 @@ class GF2Polynomial:
 
 @cache
 def chebyshev_f1(n: int) -> GF2Polynomial:
+    """
+    Recussively define the following polynomials over Z_2[x]
+    f(0,x) = 1, f(1,x) = x
+    f(n+1,x) = x*f(n,x) + f(n-1,x)
+
+    This method gives f(n,x)
+
+    raises:
+        ValueError: if n < 0
+    """
+
     if n < 0:
         raise ValueError("n must be positive")
 
-    def binomial_parity(n: int, m: int) -> int:
-        """
-        Returns the parity of binomial coefficient n choose m.
-        0 if even, 1 if odd.
-
-        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-        The number of carries is exactly the number of 1's in (n-m) & m.
-        If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
-
-        Raises:
-            ValueError: if n or m < 0, or m > n.
-        """
-
-        if n < 0:
-            raise ValueError("n must be positive")
-        if m < 0 or n < m:
-            raise ValueError("m must be non-negative and less than n")
-
-        return 0 if ((n - m) & m) else 1
-
-    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
+    # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
     k = (1 << ceil(log2(n + 1))) - 1
     start = 2 * (k - n)
 
-    return GF2Polynomial(
-        {n - i for i in range(n + 1) if binomial_parity(2 * i + start, start + i)}
-    )
+    """
+    Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
+    The number of carries is exactly the number of 1's in (n-m) & m.
+    If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+    """
+    return GF2Polynomial({n - i for i in range(n + 1) if not (i & (start + i))})
 
 
 @cache
 def chebyshev_f2(n: int) -> GF2Polynomial:
-    if n < 0:
-        raise ValueError("n must be positive")
+    """
+    Recussively define the following polynomials over Z_2[x]
+    f(0,x) = 1, f(1,x) = x
+    f(n+1,x) = x*f(n,x) + f(n-1,x)
 
-    def trinomial_parity(n: int, m: int) -> int:
-        """
-        Returns the parity of the trinomial coefficient n choose m.
-        0 if even, 1 if odd.
+    This method gives f(n,x+1)
+    """
 
-        For info on trinomial coefficients, see https://en.wikipedia.org/wiki/Trinomial_triangle.
-        For info on this algorithm, see https://stackoverflow.com/a/43698262.
+    p = chebyshev_f1(n)
+    x_plus_1 = GF2Polynomial({1, 0})
 
-        Raises:
-            ValueError: if n or m < 0, or m is greater than 2n.
-        """
-
-        if n < 0:
-            raise ValueError("n must be > 0")
-        if m < 0 or 2 * n < m:
-            print(n, m)
-            raise ValueError("m must be non-negative and less than 2*n")
-
-        a, b = 1, 0
-        while m:
-            n1, n = n & 1, n >> 1
-            m1, m = m & 1, m >> 1
-            a, b = ((n1 | ~m1) & a) ^ (m1 & b), ((n1 & ~m1) & a) ^ (n1 & b)
-
-        return a
-
-    # 2*(2^k - 1 - n), where k is the smallest integer such that 2^k - 1 >= n
-    k = (1 << ceil(log2(n + 1))) - 1
-    start = k - n
-
-    return GF2Polynomial(
-        {n - i for i in range(n + 1) if trinomial_parity(start + i, 2 * start + i)}
+    return reduce(
+        GF2Polynomial.__add__,
+        (x_plus_1 ** d for d in p.degrees),
+        GF2Polynomial(),
     )
