@@ -5,7 +5,7 @@ from functools import cache, reduce, cached_property
 from math import ceil, log2
 
 
-@dataclass
+@dataclass(repr=False, eq=True, frozen=True)
 class GF2Polynomial:
     """
     Represents polynomials in Z_2[x].
@@ -51,16 +51,6 @@ class GF2Polynomial:
         """
 
         return self.__add__(other)
-
-    def __eq__(self, other: GF2Polynomial) -> bool:
-        """
-        Two polynomials are equal if the contain the exact same terms.
-        """
-
-        if type(other) is not GF2Polynomial:
-            return False
-
-        return self.degrees == other.degrees
 
     def __lshift__(self, n: int) -> GF2Polynomial:
         """
@@ -195,8 +185,20 @@ def chebyshev_f1(n: int) -> GF2Polynomial:
     if n < 0:
         raise ValueError("n must be positive")
 
+    # f(0,x) = 1
+    if n == 0:
+        return GF2Polynomial({0})
+
+    # f(2^k - 1, x) = x^(2^k - 1)
+    if (n + 1) & n == 0:
+        return GF2Polynomial({n})
+    # f(2n+1,x) = xf^2(n,x)
+    elif n % 2 == 1:
+        return (chebyshev_f1(n // 2) ** 2) << 1
+
     # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
-    k = (1 << ceil(log2(n + 1))) - 1
+    l = ceil(log2(n + 1))
+    k = (1 << l) - 1
     start = 2 * (k - n)
 
     """
@@ -225,3 +227,49 @@ def chebyshev_f2(n: int) -> GF2Polynomial:
         (x_plus_1 ** d for d in p.degrees),
         GF2Polynomial(),
     )
+
+
+# Conjecture 1: p(k) = chebyshev_f1(2 * 3^k - 1)
+@cache
+def p(k):
+    # p(0) = x
+    # p(n+1) = p(n)(x*p(n) + 1)^2
+
+    x = GF2Polynomial({1})
+
+    if k == 0:
+        return x
+    else:
+        prev = p(k - 1)
+        return prev * (x * prev + GF2Polynomial({0})) ** 2
+
+
+# Conjecture 1 (Equivalently): q(k) = chebyshev_f2(2 * 3^k - 1)
+@cache
+def q(k):
+    # q(0) = x+1
+    # q(n+1) = p(n)((x+1)*p(n) + 1)^2
+
+    x_plus_1 = GF2Polynomial({1, 0})
+
+    if k == 0:
+        return x_plus_1
+    else:
+        prev = q(k - 1)
+        return prev * ((x_plus_1 * prev) + GF2Polynomial({0})) ** 2
+
+
+# Conjecture 2: GCD(p(k), q(k)) = x**2 + x
+
+
+def estimate_nullity(n: int):
+    if n < 0 or n % 2 == 0:
+        raise ValueError("n must be odd and positive")
+
+    n2 = n // 2
+
+    p, q = chebyshev_f1(n2), chebyshev_f2(n2)
+    gcd = GF2Polynomial.gcd
+    g = gcd(p, q)
+    x = GF2Polynomial({1})
+    return 2 * (g.degree + gcd(x, q // g).degree)
