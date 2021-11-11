@@ -144,12 +144,12 @@
 	If each entry in the triangle that is odd is colored black and each entry that is even colored white, then the even rows (0,2,4,...) give exactly rule 90.
 	
 	\begin{lemma}
-		Let $f_n(x)_i$ be the $i$th entry in the coefficient list of $f(n,x)$ so that $f(n,x)_0$ is the highest degree term and $f(n,x)_n$ is the units term.
+		Let $f_n(x)_i$ be the $i$th entry in the coefficient list of $f_n(x)$ so that $f_n(x)_0$ is the highest degree term and $f_n(x)_n$ is the units term.
 		Let $K = 2^k - 1$ where $k$ is the smallest integer such that $K \geq n$.
 		Let $S = 2(K-n)$.
 		Then
 		\begin{equation*}
-			f(n,x)_i = \binom{2i + S}{S + i} \mod 2.
+			f_n(x)_i = \binom{2i + S}{S + i} \mod 2.
 		\end{equation*}	
 	\end{lemma}
 	\begin{proof}
@@ -180,7 +180,7 @@
 	The first carry operation that happens must also have two 1 matching in the same place.
 	Thus, there is at least one carry operation when adding $n$ and $m$ in binary if and only if $n \texttt{ \& } m \neq 0$, where $\texttt{\&}$ is the bitwise AND operation.
 	
-	So, we now have an algorithm for calculating $f(n,x)$ in coefficient list form.
+	So, we now have an algorithm for calculating $f_n(x)$ in coefficient list form.
 	Below is an implementation in Python
 	\begin{center}
 	\begin{verbatim}
@@ -247,7 +247,7 @@
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
-		Consider how we calculate $f(g(b,k),x)$ in our code.
+		Consider how we calculate $f_{g(b,k)}(x)$ in our code.
 		\begin{align*}
 			K_{g(b,k)} &= 2^{\lceil \log_2{\left(b\cdot2^{k-1}\right)} \rceil} - 1 \\
 				&= 2^{\lceil \log_2{\left(2^{k-1}\right)}+ \log_2{(b)} \rceil} - 1 \\
@@ -288,14 +288,14 @@
 			\texttt{2i \& }2\left(2^{k}\left(2^{\lceil\log_2{(b)}\rceil} - b\right)\texttt{+ i}\right) &\neq 0.
 		\end{align*}
 		Recall that our list of coefficients represents polynomials with the highest degree as the first term (i.e. index 0).
-		Thus, the sum of the index and the degree for $f(n,x)$ is always equal to $n$.
-		So, for $f(g(b,k),x)$,
+		Thus, the sum of the index and the degree for $f_n(x)$ is always equal to $n$.
+		So, for $f_{g(b,k)}(x)$,
 		\begin{align*}
 			\deg_{i,k} + i &= g(b,k) \\
 			\deg_{i,k} &= g(b,k) - i
 		\end{align*}
-		where $\deg_{i,k}$ is the corresponding degree of the coefficient at index $i$ in our representation of $f(g(b,k))$.
-		So, for $f(g(b,k+1),x)$,
+		where $\deg_{i,k}$ is the corresponding degree of the coefficient at index $i$ in our representation of $f_{g(b,k)}(x)$.
+		So, for $f_{g(b,k+1)}(x)$,
 		\begin{align*}
 			\deg_{2i,k+1} + 2i &= g(b,k+1) \\
 			\deg_{2i,k+1} &= g(b,k+1) - 2i \\
@@ -312,7 +312,7 @@
 		\begin{equation*}
 			\binom{S_{g(b,k)} + 2i}{S_{g(b,k)} + i} \equiv \binom{S_{g(b,k+1)} + 4i}{S_{g(b,k+1)} + 2i} \mod 2.
 		\end{equation*}
-		Now we just need to consider odd indices $i$ in $f(g(b,k),x)$.
+		Now we just need to consider odd indices $i$ in $f_{g(b,k)}(x)$.
 		Recall that for any index $i$,
 		\begin{equation*}
 			\binom{S_{g(b,k)} + 2i}{S_{g(b,k)} + i} \mod 2 =\begin{cases}
@@ -324,7 +324,7 @@
 		$S_{g(b,k)}$ is always even.
 		Thus for odd $i$, both $i$ and $S_{g(b,k)} + i$ will be odd.
 		Therefore, the result of their bitwise AND (i.e. \texttt{\&}) will be non-zero.
-		So, all odd indices $i$ in $f(g(b,k+1))$ will be 0 in our polynomial representation.
+		So, all odd indices $i$ in $f_{g(b,k+1)}(x)$ will be 0 in our polynomial representation.
 	\end{proof}
 
 	\begin{corollary}
