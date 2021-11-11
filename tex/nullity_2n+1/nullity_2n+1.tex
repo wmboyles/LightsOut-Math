@@ -129,11 +129,11 @@
 		Let $f_n(x)_i$ be the $i$th digit in the binary representation of $f_n(x)$, with $i=0$ giving the largest term, and $i=n$ giving the units term.
 		For a particular cell,
 		\begin{equation*}
-			f(n,x)_i = f(n-1,x)_i \xor f(n-2)_{i-2}.
+			f_n(x)_i = f_{n-1}(x)_i \xor f_{n-2}(x)_{i-2}.
 		\end{equation*}
 		Rearranging,
 		\begin{equation*}
-			f(n-1,x)_i = f(n,x)_i \xor f(n-2)_{i-2}.
+			f_{n-1}(x)_i = f_n(x)_i \xor f_{n-2}(x)_{i-2}.
 		\end{equation*}
 		This is exactly what rule 90 tells us: The state of a cell in a subsequent row (column in our image) is the XOR of the two cells to the left and right in the above row, and that the cell immediately above does not affect the outcome.
 	\end{proof}
@@ -153,7 +153,20 @@
 		\end{equation*}	
 	\end{lemma}
 	\begin{proof}
-		TODO. Basically just manipulate some binomial identities.
+		Notice that when working modulo 2,
+		\begin{align*}
+			\binom{p}{q} &= \binom{p-1}{q} + \binom{p-1}{q-1} \\
+				&= \binom{p-2}{q} + \binom{p-2}{q-1} + \binom{p-2}{q-1} + \binom{p-2}{q-2} \\
+				&\equiv \binom{p-2}{q} + \binom{p-2}{q-2}.
+		\end{align*}
+		We see then that the parity of $\binom{p}{q}$ is determined by the parities of $\binom{p-2}{q}$ and $\binom{p-2}{q-2}$ in a XOR fashion.
+		That is, for $\binom{p}{q}$ to be odd, the parities of each much by different.
+		So, to generate rule 90, we need the parity of even rows in Pascal's Triangle. \\
+		
+		We saw before that our polynomials plotted out exactly matched rule 90 when we plotted $f_0$ to $f_m$, where $m$ is one less than a power of 2.
+		So, $f_n(x)_i$ is found by looking at the $(K-n+i)$th row and $(K-i)$th column in the right half of rule 90, where the 0th row and 0th column is the top and center of rule 90.
+		Thus, $f_n(x)_i$ is found by looking at the parity of the $2(K-n+i)$ row and $(K-n)$th column in the right half of Pascal's Triangle.
+		That is, the parity of $\binom{2(K-n+i)}{2(K-n) + i} = \binom{S + 2i}{S + i}$.
 	\end{proof}
 
 	It turns out that there's a quick way to calculate the parity of binomial coefficients.
