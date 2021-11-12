@@ -138,9 +138,11 @@ def kernel(n: int) -> list[np.ndarray]:
     In the worst case, d(n) is O(n).
     """
 
+    # Calculate the nullity(n) elements in the basis for the kernel
     basis = kernel_basis(n)
-    space = chain.from_iterable(combinations(basis, i) for i in range(len(basis) + 1))
 
+    # Calculate all 2^nullity(n) elements in the kernel as combinations of the basis elements
+    space = chain.from_iterable(combinations(basis, i) for i in range(len(basis) + 1))
     return [reduce(xor, boards, np.zeros(n * n, dtype=int)) for boards in space]
 
 
