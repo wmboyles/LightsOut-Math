@@ -263,7 +263,17 @@ def chebyshev_f2(n: int) -> GF2Polynomial:
     )
 
 
-# Conjecture 1: p(k) = chebyshev_f1(2 * 3^k - 1)
+"""
+Conjecture 1: p(k) = chebyshev_f1(2 * 3^k - 1)
+Conjecture 1 (Equivalently): q(k) = chebyshev_f2(2 * 3^k - 1)
+
+Conjecture 2: p(0) = x, p(n+1) = x^2 p_n^3 + p_n
+Conjecture 2 (Equivalently): q(0) = x+1, q(n+1) = (x+1)^2 q_n^3 + q_n
+
+Conjecture 3: GCD(p(k), q(k)) = x**2 + x
+"""
+
+
 @cache
 def p(k):
     # p(0) = x
@@ -278,7 +288,6 @@ def p(k):
         return prev * (x * prev + GF2Polynomial({0})) ** 2
 
 
-# Conjecture 1 (Equivalently): q(k) = chebyshev_f2(2 * 3^k - 1)
 @cache
 def q(k):
     # q(0) = x+1
@@ -291,6 +300,3 @@ def q(k):
     else:
         prev = q(k - 1)
         return prev * ((x_plus_1 * prev) + GF2Polynomial({0})) ** 2
-
-
-# Conjecture 2: GCD(p(k), q(k)) = x**2 + x
