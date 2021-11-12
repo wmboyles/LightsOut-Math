@@ -169,44 +169,78 @@ class GF2Polynomial:
         return f
 
 
+def find_gbk(n: int) -> tuple[int, int]:
+    """
+    Cakculates n = b*2^(k-1) - 1, where b and k are naturals and b is odd.
+
+    Raises:
+        ValueError: If n <= 0
+    """
+
+    if n <= 0:
+        raise ValueError("n must be positive")
+
+    binary_n = bin(n + 1)
+    b_str = binary_n.rstrip("0")
+    k = len(binary_n) - len(b_str) + 1
+    b = int(b_str, 2)
+
+    return b, k
+
+
 @cache
 def chebyshev_f1(n: int) -> GF2Polynomial:
     """
-    Recussively define the following polynomials over Z_2[x]
+    Recursively define the following polynomials over Z_2[x]
     f(0,x) = 1, f(1,x) = x
     f(n+1,x) = x*f(n,x) + f(n-1,x)
+    This method gives f(n,x).
 
-    This method gives f(n,x)
-
-    raises:
+    Raises:
         ValueError: if n < 0
     """
 
     if n < 0:
         raise ValueError("n must be positive")
-
-    # f(0,x) = 1
-    if n == 0:
+    elif n == 0:
         return GF2Polynomial({0})
 
-    # f(2^k - 1, x) = x^(2^k - 1)
-    if (n + 1) & n == 0:
-        return GF2Polynomial({n})
-    # f(2n+1,x) = xf^2(n,x)
-    elif n % 2 == 1:
-        return (chebyshev_f1(n // 2) ** 2) << 1
-
-    # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
-    l = ceil(log2(n + 1))
-    k = (1 << l) - 1
-    start = 2 * (k - n)
-
     """
-    Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-    The number of carries is exactly the number of 1's in (n-m) & m.
-    If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+    From Hunziker, Machivelo, and Park
+    "Chebyshev Polynomials Over Finite Fields and Reversibility of Sigma-automata on Square Grids"
+    Lemma 2.6 (restated in our notation to avoid confusing offset)
+    Let n = b*2^(k-1) - 1, where b is odd
+    f(n, x)   = f(2^(k-1) - 1, x) * f(b-1, x) ** (2^(k-1))
+              = x^(2^(k-1) - 1)   * f(b-1, x) ** (2^(k-1))
     """
-    return GF2Polynomial({n - i for i in range(n + 1) if not (i & (start + i))})
+    b, k = find_gbk(n)
+
+    # Calculate f(b-1,k), where b is odd
+    @cache
+    def old_chebyshev_f1(b: int) -> GF2Polynomial:
+        """
+        Calculate f(b), where b is even.
+        Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
+        However, they don't give any neat identities here to reduce the problem instance size.
+        So, we have to the relationship between f and binomial coefficients.
+        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
+        The number of carries is exactly the number of 1's in (n-m) & m.
+        If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+        """
+
+        # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
+        l = ceil(log2(b + 1))
+        k = (1 << l) - 1
+        start = 2 * (k - b)
+
+        return GF2Polynomial({b - i for i in range(b + 1) if not (i & (start + i))})
+
+    poly_b = old_chebyshev_f1(b - 1)
+    if k == 1:
+        return poly_b
+    else:
+        exp = 2 ** (k - 1)
+        return GF2Polynomial({exp - 1}) * (poly_b ** exp)
 
 
 @cache
@@ -260,16 +294,3 @@ def q(k):
 
 
 # Conjecture 2: GCD(p(k), q(k)) = x**2 + x
-
-
-def estimate_nullity(n: int):
-    if n < 0 or n % 2 == 0:
-        raise ValueError("n must be odd and positive")
-
-    n2 = n // 2
-
-    p, q = chebyshev_f1(n2), chebyshev_f2(n2)
-    gcd = GF2Polynomial.gcd
-    g = gcd(p, q)
-    x = GF2Polynomial({1})
-    return 2 * (g.degree + gcd(x, q // g).degree)

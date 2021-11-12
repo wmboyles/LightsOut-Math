@@ -1,5 +1,5 @@
 from functools import cache
-from polynomials import chebyshev_f1, chebyshev_f2, GF2Polynomial
+from polynomials import chebyshev_f1, chebyshev_f2, GF2Polynomial, find_gbk
 
 
 def g(b: int, k: int) -> int:
@@ -12,25 +12,6 @@ def g(b: int, k: int) -> int:
     """
 
     return b * (1 << (k - 1)) - 1
-
-
-def find_gbk(n: int) -> tuple[int, int]:
-    """
-    Finds naturals b and k, b odd such that n = b*2^(k-1) - 1.
-
-    Raises:
-        ValueError: If n <= 0
-    """
-
-    if n <= 0:
-        raise ValueError("n must be positive")
-
-    binary_n = bin(n + 1)
-    b_str = binary_n.rstrip("0")
-    k = len(binary_n) - len(b_str) + 1
-    b = int(b_str, 2)
-
-    return b, k
 
 
 @cache
