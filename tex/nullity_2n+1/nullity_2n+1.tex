@@ -29,6 +29,10 @@
 	
 	\section{Introduction}
 	We resolve a conjecture first stated by Sutner in 1989 about the nullity of \textit{Lights Out} boards of size $2n + 1$ in the affirmative \cite{Sutner1989}.
+	We use results from Sutner that give the nullity of a $n \times n$ board as the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
+	We then apply identities from Hunziker, Machiavelo, and Park that relate these polynomials for $(2n+1) \times (2n+1)$ boards to those for $n \times n$ boards \cite{HUNZIKER2004465}.
+	Finally, we use a result from Ore about the GCD of products \cite{ore_number_theory}.
+	Together, these results allow us to prove Sutner's conjecture and provide conditions under which each case occurs.
 	
 	\section{Preliminary Results}
 	Let $d(n)$ be the nullity of an $n \times n$ \textit{Light Out board}.
@@ -105,7 +109,7 @@
 		\end{align*}
 		Notice that if we substitute $x+1$ for $x$, 
 		\begin{equation*}
-			\left(x+1,\frac{f_n(x)}{(f_n(x+1),f_n(x+1+1))}\right) = \left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			\left(x+1,\frac{f_n(x)}{(f_n(x+1),f_n(x)}\right) \text{ becomes } \left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{equation*}
 		Thus, we see that these two remaining GCD terms are either both 1 nor not 1 simultaneously.
 		This means we can further simplify to
@@ -116,7 +120,7 @@
 		\begin{equation*}
 			d(2n+1) = 2d(n) + \delta_n \text{, where }\delta_n = 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{equation*}
-		Thus, $\delta_n \in \{0,2\}$. \\
+		Thus, $\delta_n \in \{0,2\}$.
 		
 		Next, we'll calculate $\delta_{2n+1}$.
 		Applying Corollary \ref{cor1},
