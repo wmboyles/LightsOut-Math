@@ -27,33 +27,22 @@ def nullity(n: int) -> int:
     Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
     """
 
-    return GF2Polynomial.gcd(chebyshev_f1(n), chebyshev_f2(n)).degree
-
-
-def conjectured_nullity(n: int) -> int:
     """
-    Returns the nullity of an n x n board, using the following conjectured results:
+    We proved Sutner's conjecture that d(2n+1) = 2*d(n) + delta_n, and delta_{2n+1} = delta_n.
+    Thus, if n = b*2^(k-1) - 1 where k > 2, it's cheaper to calculate delta_n =  nullity(2b - 1) - nullity(b-1).
     """
 
-    # Find (b,k) such that n = g(b,k)
     b, k = find_gbk(n)
 
-    # If k = 1, we have to calculate the nullity directly
-    # If nullity_k1 != 0, then we can apply conjecture 1a
-    nullity_k1 = nullity(g(b, 1))
-    if k == 1:
-        return nullity_k1
+    # A result from Hunziker, Machivelo, and Park and possibly also Sutner says that d(2^(k-1) - 1) = 0 for all k.
+    if b == 1:
+        return 0
+    elif k > 2:
+        a1, a2 = nullity(b - 1), nullity(2 * b - 1)
+        delta = a2 - 2 * a1
+        return (a1 + delta) * 2 ** (k - 1) - delta
 
-    nullity_k2 = nullity(g(b, 2))
-    if k == 2:
-        return nullity_k2
-
-    if nullity_k2 == 2 * nullity_k1:
-        return nullity_k1 * 2 ** (k - 1)
-    elif nullity_k2 == 2 * nullity_k1 + 2:
-        return (nullity_k1 + 2) * 2 ** (k - 1) - 2
-    else:
-        raise ValueError(f"Conjecture failed {n=}")
+    return GF2Polynomial.gcd(chebyshev_f1(n), chebyshev_f2(n)).degree
 
 
 def full_rank_b(N: int, test_length: int = 2) -> list:
