@@ -189,12 +189,12 @@ def find_gbk(n: int) -> tuple[int, int]:
 
 
 @cache
-def chebyshev_f1(n: int) -> GF2Polynomial:
+def chebyshev_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     """
     Recursively define the following polynomials over Z_2[x]
     f(0,x) = 1, f(1,x) = x
     f(n+1,x) = x*f(n,x) + f(n-1,x)
-    This method gives f(n,x).
+    This method gives f(n,x) and f(n,x+1)
 
     Raises:
         ValueError: if n < 0
@@ -202,8 +202,10 @@ def chebyshev_f1(n: int) -> GF2Polynomial:
 
     if n < 0:
         raise ValueError("n must be positive")
+
+    # f(0,x) = f(0,x+1) = 1
     elif n == 0:
-        return GF2Polynomial({0})
+        return GF2Polynomial({0}), GF2Polynomial({0})
 
     """
     From Hunziker, Machivelo, and Park
@@ -215,11 +217,10 @@ def chebyshev_f1(n: int) -> GF2Polynomial:
     """
     b, k = find_gbk(n)
 
-    # Calculate f(b-1,k), where b is odd
     @cache
-    def old_chebyshev_f1(b: int) -> GF2Polynomial:
+    def brute_f1(y: int):
         """
-        Calculate f(b), where b is even.
+        Calculate f(y), where y is even.
         Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
         However, they don't give any neat identities here to reduce the problem instance size.
         So, we have to the relationship between f and binomial coefficients.
@@ -229,74 +230,70 @@ def chebyshev_f1(n: int) -> GF2Polynomial:
         """
 
         # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
-        l = ceil(log2(b + 1))
+        l = ceil(log2(y + 1))
         k = (1 << l) - 1
-        start = 2 * (k - b)
+        start = 2 * (k - y)
 
-        return GF2Polynomial({b - i for i in range(b + 1) if not (i & (start + i))})
+        return GF2Polynomial({y - i for i in range(y + 1) if not (i & (start + i))})
 
-    poly_b = old_chebyshev_f1(b - 1)
+    polyb_f1 = brute_f1(b - 1)
     if k == 1:
-        return poly_b
+        f1 = polyb_f1
     else:
         exp = 2 ** (k - 1)
-        return GF2Polynomial({exp - 1}) * (poly_b ** exp)
+        f1 = GF2Polynomial({exp - 1}) * (polyb_f1 ** exp)
 
-
-@cache
-def chebyshev_f2(n: int) -> GF2Polynomial:
-    """
-    Recussively define the following polynomials over Z_2[x]
-    f(0,x) = 1, f(1,x) = x
-    f(n+1,x) = x*f(n,x) + f(n-1,x)
-
-    This method gives f(n,x+1)
-    """
-
-    p = chebyshev_f1(n)
+    # Calculate f(n,x+1) by evaluating f(n,x) at x+1
     x_plus_1 = GF2Polynomial({1, 0})
-
-    return reduce(
-        GF2Polynomial.__add__,
-        (x_plus_1 ** d for d in p.degrees),
-        GF2Polynomial(),
+    f2 = reduce(
+        GF2Polynomial.__add__, (x_plus_1 ** d for d in f1.degrees), GF2Polynomial()
     )
 
-
-"""
-Conjecture 1: p(k) = chebyshev_f1(2 * 3^k - 1)
-Conjecture 1 (Equivalently): q(k) = chebyshev_f2(2 * 3^k - 1)
-
-Conjecture 2: p(0) = x, p(n+1) = x^2 p_n^3 + p_n
-Conjecture 2 (Equivalently): q(0) = x+1, q(n+1) = (x+1)^2 q_n^3 + q_n
-
-Conjecture 3: GCD(p(k), q(k)) = x**2 + x
-"""
+    return f1, f2
 
 
-@cache
-def p(k):
-    # p(0) = x
-    # p(n+1) = p(n)(x*p(n) + 1)^2
+# @cache
+# def chebyshev_f1(n: int) -> GF2Polynomial:
 
-    x = GF2Polynomial({1})
+#     # if n < 0:
+#     #     raise ValueError("n must be positive")
+#     # elif n == 0:
+#     #     return GF2Polynomial({0})
 
-    if k == 0:
-        return x
-    else:
-        prev = p(k - 1)
-        return prev * (x * prev + GF2Polynomial({0})) ** 2
+#     # # Calculate f(b-1,k), where b is odd
+#     # @cache
+#     # def old_chebyshev_f1(b: int) -> GF2Polynomial:
+#     #     """
+#     #     Calculate f(b), where b is even.
+#     #     Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
+#     #     However, they don't give any neat identities here to reduce the problem instance size.
+#     #     So, we have to the relationship between f and binomial coefficients.
+#     #     Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
+#     #     The number of carries is exactly the number of 1's in (n-m) & m.
+#     #     If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+#     #     """
+
+#     poly_b = old_chebyshev_f1(b - 1)
+#     if k == 1:
+#         return poly_b
+#     else:
+#         exp = 2 ** (k - 1)
+#         return GF2Polynomial({exp - 1}) * (poly_b ** exp)
 
 
-@cache
-def q(k):
-    # q(0) = x+1
-    # q(n+1) = p(n)((x+1)*p(n) + 1)^2
+# @cache
+# def chebyshev_f2(n: int) -> GF2Polynomial:
+#     """
+#     Recussively define the following polynomials over Z_2[x]
+#     f(0,x) = 1, f(1,x) = x
+#     f(n+1,x) = x*f(n,x) + f(n-1,x)
 
-    x_plus_1 = GF2Polynomial({1, 0})
+#     This method gives f(n,x+1)
+#     """
 
-    if k == 0:
-        return x_plus_1
-    else:
-        prev = q(k - 1)
-        return prev * ((x_plus_1 * prev) + GF2Polynomial({0})) ** 2
+#     p = chebyshev_f1(n)
+#     x_plus_1 = GF2Polynomial({1, 0})
+
+#     return reduce(
+#         GF2Polynomial.__add__, (x_plus_1 ** d for d in p.degrees), GF2Polynomial()
+#     )
