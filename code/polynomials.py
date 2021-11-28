@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from functools import cache, reduce, cached_property
-from math import ceil, log2
 
 
 @dataclass(repr=False, eq=True, frozen=True)
@@ -168,6 +167,18 @@ class GF2Polynomial:
 
         return f
 
+    def compose(self, g: GF2Polynomial) -> GF2Polynomial:
+        """
+        Let f(x) = self, g(x) = g.
+        Then this method returns f(g(x)).
+        """
+
+        return reduce(
+            GF2Polynomial.__add__,
+            [g ** deg for deg in self.degrees],
+            GF2Polynomial(),
+        )
+
 
 def find_gbk(n: int) -> tuple[int, int]:
     """
@@ -223,18 +234,16 @@ def chebyshev_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
         Calculate f(y), where y is even.
         Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
         However, they don't give any neat identities here to reduce the problem instance size.
-        So, we have to the relationship between f and binomial coefficients.
-        Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-        The number of carries is exactly the number of 1's in (n-m) & m.
+
+        So, we have to use the relationship between f and binomial coefficients.
+        Sutner tells us that f_y(x) = sum_{i=0}^{y}{C(y+1+i, 2i+1) x^i mod 2}.
+        Thus, we need to find when C(y+1+i, 2i+1) is odd.
+        Kummer's theorem, tells us that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
         If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+        So, C(n+1+i, 2i+1) is odd when (y-i) & (2i+1) == 0.
         """
 
-        # 2*((2^k - 1) - n), where k is the smallest integer such that 2^k - 1 >= n
-        l = ceil(log2(y + 1))
-        k = (1 << l) - 1
-        start = 2 * (k - y)
-
-        return GF2Polynomial({y - i for i in range(y + 1) if not (i & (start + i))})
+        return GF2Polynomial({i for i in range(y + 1) if not ((y - i) & (2 * i + 1))})
 
     polyb_f1 = brute_f1(b - 1)
     if k == 1:
@@ -244,56 +253,6 @@ def chebyshev_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
         f1 = GF2Polynomial({exp - 1}) * (polyb_f1 ** exp)
 
     # Calculate f(n,x+1) by evaluating f(n,x) at x+1
-    x_plus_1 = GF2Polynomial({1, 0})
-    f2 = reduce(
-        GF2Polynomial.__add__, (x_plus_1 ** d for d in f1.degrees), GF2Polynomial()
-    )
+    f2 = f1.compose(GF2Polynomial({1, 0}))
 
     return f1, f2
-
-
-# @cache
-# def chebyshev_f1(n: int) -> GF2Polynomial:
-
-#     # if n < 0:
-#     #     raise ValueError("n must be positive")
-#     # elif n == 0:
-#     #     return GF2Polynomial({0})
-
-#     # # Calculate f(b-1,k), where b is odd
-#     # @cache
-#     # def old_chebyshev_f1(b: int) -> GF2Polynomial:
-#     #     """
-#     #     Calculate f(b), where b is even.
-#     #     Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
-#     #     However, they don't give any neat identities here to reduce the problem instance size.
-#     #     So, we have to the relationship between f and binomial coefficients.
-#     #     Using Kummer's theorem, we can say that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-#     #     The number of carries is exactly the number of 1's in (n-m) & m.
-#     #     If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
-#     #     """
-
-#     poly_b = old_chebyshev_f1(b - 1)
-#     if k == 1:
-#         return poly_b
-#     else:
-#         exp = 2 ** (k - 1)
-#         return GF2Polynomial({exp - 1}) * (poly_b ** exp)
-
-
-# @cache
-# def chebyshev_f2(n: int) -> GF2Polynomial:
-#     """
-#     Recussively define the following polynomials over Z_2[x]
-#     f(0,x) = 1, f(1,x) = x
-#     f(n+1,x) = x*f(n,x) + f(n-1,x)
-
-#     This method gives f(n,x+1)
-#     """
-
-#     p = chebyshev_f1(n)
-#     x_plus_1 = GF2Polynomial({1, 0})
-
-#     return reduce(
-#         GF2Polynomial.__add__, (x_plus_1 ** d for d in p.degrees), GF2Polynomial()
-#     )
