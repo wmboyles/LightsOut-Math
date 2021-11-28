@@ -17,237 +17,113 @@
 \newcommand{\N}{\mathbb{N}}
 \renewcommand{\qedsymbol}{$\blacksquare$}
 \newcommand{\abs}[1]{\left| #1 \right|}
-\renewcommand{\dim}[1]{\text{dim}\left( #1 \right)}
+\renewcommand{\dim}[1]{\textnormal{dim}\left( #1 \right)}
 
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
 
 \begin{document}
-	\title{Most Moves Problem in \textit{Lights Out}}
+	\title{Most Clicks Problem in \textit{Lights Out}}
 	\author{William Boyles}
 	\date{\today}
 	\maketitle
 	
 	\section{Introduction}
 	Consider a game played on a simple graph $G=(V,E)$ where each vertex consists of a clickable light.
-	A move consists of clicking any vertex $v$, which toggles the on/off state of $v$ and its neighbors.
-	Starting from an initial configuration of lights, one wins the game by finding a solution: a sequence of moves that turns off all the lights.
-	When $G$ is a $5 \times 5$ grid, this game is commercially available from Tiger Electronics as \textit{Lights Out}.
+	Clicking any vertex $v$ toggles the on/off state of $v$ and its neighbors.
+	Starting from an initial configuration of lights, one wins the game by finding a solution: a sequence of clicks that turns off all the lights.
+	When $G$ is a $5 \times 5$ grid, this game was commercially available from Tiger Electronics as \textit{Lights Out}.
 	
-	Clicking a vertex twice is equivalent to not clicking it at all \cite{Sutner1989}.
-	Thus, solutions can be sets of vertices rather than sequences.
-	Some initial configurations cannot be solved, meaning some lights will always remain on \cite{anderson_feil}.
-	Further, Goldwasser and Klostermeyer show that determining if some initial configuration can be transformed through moves to a configuration with at least $k$ lights off, which they call the \textit{Maximizing Off Switches (MOS)} problem, is NP-complete.
-	However, the case where $k=\abs{V}$ is solvable in polynomial time, and the authors do not believe that MOS is NP-complete when $G$ is restricted to grid graphs \cite{Goldwasser2000}.
-	Thus, we restrict our attention only to solvable initial configurations.
-	One natural question to ask about \textit{Lights Out} is what we call the \textit{Most Moves Problem (MMP)}:
+	Restricting ourselves to solvable initial configurations, we pose a natural question about this game, the \textit{Most Clicks Problem (MCP)}:
 	\begin{quote}
-		How many moves does a worst-case initial configuration on $G$ require to solve?
+		How many clicks does a worst-case initial configuration on $G$ require to solve?
 	\end{quote}
-	This question is analogous to finding the most turns of a Rubik's Cube needed to solve any scramble, which is known to be 20 \cite{Rockiki2013}. 
+	This question is analogous to finding the most turns of a Rubik's Cube needed to solve any scramble, which is known to be 20 \cite{Rockiki2013}.
 	
-	Previous work determined when the answer to the MMP is the worst-case $\abs{V}$.
-	Eriksson, Eriksson, and Sjöstrand show that answer to the MMP is $\abs{V}$ if and only if the number of perfect matchings in $G$ is odd \cite{ERIKSSON2001357}.
-	Sutner shows that the function $\Phi_G$ which maps which vertices are clicked to which vertices turn on is linear with respect to symmetric difference.
+	
+	Sutner was one of the first to study these sorts of games, mostly through the lens of cellular automata.
+	He observes that clicking a vertex twice is equivalent to not clicking it at all, and the order in which one clicks vertices is irrelevant.
+	Thus, solutions can be sets of vertices rather than sequences \cite{Sutner1989}.
+	Sutner also introduces the \textit{All Ones Problem}, which asks if it is possible for some graph $G$ to go from all lights off to all lights on \cite{Sutner1988}.
+	He shows that it is always possible for any $G$ \cite{Sutner1989}.
+	However, finding minimal such sets, the \textit{Minimum All Ones Problem}, is NP-complete \cite{Sutner1988}.
+	Several authors have shown for different types of graphs whether or not the Minimum All Ones Problem remains NP-Complete.
+	Chen, Li, Wang, and Zhang give linear time algorithms for trees, unicyclic and bicyclic graphs, and graphs with bounded tree width \cite{CHEN200493}.
+	Amin and Slater give a linear time algorithm for series-parallel graphs \cite{AminSlater1992}.
+	Broersma and Li show that the Minimum All Ones Problem remains NP-Complete when $G$ is restricted to be bipartite or planar \cite{BROERSMA200760}.
+	
+	Goldwasser and Klostermeyer show that the related problem of determining if some initial configuration can be transformed through light clicks to a configuration with at least $k$ lights off, which they call the \textit{Maximizing Off Switches (MOS)} problem, is NP-Complete \cite{Goldwasser2000}.
+	However, they note that the particular case where $k = \abs{V}$, which is equivalent to asking if an initial configuration is solvable, has a polynomial time algorithm.
+	Goldwasser and Klostermeyer do not believe MOS is NP-complete when restricted to grid graphs \cite{Goldwasser2000}.
+	
+	In analyzing these sorts of games, authors have found useful connections with other parts of mathematics.
+	An \textit{odd dominating set} of $G$ is a subset $V' \subseteq V$ such that every vertex contains an odd number of vertices from $V'$ in its neighborhood (itself and its edge-adjacent neighbors).
+	Even dominating sets can be analogously defined.
+	Consider the function $\Phi_G$ from subsets of $V$ to subsets of $V$ that maps which vertices are clicked to which lights change state.
+	Odd dominating sets are exactly the solutions to the All Ones Problem, while even dominating sets are exactly the elements of $\ker{\Phi_G}$ \cite{Sutner1989}.
+	Sutner showed that this function is linear with respect to symmetric difference.
 	That is, for all $V_1, V_2 \subseteq V$,
 	\begin{equation*}
 		\Phi_G(V_1 \triangle V_2) = \Phi_G(V_1) \triangle \Phi_G(V_2).
 	\end{equation*}
-	Further, Sutner shows that $\Phi_G$ is a bijection if and only if the answer to the MMP is $\abs{V}$.
-	Otherwise, the nullity of $G$, $\dim{\ker{\Phi_G}}$, is non-zero and even \cite{Sutner1989}.
+	Further, the set of all configurations form a vector space, with the set of all solvable configurations as a subspace \cite{Sutner1988}. 
 	
-	We review a technique from Scherphuis to solve the MMP for a $5 \times 5$ grid \cite{jaap}.
-	We generalize this approach to give an upper bound the MMP for all grids of size $(6k-1) \times (6k-1)$.
-	The value given by this upper bound exactly solves the MMP for all nullity 2 grids of this size.
-	We conjecture that all nullity 2 grids are of size $(6k-1) \times (6k-1)$, which would mean we solved the MMP for all nullity 2 grids.
+	Finding $\dim{\ker{\Phi_G}}$, the \textit{nullity} of $G$, is useful for determining the difficulty of solving problems like MCP and MOS. 
+	For example, every initial configuration is solvable in exactly one way if and only if the nullity of $G$ is 0, meaning the answer to MOS is ``yes'' for all $k \leq \abs{V}$.
+	In general, only 1 out of every $2^{\dim{\ker{\Phi_G}}}$ initial configurations are solvable, and each solvable configuration can be solved in $2^{\dim{\ker{\Phi_G}}}$ unique ways \cite{Sutner1989}.
+	There are other unexpected connections with the nullity of $G$.
+	Eriksson, Eriksson, and Sjöstrand show that $G$ is nullity 0 if and only if the number of perfect matchings in $G$ is odd \cite{ERIKSSON2001357}.
+	Sutner also shows that one can calculate the nullity of an $m \times n$ grid as the GCD of two Chebyshev polynomials in $\Z_2[x]$ \cite{Sutner2000}.
 	
-	\section{Parity Covers}
-	For any $v \in V$, define $N(v)$, the neighborhood of $v$, to be all vertices that are affected when $v$ is clicked.
-	That is,
-	\begin{equation*}
-		N(v) = \{u \in V \mid u=v \text{ or } (u,v) \in E\}.
-	\end{equation*}
-	If we have $V' \subseteq V$ such that for all $v \in V$, $\abs{V' \cap N(v)}$ is even, then we say $V'$ is an even parity cover of $G$.
-	Similarly, if all $\abs{V' \cap N(v)}$ is odd, then $V'$ is an odd parity cover of $G$.
-	Every graph has an odd parity cover, but not every graph has an even parity cover other than the trivial $V' = \emptyset$ \cite{Sutner1989}.
+	The MCP is trivial when the nullity of $G$ is 0.
+	The initial configuration obtained by starting with all lights off and clicking every vertex once can only be solved in the same way of clicking every vertex once.
+	Thus, the answer to the MCP for nullity 0 graphs is $\abs{V}$.
 	
-	\begin{lemma}\label{empty-is-even}
-		Let $V' \subseteq V$.
-		Then $V'$ is an even parity cover of $G$ if and only if $\Phi_G(V') = \emptyset$.
-	\end{lemma}
+	When $G$ is an $n \times n$ grid, the nullity of $G$ is always even \cite{Sutner1989}.
+	Thus, the next nullity of interest is nullity 2.
+	The smallest $n \times n$ grid graph with nullity 2 is $n=5$.
+	Scherphuis showed that the answer to the MCP for the $5 \times 5$ grid graph is 15 \cite{jaap}.
+	However, the answer to the MCP for all other grid sizes with non-zero nullity is unknown. 
+	We generalize Scherphuis's technique to solve the MCP for a $5 \times 5$ grid to give an upper bound the MCP for all grids of size $(6k-1) \times (6k-1)$.
+	We show the value given by this upper bound exactly solves the MCP for all nullity 2 grids of this size.
+	We conjecture that all nullity 2 grids are of size $(6k-1) \times (6k-1)$, which would mean we solved the MCP for all nullity 2 grids.
+	
+	\section{Even Parity Covers}
+	Scherphuis's techniques rely heavily on even parity covers.
+	Thus, we need to first show basic properties of even parity covers.
+	
+	\begin{theorem}\label{iff-even-parity}
+		The sets $V_1$ and $V_2$ are solutions to the same initial configuration if and only if $V_1 \triangle V_2$ is an even parity cover of $G$.
+	\end{theorem}
 	\begin{proof}
-		The state of vertex $v$ depends only on how often (even or odd) elements of $N(v)$ have been clicked \cite{Sutner1989}.
-		So, $\Phi_G(V') = \emptyset$ if and only if every vertex contains an even number of elements from $V'$ in its neighborhood, the definition of $V'$ being an even parity cover.
-	\end{proof}
-	
-	\begin{lemma}
-		Let $V'$ be an even parity cover of $G$.
-		If $V_1 \subseteq V$ is the solution to some initial configuration, then so is $V_1 \triangle V'$.
-	\end{lemma}
-	\begin{proof}
-		Two sets $A$ and $B$ are solutions to the same initial configuration if $\Phi_G(A) = \Phi_G(B)$.
+		Assume $V_1$ and $V_1$ are solutions to the same initial configuration.
+		This means that they have the same image under $\Phi_G$.
+		Notice,
+		\begin{align*}
+			\Phi_G(V_1 \triangle V_2) &= \Phi_G(V_1) \triangle \Phi_G(V_2) \\
+				&= \Phi_G(V_1) \triangle \Phi_G(V_1) \\
+				&= \emptyset.
+		\end{align*}
+		Thus, $V_1 \triangle V_2 \in \ker{\Phi_G}$ and is an even parity cover of $G$.
+		Now assume that $V_1 \triangle V_2$ is an even parity cover of $G$.
 		Notice,
 		\begin{align*}
 			\Phi_G(V_1) &= \Phi_G(V_1) \triangle \emptyset \\
-			&= \Phi_G(V_1) \triangle \Phi_G(V') \\
-			&= \Phi_G(V_1 \triangle V').
+				&= \Phi_G(V_1) \triangle \Phi_G(V_1 \triangle V_2) \\
+				&= \Phi_G(V_1) \triangle \Phi_G(V_1) \triangle \Phi_G(V_2) \\
+				&= \Phi_G(V_2).
 		\end{align*}
-		Thus, $V_1$ and $V_1 \triangle V'$ are solutions to the same initial configuration.
+		Thus, $V_1$ and $V_2$ are solutions to the same initial configuration.
 	\end{proof}
 
-	\begin{lemma}
-		Let $V_1$ and $V_2$ be even parity covers of $G$.
-		Then $V_1 \triangle V_2$ is also an even parity cover of $G$
-	\end{lemma}
-	\begin{proof}
-		Notice,
-		\begin{align*}
-			\Phi_G(V_1 \triangle V_2) &= \Phi(V_1) \triangle \Phi(V_2) \\
-			&= \emptyset \triangle \emptyset \\
-			&= \emptyset.
-		\end{align*}
-		Thus, by Lemma \ref{empty-is-even}, $V_1 \triangle V_2$ is an even parity cover of $G$.
-	\end{proof}
-
-	\begin{lemma}
-		Let $V_1$ and $V_2$ be solutions to the same initial configuration.
-		Then $V_1 \triangle V_2$ is an even parity cover of $G$.
-	\end{lemma}
-	\begin{proof}
-		Since $V_1$ and $V_2$ are solutions to the same initial configuration, $\Phi_G(V_1) = \Phi_G(V_2)$.
-		So,
-		\begin{align*}
-			\Phi_G(V_1 \triangle V_2) &= \Phi_G(V_1) \triangle \Phi_G(V_2) \\
-			&= \Phi_G(V_1) \triangle \Phi_G(V_1) \\
-			&= \emptyset.
-		\end{align*}
-		Thus, by Lemma \ref{empty-is-even}, $V_1 \triangle V_2$ is an even parity cover of $G$.
-	\end{proof}
-
-	These lemmas provide a way to determine the solution to a given initial configuration that uses the fewest moves.
-	First, find any solution to the initial configuration.
+	Theorem \ref{iff-even-parity} gives us a way to determine the solution to a given initial configuration that uses the fewest clicks.
+	First, find all even parity covers of $G$ and any solution to the initial configuration.
 	Next, take the symmetric difference of this solution with each even parity cover of $G$ to generate all solutions to the initial configuration.
 	Finally, choose whichever solution is the smallest.
-		
-	\section{MMP for $5 \times 5$ Grid}
-	The $5 \times 5$ grid is smallest with $\dim{\ker{\Phi_G}} = 2$.
-	Since we will apply nearly the same techniques in the next section, we will restate Scherphuis's proof of solving the MMP for a $5 \times 5$ grid in our own notation.
-	\begin{theorem}[Scherphuis]\label{min-moves-problem-5x5}
-		The answer to the Min Moves Problem for a $5 \times 5$ grid is 15.
-	\end{theorem}
-	\begin{proof}
-		Since $\dim{\ker{\Phi_G}} = 2$ for a $5 \times 5$ grid, there are $2^{\dim{\ker{\Phi_G}}} = 4$ even parity covers.
-		One of these even parity covers is the trival empty set.
-		Below are the three non-trivial even parity covers.
-		A black square means the corresponding vertex is an element of the even parity cover.
-		
-		\begin{figure}[H]
-			\centering
-			\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_1.png}
-			\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_2.png}
-			\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_3.png}
-			\caption{Non-trivial elements of $\ker{\Phi_G}$ for $G$ a $5 \times 5$ grid}
-		\end{figure}
-	
-		Partition the vertices of the $5 \times 5$ grid to one of four regions based on which even parity covers contain them, as shown below.
-		
-		\begin{figure}[H]
-			\centering
-			\includegraphics[width=0.49\textwidth]{../../code/serialization/regions/5x5_regions.png}
-			\caption{The four regions of a $5 \times 5$ grid}
-		\end{figure}
-	
-		Region 1 is the intersection of covers 2 and 3;
-		region 2 is the intersection of  covers 1 and 2;
-		region 3 is the intersection of covers 1 and 3;
-		region 4 is the intersection of all the complements.
-		
-		Let $Y \subseteq V$ be a worst-case initial configuration.
-		Let $X \subseteq V$ be a solution to $Y$ that uses the fewest moves among all solutions to $Y$.
-		Let $R_i$ be the number of vertices in $X$ also contained in region $i$.
-		Then the solution uses $\abs{X} = R_1 + R_2 + R_3 + R_4$ moves.
-		
-		If we take the symmetric difference of $X$ and even parity cover 1, we obtain an equivalent solution that uses $R_1 + (8 - R_2) + (8 - R_3) + R_4$ moves.
-		Since we assumed $X$ was a minimal solution,
-		\begin{equation*}
-			R_1 + R_2 + R_3 + R_4 \leq R_1 + (8 - R_2) + (8 - R_3) + R_4.
-		\end{equation*}
-		Rearranging,
-		\begin{equation}\label{5x5_constr1}
-			R_2 + R_3 \leq 8.
-		\end{equation}
-	
-		If we take the symmetric difference of $X$ and even parity cover 2, we obtain an equivalent solution that uses $(4 - R_1) + (8 - R_2) + R_3 + R_4$ moves.
-		Since we assumed $X$ was a minimal solution,
-		\begin{equation*}
-			R_1 + R_2 + R_3 + R_4 \leq (4 - R_1) + (8 - R_2) + R_3 + R_4.
-		\end{equation*}
-		Rearranging,
-		\begin{equation}\label{5x5_constr2}
-			R_1 + R_2 \leq 6.
-		\end{equation}
-	
-		If we take the symmetric difference of $X$ and even parity cover 3, we obtain an equivalent solution that uses $(4 - R_1) + R_2 + (8 - R_3) + R_4$ moves.
-		Since we assumed $X$ was already a minimal solution,
-		\begin{equation*}
-			R_1 + R_2 + R_3 + R_4 \leq (4 - R_1) + R_2 + (8 - R_3) + R_4.
-		\end{equation*}
-		Rearranging,
-		\begin{equation}\label{5x5_constr3}
-			R_1 + R_3 \leq 6.
-		\end{equation}
-	
-		Since we have applied all even parity covers, we can be sure we considered all solutions to $Y$.
-		None of \eqref{5x5_constr1}, \eqref{5x5_constr2}, or \eqref{5x5_constr3} involve $R_4$.
-		Thus, $R_4$ is not constrained beyond the fact that region 4 contains five vertices.
-		Since we assumed $Y$ was a worst-case initial configuration, $R_4 = 5$.
-	
-		Combining \eqref{5x5_constr1}, \eqref{5x5_constr2}, and \eqref{5x5_constr3} into matrix form,
-		\begin{equation}\label{5x5_ilp}
-			\begin{bmatrix}
-				0 & 1 & 1 \\
-				1 & 1 & 0 \\
-				1 & 0 & 1
-			\end{bmatrix}
-			\begin{bmatrix}
-				R_1 \\
-				R_2 \\
-				R_3
-			\end{bmatrix}
-			\leq
-			\begin{bmatrix}
-				8 \\
-				6 \\
-				6
-			\end{bmatrix}.
-		\end{equation}
-		We need to solve this integer linear program (ILP), maximizing the $L^1$-norm $R_1 + R_2 + R_3$.
-		Since all entries in the constraint matrix are non-negative, finding an integer solution where the constraints are tight (i.e. replace the $\leq$ in \eqref{5x5_ilp} with $=$) would be the optimal solution to the ILP.
-		Assuming the constraints are tight and performing row reduction, we find that
-		\begin{equation*}
-			\begin{bmatrix}
-				R_1 \\
-				R_2 \\
-				R_3
-			\end{bmatrix}
-			=
-			\begin{bmatrix}
-				2 \\
-				4 \\
-				4
-			\end{bmatrix}
-		\end{equation*}
-		is the optimal solution to the ILP.
-		So, the answer to the Min Moves Problem for a $5 \times 5$ grid is 
-		\begin{align*}
-			\abs{X} &= R_1 + R_2 + R_3 + R_3 \\
-				&= 2 + 4 + 4 + 5 \\
-				&= 15.
-		\end{align*}
-	\end{proof}
 
-	\section{Inequality for Larger Grids}
+	\section{A Lower Bound on Nullity}
 	For each even parity cover of a smaller grid, we can construct a unique even parity cover of a larger grid.
+	This construction will allow us in the next section to generalize Scherphuis's proof technique to larger grids.
 	
 	\begin{theorem}\label{tiling-quiet-patterns}
 		Let $d(n) = \dim{\ker{\Phi_G}}$ for $G$ an $n \times n$ grid.
@@ -260,7 +136,7 @@
 		Since $nk - 1 = k(n-1) + (k-1)$, an $(nk-1) \times (nk-1)$ grid consists of a $k \times k$ grid of $(n-1) \times (n-1)$ grids, each separated by a horizontal or vertical strip of height or width 1.
 	
 		Let $Q$ be an even parity cover for an $(n-1) \times (n-1)$ grid.
-		Let $R$ be $Q$ tiled $k$ times horizontally and vertically onto an $(nk-1) \times (nk-1)$ grid, where each tile is a horizontal/vertical reflection of its horizontal/vertical neighboring tiles, as shown below.
+		Let $R$ be $Q$ tiled $k$ times horizontally and vertically onto an $(nk-1) \times (nk-1)$ grid, where each tile is a horizontal/vertical reflection of its vertical/horizontal neighboring tiles, as shown below.
 		
 		\begin{figure}[H]
 			\centering
@@ -306,7 +182,10 @@
 		\end{equation*}
 	\end{proof}
 
-	\section{Establishing an Upper Bound}
+	Sutner shows a generalization of this result to product graphs \cite{Sutner1988_2}.
+
+	\section{Solving the MCP}
+	We are now ready to solve the MCP for all nullity 2 grids of size $(6k-1) \times (6k-1)$.
 	Applying Theorem \ref{tiling-quiet-patterns} for $n=6$, we get that for all $k \in \N$,
 	\begin{equation*}
 		d(6k - 1) \geq d(5) = 2.
@@ -325,30 +204,69 @@
 		\caption{Non-trivial elements of $\ker{\Phi_G}$ for $G$ a $5 \times 5$ and $17 \times 17$ grid}
 	\end{figure}
 	
-	Thus, we can apply the same proof technique as in Theorem \ref{min-moves-problem-5x5} to find an upper bound for the Min Moves Problem for such grid sizes.
-	We'll also know that if $d(6k - 1) = 2$, then we have considered all equivalent solutions, meaning this upper bound is exact, and we have solved the Min Moves Problem.
-	
+	We will apply the same techniques that Scherphius \cite{jaap} used to solve the MCP for a $5 \times 5$ board to all $(6k-1) \times (6k-1)$ boards.
 	\begin{theorem}\label{min-moves-problem-6k-1x6k-1}
 		Let $k \in \N$.
-		Then the answer to the MMP for a $(6k - 1) \times (6k - 1)$ grid is at most $26k^2 - 12k + 1$.
-		This bound is exactly the answer to the MMP when $d(6k-1)=2$.
+		Then the answer to the MCP for a $(6k - 1) \times (6k - 1)$ grid is at most $26k^2 - 12k + 1$.
+		This bound is exactly the answer to the MCP when $d(6k-1)=2$.
 	\end{theorem}
 	\begin{proof}
 		Applying Theorem \ref{tiling-quiet-patterns} with $n=6$, the even parity covers of the $5 \times 5$ grid will tile a $(6k - 1) \times (6k - 1)$ grid.
 		We can partition the grid into four regions based on which of these even parity covers they are a part of.
-		Using the same numbering for even parity covers as in Theorem \ref{min-moves-problem-5x5}, region 1 is the intersection of even parity covers 2 and 3;
+		Below are the regions for the $5 \times 5$ board.
+		For larger boards, these regions would be tiled exactly as described in Theorem \ref{tiling-quiet-patterns}.
+		
+		\begin{figure}[H]
+			\centering
+			\includegraphics[width=0.49\textwidth]{../../code/serialization/regions/5x5_regions.png}
+			\caption{The four regions of a $5 \times 5$ grid}
+		\end{figure}
+		
+		Region 1 is the intersection of even parity covers 2 and 3;
 		region 2 is the intersection of even parity covers 1 and 2;
 		region 3 is the intersection of even parity covers 1 and 3;
 		region 4 is the intersection of the complements.
-		Region 1 contains $4k^2$ vertices, regions 2 and 3 contain $8k^2$ vertices, and region 4 contains the remaining $16k^2 - 12k + 1$ vertices.
+		Region 1 contains $4k^2$ vertices;
+		regions 2 and 3 contain $8k^2$ vertices;
+		region 4 contains the remaining $16k^2 - 12k + 1$ vertices.
 		
-		Let $Y \subseteq V$ be a worst-case initial configuration.
-		Let $X \subseteq V$ be a solution to $Y$ that uses the fewest moves among all solutions to $Y$.
+		Let $Y$ be a worst-case initial configuration.
+		Let $X$ be a solution to $Y$ that uses the fewest clicks among all solutions to $Y$.
 		Let $R_i$ be the number of vertices in $X$ also contained in region $i$.
-		Then the solution uses $\abs{X} = R_1 + R_2 + R_3 + R_4$ moves.
+		Then the solution uses $\abs{X} = R_1 + R_2 + R_3 + R_4$ clicks.
 		
-		Applying the three even parity covers and deriving the constraints like we did in proving Theorem \ref{min-moves-problem-5x5}, we find that $R_4$ is unconstrained and can thus be set to $16k^2 - 12k + 1$, while $R_1$, $R_2$, and $R_3$ are constrained by the following ILP:
-		\begin{equation}
+		If we take the symmetric difference of $X$ and even parity cover 1, we obtain an equivalent solution that uses $R_1 + (8k^2 - R_2) + (8k^2 - R_3) + R_4$ clicks.
+		Since we assumed $X$ was a minimal solution,
+		\begin{equation*}
+			R_1 + R_2 + R_3 + R_4 \leq R_1 + (8k^2 - R_2) + (8k^2 - R_3) + R_4.
+		\end{equation*}
+		Rearranging,
+		\begin{equation*}
+			R_2 + R_3 \leq 8k^2.
+		\end{equation*}
+		If we take the symmetric difference of $X$ and even parity cover 2, we obtain an equivalent solution that uses $(4k^2 - R_1) + (8k^2 - R_2) + R_3 + R_4$ clicks.
+		Since we assumed $X$ was a minimal solution,
+		\begin{equation*}
+			R_1 + R_2 + R_3 + R_4 \leq (4k^2 - R_1) + (8k^2 - R_2) + R_3 + R_4.
+		\end{equation*}
+		Rearranging,
+		\begin{equation*}
+			R_1 + R_2 \leq 6k^2.
+		\end{equation*}
+		If we take the symmetric difference of $X$ and even parity cover 3, we obtain an equivalent solution that uses $(4k^2 - R_1) + R_2 + (8k^2 - R_3) + R_4$ clicks.
+		Since we assumed $X$ was already a minimal solution,
+		\begin{equation*}
+			R_1 + R_2 + R_3 + R_4 \leq (4k^2 - R_1) + R_2 + (8k^2 - R_3) + R_4.
+		\end{equation*}
+		Rearranging,
+		\begin{equation*}
+			R_1 + R_3 \leq 6k^2.
+		\end{equation*}
+	
+		We see that $R_4$ is not constrained by any of the above inequalities, only that region 4 contains $16k^2 - 12k + 1$ squares.
+		Since we assumed $Y$ is a worst-case initial configuration, we can set $R_4 = 16k^2 - 12k + 1$.
+		Meanwhile, $R_1$, $R_2$, and $R_3$ are constrained by the following integer linear program (ILP):
+		\begin{equation*}
 			\begin{bmatrix}
 				0 & 1 & 1 \\
 				1 & 1 & 0 \\
@@ -365,8 +283,9 @@
 				6 \\
 				6
 			\end{bmatrix}k^2.
-		\end{equation}
-		This is the exact same set of constraints as in Theorem \ref{min-moves-problem-5x5}, just with a factor of $k^2$.
+		\end{equation*}
+		We see that this constraint matrix is totally unimodular.
+		Thus, we can ignore the integrality constraints on $R_1$, $R_2$, and $R_3$ and solve this ILP as if it was a linear system.
 		Thus,
 		\begin{equation*}
 			\begin{bmatrix}
@@ -382,39 +301,39 @@
 			\end{bmatrix}k^2.
 		\end{equation*}
 		is the solution to the ILP.
-		Thus,
+		So,
 		\begin{align*}
 			\abs{X} &=  R_1 + R_2 + R_3 + R_4 \\
 				&= 2k^2 + 4k^2 +  4k^2 + (16k^2 - 12k + 1) \\
 				&= 26k^2 - 12k + 1.
 		\end{align*}
 		If $\dim{\ker{\Phi}} > 2$ there will be more even parity covers that would create more restrictive constraints.
-		However, if $\dim{\ker{\Phi}} = 2$, we have considered all even parity covers and have solved the MMP.
+		However, if $\dim{\ker{\Phi}} = 2$, we have considered all even parity covers and have solved the MCP.
 	\end{proof}
 
 	The $5 \times 5$, $17 \times 17$, $41 \times 41$, $53 \times 53$, $77 \times 77$, grids are those of size $(6k-1) \times (6k-1)$ less than 100 with nullity 2.
-	Thus, we find that the answers to the MMP for these grids are 15, 199, 1191, 1999, and 4239 respectively.
+	Thus, we find that the answers to the MCP for these grids are 15, 199, 1191, 1999, and 4239 respectively.
 	
 	\section{Conjectures}
 	\begin{conjecture}\label{infinite-nullity-2}
 		There are infinitely many $n$ such that $d(n) = 2$.
 	\end{conjecture}
-	We already know that the version of this conjecture with $d(n)=0$ is true.
-	Sutner mentions $d(2^k - 1) = 0$ for $k \in \N$ \cite{Sutner1989}.
-	Theorem \ref{tiling-quiet-patterns} tells us that there are infinitely many $n$ with $d(n) \geq 2$.
-	By computer search we found that for $n \leq 10000$, there are 497 such $n$ such that $d(n) = 2$.
+	The version of this conjecture with $d(n) = 0$ is true because Sutner shows that $d(2^k - 1) = 0$ \cite{Sutner1989}.
+	We suspect that $d(2 \cdot 3^k - 1) = 2$ for $k \in \N$, but we are not aware of a proof.
+	Theorem \ref{tiling-quiet-patterns} tells us that if there exists one grid with nullity $q$, there are infinitely many $n$ such that $d(n) \geq q$.
+	So, there are certainly infinitely many grids with nullity at least 2.
+	By computer search, we found for $n \leq 25000$ there are 1242 nullity 2 grids.
 	
 	\begin{conjecture}\label{all-nullity2-conj}
 		If $d(n) = 2$, then $n \equiv -1 \mod 6$.
 	\end{conjecture}
 	That is, the even parity covers of all nullity 2 grids are tilings of the $5 \times 5$ even parity covers.
-	If true, this would mean that we have solved the MMP for all nullity 2 grids.
-	We performed a computer search, applying Theorem \ref{tiling-quiet-patterns} in a sieve approach to eliminate grids we know have nullity greater than 2, and found no counterexamples for $n \leq 10000$.
+	If true, this would mean that we have solved the MCP for all nullity 2 grids.
+	We performed a computer search, applying Theorem \ref{tiling-quiet-patterns} in a sieve approach to eliminate grids we know have nullity greater than 2, and found no counterexamples for $n \leq 25000$.
 	
 	\section{Future Work}
-	We'd like future work to focus on resolving these conjectures and solving the MMP on grids with nullities greater than 2.
-	For any sized grid (in fact, any graph), we can apply the same technique as in theorems \ref{min-moves-problem-5x5} and \ref{min-moves-problem-6k-1x6k-1} of finding the answer to the MMP as the solution to an ILP.
-	However, it seems we cannot apply the same technique of trying to solve the ILP with all constraints tight for larger nullities.
+	We'd like future work to focus on resolving these conjectures and solving the MCP on grids with nullities greater than 2.
+	For any sized grid (in fact, any graph), we can apply the same technique as in Theorem \ref{min-moves-problem-6k-1x6k-1} of finding the answer to the MCP as the solution to an ILP.
 	
 	We'd also like future work to focus more on understanding the relationships between the nullities of different sized grids.
 	Theorem \ref{tiling-quiet-patterns} is a good start to this, but there seem to be many other relationships to discover.
