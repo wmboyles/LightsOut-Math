@@ -24,7 +24,7 @@
 
 \begin{document}
 	\title{Most Clicks Problem in \textit{Lights Out}}
-	\author{William Boyles}
+	\author{William Boyles\thanks{Department of Mathematics, North Carolina State University, Raleigh, NC 27695 (wmboyle2@ncsu.edu)}}
 	\date{\today}
 	\maketitle
 	
@@ -66,7 +66,7 @@
 	\begin{equation*}
 		\Phi_G(V_1 \triangle V_2) = \Phi_G(V_1) \triangle \Phi_G(V_2).
 	\end{equation*}
-	Further, the set of all configurations form a vector space, with the set of all solvable configurations as a subspace \cite{Sutner1988}. 
+	Further, the set of all configurations form a vector space, of which the set of all solvable configurations is a subspace \cite{Sutner1988}. 
 	
 	Finding $\dim{\ker{\Phi_G}}$, the \textit{nullity} of $G$, is useful for determining the difficulty of solving problems like MCP and MOS. 
 	For example, every initial configuration is solvable in exactly one way if and only if the nullity of $G$ is 0, meaning the answer to MOS is ``yes'' for all $k \leq \abs{V}$.
@@ -166,11 +166,12 @@
 		\end{figure}
 	
 		Consider any vertex $v$ in the $(nk-1) \times (nk-1)$ grid.
+		Let $N(v) = \{u \in V \mid (u,v) \in E \text{ or } u=v\}$.
 		If $v$ is in one of the areas containing a reflection of $Q$, then $\abs{N(v) \cap R}$ is even because $Q$ is an even parity cover.
 		Otherwise, $v$ is on the border between reflections of $Q$.
 		If $v$ is in the intersection of a horizontal and vertical border, then $\abs{N(v) \cap R} = 0$, which is even.
 		Otherwise, $N(v)$ contains two vertices that are in neighboring reflections of $Q$.
-		Since we reflected $Q$ across this boarder, the two vertices are either both in $R$ or neither are in $R$.
+		Since we reflected $Q$ across this border, the two vertices are either both in $R$ or neither are in $R$.
 		In either case, $\abs{N(v) \cap R}$ is even.
 		So, $R$ is an even parity cover.
 		
@@ -195,12 +196,12 @@
 	
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_1.png}
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_2.png}
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/5x5/full/5x5_kernel_full_3.png}
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_1.png}
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_2.png}
-		\includegraphics[width=0.32\textwidth]{../../code/serialization/kernels/17x17/full/17x17_kernel_full_3.png}
+		\includegraphics[width=0.32\textwidth]{5x5_kernel_full_1.png}
+		\includegraphics[width=0.32\textwidth]{5x5_kernel_full_2.png}
+		\includegraphics[width=0.32\textwidth]{5x5_kernel_full_3.png}
+		\includegraphics[width=0.32\textwidth]{17x17_kernel_full_1.png}
+		\includegraphics[width=0.32\textwidth]{17x17_kernel_full_2.png}
+		\includegraphics[width=0.32\textwidth]{17x17_kernel_full_3.png}
 		\caption{Non-trivial elements of $\ker{\Phi_G}$ for $G$ a $5 \times 5$ and $17 \times 17$ grid}
 	\end{figure}
 	
@@ -218,7 +219,7 @@
 		
 		\begin{figure}[H]
 			\centering
-			\includegraphics[width=0.49\textwidth]{../../code/serialization/regions/5x5_regions.png}
+			\includegraphics[width=0.49\textwidth]{5x5_regions.png}
 			\caption{The four regions of a $5 \times 5$ grid}
 		\end{figure}
 		
@@ -265,7 +266,7 @@
 	
 		We see that $R_4$ is not constrained by any of the above inequalities, only that region 4 contains $16k^2 - 12k + 1$ squares.
 		Since we assumed $Y$ is a worst-case initial configuration, we can set $R_4 = 16k^2 - 12k + 1$.
-		Meanwhile, $R_1$, $R_2$, and $R_3$ are constrained by the following integer linear program (ILP):
+		Meanwhile, $R_1$, $R_2$, and $R_3$ are constrained by the following integer linear program (ILP) where we seek to maximize $R_1 + R_2 + R_3$:
 		\begin{equation*}
 			\begin{bmatrix}
 				0 & 1 & 1 \\
@@ -319,7 +320,7 @@
 		There are infinitely many $n$ such that $d(n) = 2$.
 	\end{conjecture}
 	The version of this conjecture with $d(n) = 0$ is true because Sutner shows that $d(2^k - 1) = 0$ \cite{Sutner1989}.
-	We suspect that $d(2 \cdot 3^k - 1) = 2$ for $k \in \N$, but we are not aware of a proof.
+	We suspect that $d(2 \cdot 3^k - 1) = 2$ for all $k \in \N$, but we are not aware of a proof.
 	Theorem \ref{tiling-quiet-patterns} tells us that if there exists one grid with nullity $q$, there are infinitely many $n$ such that $d(n) \geq q$.
 	So, there are certainly infinitely many grids with nullity at least 2.
 	By computer search, we found for $n \leq 25000$ there are 1242 nullity 2 grids.
