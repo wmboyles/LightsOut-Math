@@ -26,7 +26,7 @@ def full_rank_b(N: int, test_length: int = 2) -> list:
     Let B be the set of all b in [1,N] such that for all k >= 1, nullity(g(b,k)) == 0.
     * If x is a number such that x is in B, but all proper divisors of x are not in B, then x is a primitive element of B.
         - It seems that all primitive elements of B are prime.
-    * If x is a number such that x is not in B, but all proper divisors of x are in B, then x is a primitive elemment of the complement of B.
+    * If x is a number such that x is not in B, but all proper divisors of x are in B, then x is a primitive element of the complement of B.
         - The first few primitive elements of the complement of B are: 3, 5, 17, 31, 127, 257, 511, 683, ...
             - This is sequence [A007802](https://oeis.org/A007802) in the OEIS
         - It seems that most primitive elements of the complement of B are prime.
@@ -42,7 +42,7 @@ def full_rank_b(N: int, test_length: int = 2) -> list:
 
 
 """
-Conjecture 1: There are ininitely many n such that d(n) = 2.
+Conjecture 1: There are infinitely many n such that d(n) = 2.
 """
 
 
@@ -332,8 +332,21 @@ primes = [
 ]
 
 
-def conjectured_nullity(n):
-    for prime in primes:
-        if abs(log(n - 1, prime)) < 0.000001:
-            return nullity(prime - 1)
-    return nullity(n)
+# for prime in primes:
+#     print("\n", prime)
+
+#     for n in range(2, prime ** 2):
+#         if n % 25 == 0:
+#             print(n)
+
+#         if nullity((prime * n) - 1) != nullity(n - 1):
+#             print(f"d({prime} * {n} - 1) != d({n} - 1)")
+#             break
+n = 2200
+while True:
+    print(n)
+
+    if nullity(47 * n - 1) != nullity(n - 1):
+        print(f"d(47*{n} - 1) != d({n} - 1)")
+        break
+    n += 1
