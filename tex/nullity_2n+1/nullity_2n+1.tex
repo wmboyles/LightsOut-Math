@@ -28,14 +28,14 @@
 	\maketitle
 	
 	\section{Introduction}
-	We resolve a conjecture first stated by Sutner in 1989 about the nullity of \textit{Lights Out} boards of size $2n + 1$ in the affirmative \cite{Sutner1989}.
+	We resolve a conjecture first stated by Sutner in 1989 about the relationship between the nullity of \textit{Lights Out} boards of size $n$ and $2n + 1$ in the affirmative \cite{Sutner1989}.
 	We use results from Sutner that give the nullity of a $n \times n$ board as the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
 	We then apply identities from Hunziker, Machiavelo, and Park that relate these polynomials for $(2n+1) \times (2n+1)$ boards to those for $n \times n$ boards \cite{HUNZIKER2004465}.
-	Finally, we use a result from Ore about the GCD of products \cite{ore_number_theory}.
+	Finally, we use a result from Ore about the GCD of two products \cite{ore_number_theory}.
 	Together, these results allow us to prove Sutner's conjecture and provide conditions under which each case occurs.
 	
 	\section{Preliminary Results}
-	Let $d(n)$ be the nullity of an $n \times n$ \textit{Light Out board}.
+	Let $d(n)$ be the nullity of an $n \times n$ \textit{Lights Out} board.
 	Sutner showed how to calculate $d(n)$ as the degree of the GCD of two polynomials \cite{Sutner96sigma-automataand}.
 	
 	\begin{theorem}[Sutner]\label{Sutner_gcd}
@@ -54,7 +54,7 @@
 	\end{theorem}
 
 	This recursive definition gives a brute force approach to calculate $f_n(x)$.
-	However, Hunziker, Machiavelo, and Park show the following identity that can make calculating certain $f_n(x)$ easier.
+	However, Hunziker, Machiavelo, and Park show the following identity that can make calculating certain $f_n(x)$ easier \cite{HUNZIKER2004465}.
 	
 	\begin{theorem}[Hunziker, Machiavelo, and Park]\label{HMP_identity}
 		Let $n = b\cdot2^{k-1} - 1$ where $b, k \in \N$.
@@ -77,10 +77,11 @@
 		Thus, our desired identities follow from Theorem \ref{HMP_identity}.
 	\end{proof}
 
-	Now that we have a way to express $f_{2n+1}(x)$ and $f_{4n+3}(x)$ in terms of the product of $f_{n}(x)$ terms and $x$, we simply need a way to express the GCD of products.
+	Now that we have a way to express $f_{2n+1}(x)$ and $f_{4n+3}(x)$ as a product of $f_{n}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can calculate $d(n)$.
 	This is where a number-theoretic result from Ore comes in handy \cite{ore_number_theory}.
 	
 	\begin{theorem}[Ore]\label{Ore_gcd}
+		Let $a$, $b$, $c$, and $d$ be integers.
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Then
 		\begin{equation*}
@@ -88,7 +89,10 @@
 		\end{equation*}
 	\end{theorem}
 
-	\section{Sutner's Conjecture}
+	Ore's result deals specifically with integers.
+	However, because both the integers and $\Z_2[x]$ are Euclidean domains, the result will still hold.
+
+	\section{Proof of Sutner's Conjecture}
 	Finally, we are ready to state and prove Sutner's conjecture \cite{Sutner1989}. 
 	\begin{theorem}
 		For all $n \in \N$,
@@ -98,6 +102,7 @@
 		and $\delta_{2n+1} = \delta_n$.
 	\end{theorem}
 	\begin{proof}
+		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Applying the results from Theorems \ref{Sutner_gcd}, \ref{HMP_identity}, and \ref{Ore_gcd},
 		\begin{align*}
 			d(2n+1) &= \deg \left(f_{2n+1}(x), f_{2n+1}(x+1)\right) \\
@@ -132,13 +137,14 @@
 				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right)^3\left((x+1),\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)^3 \\
 				&= 4d(n) + 3\delta_n.
 		\end{align*}
-		Also,
+		Also, our work previously in this proof,
 		\begin{align*}
-			d(4n+3) &= 2d(2n+1) + \delta_{2n+1} \\
-				&= 2\left(2d(n) + \delta_n\right) + \delta_{2n+1} \\
+			d(4n+3) &= d(2(2n+1) + 1) \\
+				&= 2 d(2n+1) + \delta_{2n+1} \\
+				&= 2 \left(2d(n) + \delta_n\right) + \delta_{2n+1} \\
 				&= 4d(n) + 2\delta_n + \delta_{2n+1}.
 		\end{align*}
-		For these two expressions for $d(2(2n+1)+1)$ to be equal, we must have $\delta_{2n+1} = \delta_n$.
+		For these two expressions for $d(4n+3)$ to be equal, we must have $\delta_{2n+1} = \delta_n$.
 	\end{proof}
 	
 	\newpage
