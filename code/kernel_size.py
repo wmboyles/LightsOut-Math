@@ -17,7 +17,7 @@ def nullity(n: int) -> int:
 
     """
     We proved Sutner's conjecture that d(2n+1) = 2*d(n) + delta_n, and delta_{2n+1} = delta_n.
-    Thus, if n = b*2^(k-1) - 1 where k > 2, it's cheaper to calculate delta_n =  nullity(2b - 1) - nullity(b-1).
+    Thus, if n = b*2^(k-1) - 1 where k > 2, it's cheaper to calculate delta_n = nullity(2b - 1) - nullity(b-1).
     """
 
     b, k = find_gbk(n)
