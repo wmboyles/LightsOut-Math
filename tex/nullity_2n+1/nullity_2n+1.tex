@@ -28,15 +28,30 @@
 	\maketitle
 	
 	\section{Introduction}
-	We resolve a conjecture first stated by Sutner in 1989 about the relationship between the nullity of \textit{Lights Out} boards of size $n$ and $2n + 1$ in the affirmative \cite{Sutner1989}.
-	We use results from Sutner that give the nullity of a $n \times n$ board as the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
-	We then apply identities from Hunziker, Machiavelo, and Park that relate these polynomials for $(2n+1) \times (2n+1)$ boards to those for $n \times n$ boards \cite{HUNZIKER2004465}.
+	Consider a game played on a simple graph $G = (V,E)$ where each vertex consists of a clickable light.
+	Clicking any vertex $v$ toggles on on/off state of $v$ and its neighbors.
+	One wins the game by finding a sequence of clicks that turns off all the lights.
+	When $G$ is a $5 \times 5$ grid, this game was commercially available from Tiger Electronic as \textit{Lights Out}.
+	
+	Sutner was one of the first to study these games mathematically.
+	He showed that for any $G$ the initial configuration of all lights on is solvable \cite{Sutner1989}.
+	He also found that when $d(G) = \dim{\ker{(A + I)}}$ over the field $GF(2)$, where $A$ is the adjacency matrix of $G$, is 0 all initial configurations are solvable.
+	In particular, 1 out of every $2^{d(G)}$ initial configurations are solvable, while each solvable configuration has $2^{d(G)}$ distinct solutions \cite{Sutner1989}.
+	When investigating $n \times n$ grid graphs, Sutner conjectured the following relationship:
+	\begin{align*}
+		d_{2n+1} &= 2d_n + \delta_n \text{, } \delta_n \in \{0,2\} \\
+		\delta_{2n+1} &= \delta_n,
+	\end{align*}
+	where $d_n = d(G)$ for $G$ an $n \times n$ grid graph \cite{Sutner1989}.
+	
+	We resolve this conjecture in the affirmative.
+	We use results from Sutner that give the nullity of a $n \times n$ board as the GCD of two polynomials in the ring $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
+	We then apply identities from Hunziker, Machiavelo, and Park that relate the polynomials $(2n+1) \times (2n+1)$ grids and $n \times n$ grids \cite{HUNZIKER2004465}.
 	Finally, we use a result from Ore about the GCD of two products \cite{ore_number_theory}.
-	Together, these results allow us to prove Sutner's conjecture and provide conditions under which each case occurs.
+	Together, these results allow us to prove Sutner's conjecture and describe exactly when $\delta_n$ is 0 or 2.
 	
 	\section{Preliminary Results}
-	Let $d(n)$ be the nullity of an $n \times n$ \textit{Lights Out} board.
-	Sutner showed how to calculate $d(n)$ as the degree of the GCD of two polynomials \cite{Sutner96sigma-automataand}.
+	Sutner showed how to calculate $d_n$ as the degree of the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
 	
 	\begin{theorem}[Sutner]\label{Sutner_gcd}
 		Let $f_n(x)$ be the degree $n$ polynomial in the ring $\Z_2[x]$ defined recursively by
@@ -49,7 +64,7 @@
 		\end{equation*}
 		Then for all $n \in \N$.
 		\begin{equation*}
-			d(n) = \deg{\gcd\left(f_{n}(x), f_{n}(x+1)\right)}.
+			d_n = \deg{\gcd\left(f_{n}(x), f_{n}(x+1)\right)}.
 		\end{equation*}
 	\end{theorem}
 
@@ -77,7 +92,7 @@
 		Thus, our desired identities follow from Theorem \ref{HMP_identity}.
 	\end{proof}
 
-	Now that we have a way to express $f_{2n+1}(x)$ and $f_{4n+3}(x)$ as a product of $f_{n}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can calculate $d(n)$.
+	Now that we have a way to express $f_{2n+1}(x)$ and $f_{4n+3}(x)$ as a product of $f_{n}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can calculate $d_n$.
 	This is where a number-theoretic result from Ore comes in handy \cite{ore_number_theory}.
 	
 	\begin{theorem}[Ore]\label{Ore_gcd}
@@ -93,58 +108,58 @@
 	However, because both the integers and $\Z_2[x]$ are Euclidean domains, the result will still hold.
 
 	\section{Proof of Sutner's Conjecture}
-	Finally, we are ready to state and prove Sutner's conjecture \cite{Sutner1989}. 
+	Finally, we are ready to prove Sutner's conjecture \cite{Sutner1989}. 
 	\begin{theorem}
 		For all $n \in \N$,
 		\begin{equation*}
-			d(2n+1) = 2d(n) + \delta_n,
+			d_{2n+1} = 2d_n + \delta_n,
 		\end{equation*}
-		and $\delta_{2n+1} = \delta_n$.
+		where $\delta_n \in \{0,2\}$, and $\delta_{2n+1} = \delta_n$.
 	\end{theorem}
 	\begin{proof}
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Applying the results from Theorems \ref{Sutner_gcd}, \ref{HMP_identity}, and \ref{Ore_gcd},
 		\begin{align*}
-			d(2n+1) &= \deg \left(f_{2n+1}(x), f_{2n+1}(x+1)\right) \\
+			d_{2n+1} &= \deg \left(f_{2n+1}(x), f_{2n+1}(x+1)\right) \\
 				&= \deg \left(xf^2_n(x), (x+1)f^2_n(x+1)\right) \\
 				&= \deg (x,x+1)\left(f^2_n(x),f^2_n(x+1)\right)\left(\frac{x+1}{(x,x+1)},\frac{f^2_n(x)}{(f^2_n(x),f^2_n(x+1))}\right)\left(\frac{x}{(x,x+1)},\frac{f^2_n(x+1)}{(f^2_n(x),f^2_n(x+1))}\right) \\
 				&= \deg \left(f_n(x),f_n(x+1)\right)^2\left(x+1,\frac{f^2_n(x)}{(f_n(x),f_n(x+1))^2}\right)\left(x,\frac{f^2_n(x+1)}{(f_n(x),f_n(x+1))^2}\right) \\
 				&= \deg \left(f_n(x),f_n(x+1)\right)^2\left(x+1,\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right) \\
-				&= 2d(n) + \deg\left(x+1,\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+				&= 2d_n + \deg\left(x+1,\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{align*}
-		Notice that if we substitute $x+1$ for $x$, 
+		Notice that if we substitute $x+1$ for $x$,
 		\begin{equation*}
 			\left(x+1,\frac{f_n(x)}{(f_n(x+1),f_n(x)}\right) \text{ becomes } \left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{equation*}
 		Thus, we see that these two remaining GCD terms are either both 1 nor not 1 simultaneously.
 		This means we can further simplify to
 		\begin{equation*}
-			d(2n+1) = 2d(n) + 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			d_{2n+1} = 2d_{n} + 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{equation*}
 		So, we see that
 		\begin{equation*}
-			d(2n+1) = 2d(n) + \delta_n \text{, where }\delta_n = 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			d_{2n+1} = 2d_{n} + \delta_n \text{, where }\delta_n = 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
 		\end{equation*}
 		Thus, $\delta_n \in \{0,2\}$.
 		
-		Next, we'll calculate $\delta_{2n+1}$.
+		What remains is to show that $\delta_{n} = \delta_{2n+1}$.
 		Applying Corollary \ref{cor1},
 		\begin{align*}
-			d(4n+3) &= \deg\left(x^3f^4_n(x), (x+1)^3f^4_n(x+1)\right) \\
+			d_{4n+3} &= \deg\left(x^3f^4_n(x), (x+1)^3f^4_n(x+1)\right) \\
 				&= \deg\left(x,(x+1)^3\right)\left(f^4_n(x),f^4_n(x+1)\right)\left(x^3,\frac{f^4_n(x+1)}{(f^4_n(x),f^4_n(x+1))}\right)\left((x+1)^3,\frac{f^4_n(x)}{(f^4_n(x),f^4_n(x+1))}\right) \\
 				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x^3,\frac{f^4_n(x+1)}{(f_n(x),f_n(x+1))^4}\right)\left((x+1)^3,\frac{f^4_n(x)}{(f_n(x),f_n(x+1))^4}\right) \\
 				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x^3,\frac{f^3_n(x+1)}{(f_n(x),f_n(x+1))^3}\right)\left((x+1)^3,\frac{f^3_n(x)}{(f_n(x),f_n(x+1))^3}\right) \\
 				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right)^3\left((x+1),\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)^3 \\
-				&= 4d(n) + 3\delta_n.
+				&= 4d_n + 3\delta_n.
 		\end{align*}
-		Also, our work previously in this proof,
+		Also, from our work previously in this proof,
 		\begin{align*}
-			d(4n+3) &= d(2(2n+1) + 1) \\
-				&= 2 d(2n+1) + \delta_{2n+1} \\
-				&= 2 \left(2d(n) + \delta_n\right) + \delta_{2n+1} \\
-				&= 4d(n) + 2\delta_n + \delta_{2n+1}.
+			d_{4n+3} &= d_{2(2n+1) + 1} \\
+				&= 2 d_{2n+1} + \delta_{2n+1} \\
+				&= 2 \left(2d_{n} + \delta_{n}\right) + \delta_{2n+1} \\
+				&= 4d_{n} + 2\delta_{n} + \delta_{2n+1}.
 		\end{align*}
-		For these two expressions for $d(4n+3)$ to be equal, we must have $\delta_{2n+1} = \delta_n$.
+		For these two expressions for $d_{4n+3}$ to be equal, we must have $\delta_{2n+1} = \delta_n$, as desired.
 	\end{proof}
 	
 	\newpage
