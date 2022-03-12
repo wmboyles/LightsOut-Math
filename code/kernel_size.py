@@ -4,7 +4,7 @@ from polynomials import GF2Polynomial
 
 def find_bk(n: int) -> tuple[int, int]:
     """
-    Calculates n = b*2^(k-1) - 1, where b and k are naturals and b is odd.
+    Calculates n = b*2^k - 1, where b and k are naturals and b is odd.
 
     Raises:
         ValueError: If n <= 0
@@ -14,8 +14,8 @@ def find_bk(n: int) -> tuple[int, int]:
         raise ValueError("n must be positive")
 
     binary_n = bin(n + 1)
-    k = len(binary_n) - len(binary_n.rstrip("0")) + 1
-    b = (n + 1) >> (k - 1)
+    k = len(binary_n) - len(binary_n.rstrip("0"))
+    b = (n + 1) >> k
 
     return b, k
 
@@ -42,9 +42,9 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     From Hunziker, Machivelo, and Park
     "Chebyshev Polynomials Over Finite Fields and Reversibility of Sigma-automata on Square Grids"
     Lemma 2.6 (restated in our notation to avoid confusing offset)
-    Let n = b*2^(k-1) - 1, where b is odd
-    f(n, x)   = f(2^(k-1) - 1, x) * f(b-1, x) ** (2^(k-1))
-              = x^(2^(k-1) - 1)   * f(b-1, x) ** (2^(k-1))
+    Let n = b*2^k - 1, where b is odd
+    f(n, x)   = f(2^k - 1, x) * f(b-1, x) ** (2^k)
+              = x^(2^k - 1)   * f(b-1, x) ** (2^k)
     """
 
     b, k = find_bk(n)
@@ -70,7 +70,7 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     if k == 1:
         f1 = polyb_f1
     else:
-        exp = 2 ** (k - 1)
+        exp = 2 ** k
         f1 = GF2Polynomial({exp - 1}) * (polyb_f1 ** exp)
 
     # Calculate f(n,x+1) by evaluating f(n,x) at x+1
@@ -114,7 +114,7 @@ def nullity(n: int) -> int:
     # 1. d(2n+1) = 2*d(n) + delta_n
     # 2. delta_{2n+1} = delta_n.
     # 3. delta_n = 2 * deg gcd(x, f_n(x+1) / g), where g = gcd(f_n(x), f_n(x+1)).
-    # Thus, we'll take advantage of this to speed up our answer for n = b*2^(k-1) - 1 where k is large
+    # Thus, we'll take advantage of this to speed up our answer for n = b*2^k - 1 where k is large
 
     b, k = find_bk(n)
 
@@ -127,8 +127,8 @@ def nullity(n: int) -> int:
     a = g.degree
 
     # k=1 means we had to brute force: calculating te gcd of f_n(x) and f_n(x+1)
-    if k == 1:
+    if k == 0:
         return a
     else:
         delta = 2 * GF2Polynomial.gcd(GF2Polynomial({1}), fp[1] // g).degree
-        return (a + delta) * 2 ** (k - 1) - delta
+        return (a + delta) * (2 ** k) - delta
