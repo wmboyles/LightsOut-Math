@@ -1,0 +1,310 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{float}
+
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{definition}{Definition}
+\newtheorem{conjecture}{Conjecture}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\renewcommand{\dim}[1]{\textnormal{dim}\left( #1 \right)}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+	\title{Conjectures Related to \textit{Lights Out}}
+	\author{William Boyles}
+	\date{\today}
+	\maketitle
+	
+	\section{Definitions}
+	Let \textit{Lights Out} be a game played on a simple graph $G = (V,E)$ where clicking a vertex $v$ toggles the on/off state of $v$ and its neighbors.
+	One wins the game by finding a sequence of clicks that turns off all the lights.
+	
+	\begin{definition}
+		The Most Clicks Problem (MCP) asks, for playing on some graph $G$, what is the most clicks needed to solve any solvable starting configuration, assuming that one solves each configuration in as few clicks as possible.
+	\end{definition}
+	That is, what is the most number of moves one needs to be able to solve any solvable initial configuration?
+	This question is akin to looking for ``God's Number'' on a Rubik's Cube.
+
+	\begin{definition}
+		Let $d(n) = \dim{\ker{(A + I)}}$ over the field $\Z_2$ where $A$ is the adjacency matrix of $G$ an $n \times n$ grid.
+	\end{definition}
+	You may also hear $d(n)$ referred to as the ``nullity'' of the $n \times n$ grid.
+	The right-hand side of the equation applies for any graph, not just grids.
+	Elements of the null space correspond to sets of clicks that have no net effect on the states of the vertices when applied.
+	These elements also correspond exactly to subsets of $V$ such that all vertices have an even number of elements from the subset in their neighborhood (themselves and their neighbors).
+	Thus, these elements of the null space may be referred to as ``null patterns'' or ``quiet patterns''.
+	
+	\begin{definition}\label{def-polys}
+		Let $f_n(x)$ be the degree $n$ polynomial in the ring $\Z_2[x]$ such that
+		\begin{equation*}
+			f_n(x) = \begin{cases}
+				1 & n = 0 \\
+				x & n = 1 \\
+				x f_{n-1}(x) + f_{n-2}(x) & n > 1
+			\end{cases}.
+		\end{equation*}
+	\end{definition}
+	These polynomials become useful in calculating $d(n)$.
+	To find $f_n(x)$, you can truncate elementary cellular automaton rule 90 after $2^k > n$ rows and look at the $n$-th column from the right (rightmost column is 0) from bottom to top.
+	This will give you the coefficients of $f_n(x)$ (1 for black, 0 for white) starting from $x^0$ and going up to $x^n$.
+
+	\section{Existing Results}
+	\begin{theorem}[Sutner]
+		For an $n \times n$ grid, the answer to the MCP is $n^2$ if and only if $d(n) = 0$.
+	\end{theorem}
+
+	\begin{theorem}[Boyles]\label{thm-polys-div-x}
+		The polynomial $f_n(x+1)$ is divisible by $x$ if and only if $n \equiv 2 \mod 3$. 
+	\end{theorem}
+	\begin{proof}
+		By induction.
+		For the base case, notice the following are true:
+		\begin{align*}
+			f_0(x+1) &= 1 \\
+			f_1(x+1) &= x+1 \\
+			f_2(x+1) &= x^2.
+		\end{align*}
+	
+		From Definition \ref{def-polys}, we see that
+		\begin{equation*}
+			f_{n}(x+1) = (x+1)f_{n-1}(x+1) + f_{n-2}(x+1).
+		\end{equation*}
+	
+		Assume that this theorem holds true for all indices up to and including $n-1$.
+		Now for the inductive step there are 3 cases to consider.
+		
+		\textbf{Case 1: } $n \equiv 2 \mod 3$. \\
+		So, $n-1$ and $n-2$ are not equivalent to 2 modulo 3 and therefore contain a 1's term.
+		Thus, we can write
+		\begin{align*}
+			f_{n-1}(x+1) &= 1 + x p(x) \\
+			f_{n-2}(x+1) &= 1 + x q(x),
+		\end{align*}
+		Thus,
+		\begin{align*}
+			f_{n}(x+1) &= (x + 1)(1 + x p(x)) + 1 + x q(x) \\
+				&= x^2 p(x) + x p(x) + x q(x) + x \\
+				&= x(x p(x) + p(x) + q(x) + 1).
+		\end{align*}
+		We see that $f_n(x+1)$ is divisible by $x$, as desired.
+		
+		\textbf{Case 2: } $n \equiv 1 \mod 3$. \\
+		In this case we have $n-2$ equivalent to 2 modulo 3 while $n-1$ is not.
+		Therefore, $f_{n-2}(x+1)$ is divisible by $x$, while $f_{n-1}(x+1)$ is not and therefore must contain a 1's term.
+		So, we can write
+		\begin{align*}
+			f_{n-1}(x+1) &= 1 + x p(x) \\
+			f_{n-2}(x+1) &= x q(x).
+		\end{align*}
+		Thus,
+		\begin{align*}
+			f_n(x+1) &= (x+1)(1 + xp(x)) + xq(x) \\
+				&= x^2 p(x) + xp(x) + xq(x) + x + 1.
+		\end{align*}
+		We see that $f_n(x+1)$ contains a 1's term and is therefore not divisible by $x$, as desired.
+		
+		\textbf{Case 3: } $n \equiv 0 \mod 3$. \\
+		In this chase we have $n-1$ equivalent to 2 modulo 3 while $n-2$ is not.
+		Therefore, $f_{n-1}(x+1)$ is divisible by $x$, while $f_{n-2}(x+1)$ is not and therefore must contain a 1's term.
+		So, we can write
+		\begin{align*}
+			f_{n-1}(x+1) &= x p(x) \\
+			f_{n-2}(x+1) &= 1 + x q(x).
+		\end{align*}
+		Thus,
+		\begin{align*}
+			f_n(x+1) &= (x+1)(xp(x)) + 1 + xq(x) \\
+			&= x^2 p(x) + xp(x) + xq(x) + 1.
+		\end{align*}
+		We see that $f_n(x+1)$ contains a 1's term and is therefore not divisible by $x$, as desired.
+	\end{proof}
+	
+	\begin{theorem}[Hunziker, Machivelo, Park]\label{thm-polygcd}
+		For all $n \in \N$,
+		\begin{equation*}
+			d(n) = \deg{\gcd{\left(f_n(x), f_n(x+1)\right)}}.
+		\end{equation*}
+	\end{theorem}
+	This theorem gives an another way to calculate $d(n)$.
+	
+	\begin{theorem}[Sutner]\label{thm-pow(2,k)-1}
+		For all $k \in \N$,
+		\begin{equation*}
+			d(2^k - 1) = 0.
+		\end{equation*}
+	\end{theorem}
+	This theorem shows that there are infinitely many $n$ such that $d(n) = 2$.
+	
+	\begin{theorem}[Sutner, Boyles]\label{thm-tiling}
+		For all $n, k \in \N$,
+		\begin{equation*}
+			d(nk - 1) \geq d(n-1).
+		\end{equation*}
+	\end{theorem}
+	This theorem allows us to find a lower bound on the nullity of larger boards by looking at the nullity of smaller boards.
+	Intuitively, it takes advantage of the face that the geometry of a square grid allows us to tile small quiet patterns to make bigger ones.
+	
+	\begin{theorem}[Sutner, Boyles]
+		For all $n \in \N$,
+		\begin{align*}
+			d(2n+1) &= 2d(n) + \delta_n \\
+			\delta_n &\in \{0,2\} \\
+			\delta_{2n+1} &= \delta_{n}.
+		\end{align*}
+		In particular,
+		\begin{equation*}
+			\delta_n = 2 \deg{\gcd{\left(x, \frac{f_n(x+1)}{\gcd{(f_n(x+1), f_n(x))}}\right)}}.
+		\end{equation*}
+	\end{theorem}
+	Unlike Theorem \ref{thm-tiling}, this gives an exact relationship between the nullities of different-sized grids.
+	Notice that once we calculate $d(1) = d(3) = 0$, Theorem \ref{thm-pow(2,k)-1} follows as a corollary.
+	
+	\section{Conjectures}
+	
+	\subsection{Formulas for $d(n)$}
+	We'd like to extend Theorem \ref{thm-pow(2,k)-1} to other exponentials.
+	When investigating for such patterns, it seemed to make the most sense to group these by prime factorization.
+	Although we list many below, we suspect that are many more similar relations with prime factorization to be found.
+	\begin{conjecture}\label{conj-many-formulas}
+		For all $n,m,o \in \N$, the following hold:
+		\begin{align*}
+			d(2^n - 1) = 0 \\
+			d(3^n - 1) &= 0 \\
+			d(5^n - 1) &= 4 \\
+			d(2^n * 3^m - 1) &= 2^{n+1} - 2 \\
+			d(7^n - 1) &= 0 \\
+			d(2^n * 5^m - 1) &= 2^{n+2} \\
+			d(11^n - 1) &= 0 \\
+			d(13^n - 1) &= 0 \\
+			d(2^n * 7^m - 1) &= 0 \\
+			d(3^n * 5^m - 1) &= 4 \\
+			d(17^n - 1) &= 8 \\
+			d(19^n - 1) &= 0 \\
+			d(3^n * 7^m - 1) &= 24 \text{ for } n > 1, m > 0 \text{, else } 0 \\
+			d(2^n * 11^m - 1) &= 0 \\
+			d(23^n - 1) &= 0 \\
+			d(2^n * 13^m - 1) &= 0 \\
+			d(29^m - 1) &= 0 \\
+			d(2^n * 3^m * 5^o - 1) &= 3*2^{m+1} - 2 \\
+			d(31^n - 1) &= 20 \\
+			d(3^n * 11^m - 1) &= 20 \\
+			d(2^n * 17^m - 1) &= 2^{n+3} \\
+			d(5^n * 7^m - 1) &= 4 \\
+			d(37^n - 1) &= 0 \\
+			d(2^n * 19^m - 1) &= 0 \\
+			d(3^n * 13^m - 1) &= 0 \\
+			d(41^n - 1) = 0 \\
+			d(2^n * 3^m * 7^o - 1) &= 13*2^{n+1} - 2 \text{ for } m > 1, o > 0\text{, else } 2^{n+1} - 2  \\
+			d(43^n - 1) &= 0 \\
+			d(2^n * 23^m - 1) &= 0.
+		\end{align*}
+	\end{conjecture}
+	Notice that except for $d(2^n * 3^m * 5^o - 1)$ that the outputs of no other right-hand sides depend on any other exponents except that on the 2.
+	Notice that except for $d(2^n * 3^m * 5^o - 1)$ and $d(2^n * 3^m * 7^o)$ that no other statements rely on exponents other than those on the 2 in the output or conditionally.
+	This may be a quirk that arises only when there are 3 prime factors and nothing special about these particular cases.
+	Notice that except for $d(3^n * 7^m)$ and $d(2^n * 3^m * 7^o - 1)$ that no other outputs are conditional on the values of the exponents for which formula to use.
+	This might just be a fluke with the cases listed, but we suspect that this has something to do with the number $21 = 3 * 7$.
+
+	We can take certain parts of Conjecture \ref{conj-many-formulas} and state them more generally.
+	\begin{conjecture}\label{conj-odds}
+		Let $a$ be an odd number that is not divisible by 21.
+		Then for all $n \in \N$,
+		\begin{equation*}
+			d(a^k - 1) = d(a-1).
+		\end{equation*}
+	\end{conjecture}
+	We suspect that this conjecture is likely false, or at least, not completely descriptive of what's going on.
+	A similar version of this conjecture with $k \geq k_0$ and $d(a^k - 1) = d(a^{k_0} - 1)$ seems to hold for all odd numbers, and it seems we only need $k_0 = 2$.
+	We're not at all sure what's so special about the number 21.
+	We're also not entirely sure that $a$ being odd is what truly matters, especially considering 21 is such an unexplained exception.
+	Instead, we might be able to extend what $a$'s are applicable and deal with the exception of 21 by seeing when $d$ outputs 0 for exponents of 1 and when $\delta_{n}$ is 0 or 2.
+	
+	\subsection{Other Conjectures}
+	Theorem \ref{thm-pow(2,k)-1} shows that there are infinitely many $n$ such that $d(n) = 0$.
+	We'd like similar results for other even values, especially 2 since we've done some significant work in solving the MMP for nullity 2 boards.
+	\begin{conjecture}\label{conj-inf-nullity-2}
+		There are infinitely many $n \in \N$ such that $d(n) = 2$.
+		In particular, for all $k \in \N$,
+		\begin{equation*}
+			d(2 * 3^k - 1) = 2.
+		\end{equation*}
+	\end{conjecture}
+	Assuming that Conjecture \ref{conj-many-formulas} or \ref{conj-odds} is true for the case of $d(3^n - 1)$, $\delta_{3^n - 1}$ is 2 if and only $x$ divides $f_{3^n - 1}(x+1)$.
+	By Theorem \ref{thm-polys-div-x} this is true.
+	This this conjecture is implied by the $d(3^n - 1)$ case of Conjectures \ref{conj-many-formulas} and \ref{conj-odds}.
+	
+	Similar versions of Conjecture \ref{conj-inf-nullity-2} either following directly from parts of Conjectures \ref{conj-many-formulas} and \ref{conj-odds} or could be implied in a similar way to what we showed for nullity 2.
+	Thus, the following conjecture may seem surprising.
+	\begin{conjecture}
+		There exists some even $k \in \N$ such that for all $n \in \N$,
+		\begin{equation*}
+			d(n) \neq k.
+		\end{equation*}
+		In particular, the smallest such $k$ is 26.
+	\end{conjecture}
+	That is, there are no nullity 26 grids.
+	If we could show that all nullity 12 grids have $\delta = 0$, we'd show there are no odd grids with nullity 26.
+	Other such $k$ we have found are 34, 52, 54, 68, and 70.
+	
+	Previously, we were able to solve the MCP for nullity 2 grids of size $6k-1$.
+	We suspect that all nullity 2 grids are of this size, meaning we solved the MCP for all nullity 2 grids.
+	\begin{conjecture}
+		If $d(n) = 2$ then $n \equiv -1 \mod 6$.
+	\end{conjecture}
+
+	Our method for solving the MCP for nullity 2 grids of size $6k-1$ involved getting an exact solution to a integer linear program by noticing all constraints could be tightly satisfied at once.
+	This allowed us to give a parabola in terms of $k$ that solved the MCP.
+	However, this does not seem to work for higher nullities.
+	We suspect that the answer to the MCP is still a parabola though.
+	Thus, we can calculate the answer the the MCP for 3 boards of the same nullity in the same family (i.e. size is same mod some number) and derive the parabola.
+	\begin{conjecture}
+		Regarding the answer to the MCP for for an $n \times n$ grid,
+		\begin{itemize}
+			\item
+				If $n = 6k-1$ and $d(n) = 2$, then the answer to the MCP is $26k^2 - 12k + 1$.
+			\item
+				All nullity 2 grids are of size $6k-1$.
+			\item
+				If $n = 10k - 6$ and $d(n) = 4$, then the answer to the MCP is $17k^2 - 10k$.
+			\item
+				All nullity 4 grids are of size $10k - 6$
+			\item
+				If $n = 24k - 13$ and $d(n) = 6$, then the answer to the MCP is $88k^2 - 24k + 1$.
+			\item
+				All nullity 6 grids are of size $24k-13$.
+			\item
+			 	If $n = 40k - 31$ and $d(n) = 8$, then the answer to the MCP is $60k^2 - 20k - 3$.
+			 \item
+			 	If $n = 34k - 18$ and $d(n) = 8$, then the answer to the MCP is $161k^2 - 34k - 3$.
+			 \item
+			 	All nullity 8 grids are either of side $40k-31$ or $34k-18$.
+			 \item
+			 	If $n = 60k - 31$ and $d(n) = 10$ then the answer to the MCP is $506k^2 - 60k - 3$.
+			 \item
+			 	All nullity 10 grids are of size $60k - 31$.
+			 \item
+			 	If $n = 340k - 256$ and $d(n) = 12$, then the answer to the MCP is $3761k^2 - 169k - 13$.
+			 \item
+			 	All nullity 12 grids are of size $340k - 256$.
+		\end{itemize}
+	\end{conjecture}
+	Notice that there are different ``families'' associated with each nullity.
+	These families correspond to a certain size of board.
+	Notice that one nullity might have multiple families.
+	It seems that the smallest board in each family appears in OEIS sequence A118142.
+	We suspect that the parabolas giving the answer to the MCP for a given family always have integer coefficients.
+\end{document}
