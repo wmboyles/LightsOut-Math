@@ -156,18 +156,7 @@ class GF2Polynomial:
 
         return prod
 
-    @staticmethod
-    def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
-        """
-        Compute the greatest common division of two polynomials
-        """
-
-        while not g._is_zero():
-            f, g = g, f % g
-
-        return f
-
-    def compose(self, g: GF2Polynomial) -> GF2Polynomial:
+    def __matmul__(self, g: GF2Polynomial) -> GF2Polynomial:
         """
         Let f(x) = self, g(x) = g.
         Then this method returns f(g(x)).
@@ -178,6 +167,17 @@ class GF2Polynomial:
             [g ** deg for deg in self.degrees],
             GF2Polynomial(),
         )
+
+    @staticmethod
+    def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
+        """
+        Compute the greatest common division of two polynomials
+        """
+
+        while not g._is_zero():
+            f, g = g, f % g
+
+        return f
 
 
 def find_gbk(n: int) -> tuple[int, int]:
@@ -253,6 +253,6 @@ def chebyshev_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
         f1 = GF2Polynomial({exp - 1}) * (polyb_f1 ** exp)
 
     # Calculate f(n,x+1) by evaluating f(n,x) at x+1
-    f2 = f1.compose(GF2Polynomial({1, 0}))
+    f2 = f1 @ GF2Polynomial({0, 1})
 
     return f1, f2
