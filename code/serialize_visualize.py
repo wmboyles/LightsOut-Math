@@ -1,3 +1,8 @@
+"""
+This module contains a method to generate visuals of n x n Lights Out grids.
+This module contains a method to generate visuals of polynomials in GF(2).
+"""
+
 import pickle
 from os import makedirs
 

@@ -1,7 +1,12 @@
+"""
+This module contains methods related to finding the minimum number of clicks needed to solve a given n x n Lights Out grid.
+This module contains a method for finding the minimum number of clicks needed to solve any n x n Lights Out grid.
+"""
+
 import numpy as np
 
 from region_separator import regions, region_transform
-from kernel_size import nullity
+from kernel_size import grid_nullity
 from board_math import kernel
 
 from functools import cache
@@ -152,7 +157,7 @@ def min_clicks_parabola(m: int, msg=0) -> np.ndarray:
     # Find the smallest board with nullity m
     # Can start n = m because we know d(n) <= n.
     least_nullity_m = m
-    while nullity(least_nullity_m) != m:
+    while grid_nullity(least_nullity_m) != m:
         least_nullity_m += 1
 
     # Find the next two boards with nullity m
@@ -161,7 +166,7 @@ def min_clicks_parabola(m: int, msg=0) -> np.ndarray:
     k = 2
     while len(first_three_nullity_m) < 3:
         n = (least_nullity_m + 1) * k - 1
-        if nullity(n) == m:
+        if grid_nullity(n) == m:
             first_three_nullity_m.append((k, n))
         k += 1
 

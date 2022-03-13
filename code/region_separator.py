@@ -1,3 +1,8 @@
+"""
+This module separates a n x n Lights Out grid into distinct regions
+based on which "quiet patterns" (i.e. kernel elements)they are a part of.
+"""
+
 import numpy as np
 
 from board_math import kernel

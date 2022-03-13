@@ -1,3 +1,7 @@
+"""
+This module contains methods to compute the kernel of an n x n lights out grid.
+"""
+
 from functools import reduce
 from itertools import chain, combinations
 from operator import xor

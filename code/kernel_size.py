@@ -1,3 +1,7 @@
+"""
+This module contains methods for finding the kernel size (i.e. nullity) of an n x n Lights Out grid or torus.
+"""
+
 from functools import cache
 from polynomials import GF2Polynomial
 

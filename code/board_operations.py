@@ -1,3 +1,7 @@
+"""
+This module allows one to simulate operations on an n x n Lights Out grid.
+"""
+
 import numpy as np
 
 
