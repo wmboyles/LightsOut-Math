@@ -28,6 +28,8 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     f(n+1,x) = x*f(n,x) + f(n-1,x)
     This method gives f(n,x) and f(n,x+1)
 
+    It's known that deg gcd(f(n,x), f(n,x+1)) is the nullity of an n x n lights out grid.
+
     Raises:
         ValueError: if n < 0
     """
@@ -37,6 +39,9 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     # f(0,x) = f(0,x+1) = 1
     elif n == 0:
         return GF2Polynomial({0}), GF2Polynomial({0})
+    # f(1,x) = x, f(1,x+1) = x+1
+    elif n == 1:
+        return GF2Polynomial({1}), GF2Polynomial({0, 1})
 
     """
     From Hunziker, Machivelo, and Park
@@ -80,21 +85,36 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
 
 
 @cache
-def nullity(n: int) -> int:
+def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     """
-    Returns the nullity of an n x n board.
+    Recursively define the following polynomials over Z_2[x]
+    g(0,x) = 0, g(1,x) = x
+    g(n+1,x) = x*g(n,x) + g(n-1,x)
+    This method gives g(n,x) and g(n,x+1)
 
-    This uses the following result.
-    Let U(n,x) be the degree n Chebyshev polynomial of the second kind over GF(2).
-    So, U(0,x) = 1, U(1,x) = 2x, and U(n+1,x) = 2x*U(n,x) - U(n-1,x).
-    Let f(n,x) = U(n,x/2).
-    So, f(0,x) = 1, f(1,x) = x, and f(n+1,x) = x*f(n,x) - f(n-1,x).
-    Then the nullity is equal to the degree of gcd(f(n,x), f(n,1+x)).
+    It's known that deg gcd(g(n,x), g(n,x+1)) is the nullity of an n x n Lights Out torus.
+
+    Raises:
+        ValueError: if n < 0
     """
 
-    # This is the method we'll use if we can't do any tricks
-    def brute_nullity(m: int) -> int:
-        return GF2Polynomial.gcd(*f_pair(m)).degree
+    if n < 0:
+        raise ValueError("n must be positive")
+    # g(0,x) = g(0,x+1) = 0
+    elif n == 0:
+        return GF2Polynomial(), GF2Polynomial()
+
+    # It's known that g(n,x) = x*f(n-1,x)
+    f1, f2 = f_pair(n - 1)
+
+    return f1 << 1, (f2 << 1) + f2
+
+
+@cache
+def grid_nullity(n: int) -> int:
+    """
+    Returns the nullity of an n x n grid.
+    """
 
     # n=0 and n=1 are nice base cases to just have
     if n == 0 or n == 1:
@@ -108,7 +128,7 @@ def nullity(n: int) -> int:
     # If n is a power of 2... (> 1 condition taken care of above)
     if n & (n - 1) == 0:
         # n = 2^k, n.bit_length() = k+1
-        return nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
+        return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
 
     # We proved:
     # 1. d(2n+1) = 2*d(n) + delta_n
@@ -126,9 +146,26 @@ def nullity(n: int) -> int:
     g = GF2Polynomial.gcd(*fp)
     a = g.degree
 
-    # k=1 means we had to brute force: calculating te gcd of f_n(x) and f_n(x+1)
+    # k=1 means we had to brute force: calculating the gcd of f_n(x) and f_n(x+1)
     if k == 0:
         return a
     else:
         delta = 2 * GF2Polynomial.gcd(GF2Polynomial({1}), fp[1] // g).degree
         return (a + delta) * (2 ** k) - delta
+
+
+@cache
+def torus_nullity(n: int) -> int:
+    """
+    Returns the nullity of an n x n torus.
+    """
+
+    # We can calculate this one of two ways:
+    # 1: calculate 2*deg gcd(g(n,x), g(n,x+1))
+    # 2: Calculate 2*grid_nullity(n-1) + 4 if n is a multiple of 3, 2*grid_nullity(n-1) otherwise
+    # We'll use the second one.
+
+    # Both results come as from Yamagishi's paper "On the Dimension of the Space of Harmonic Functions on a Discrete Torus"
+    # and are proven in his paper "Periodic Harmomic Functions on Lattices and Chebyshev Polynomials"
+
+    return 2 * grid_nullity(n - 1) + (0 if n % 3 else 4)
