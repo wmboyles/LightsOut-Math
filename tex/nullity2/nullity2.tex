@@ -28,6 +28,11 @@
 	\date{\today}
 	\maketitle
 	
+	\begin{abstract}
+		Consider a game played on a simple graph $G = (V, E)$ where each vertex consists of a clickable light. Clicking any vertex $v$ toggles the on/off state of $v$ and its neighbors. Starting from an initial configuration of lights, one wins the game by finding a solution: a sequence of clicks that turns off all the lights. When $G$ is a $5 \times 5$ grid, this game was commercially available from Tiger Electronics as \textit{Lights Out}. Restricting ourselves to solvable initial configurations, we pose a natural question about this game, the Most Clicks Problem (MCP): How many clicks does a worst-case initial configuration
+		on $G$ require to solve? The answer to the MCP is already known for nullity 0 graphs: those on which every initial configuration is solvable. Generalizing a technique from Scherphius, we give an upper bound to the MCP for all grids of size $(6k - 1) \times (6k - 1)$. We show the value given by this upper bound exactly solves the MCP for all nullity 2 grids of this size. We conjecture that all nullity 2 grids are of size $(6k - 1) \times (6k - 1)$, which would mean we solve the MCP for all nullity 2 square grids.
+	\end{abstract}
+	
 	\section{Introduction}
 	Consider a game played on a simple graph $G=(V,E)$ where each vertex consists of a clickable light.
 	Clicking any vertex $v$ toggles the on/off state of $v$ and its neighbors.
