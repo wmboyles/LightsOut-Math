@@ -144,6 +144,8 @@ class GF2Polynomial:
 
         if exp < 0:
             raise ValueError("Exponent cannot be negative")
+        elif exp == 0:
+            return GF2Polynomial({0})
         if mod and mod.is_zero:
             raise ZeroDivisionError("Modulus cannot be 0")
 
@@ -176,7 +178,7 @@ class GF2Polynomial:
 
         return reduce(
             GF2Polynomial.__add__,
-            [g ** deg for deg in self.degrees],
+            [g**deg for deg in self.degrees],
             GF2Polynomial(),
         )
 

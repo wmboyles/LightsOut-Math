@@ -55,11 +55,10 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     f(n, x)   = f(2^k - 1, x) * f(b-1, x) ** (2^k)
               = x^(2^k - 1)   * f(b-1, x) ** (2^k)
     """
-
     b, k = find_bk(n)
 
     @cache
-    def brute_f1(y: int):
+    def brute_f1(y: int) -> GF2Polynomial:
         """
         Calculate f(y), where y is even.
         Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
@@ -76,11 +75,12 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
         return GF2Polynomial({i for i in range(y + 1) if not ((y - i) & (2 * i + 1))})
 
     polyb_f1 = brute_f1(b - 1)
-    if k == 1:
+
+    if k <= 1:
         f1 = polyb_f1
     else:
-        exp = 2 ** k
-        f1 = GF2Polynomial({exp - 1}) * (polyb_f1 ** exp)
+        exp = 2**k
+        f1 = GF2Polynomial({exp - 1}) * (polyb_f1**exp)
 
     # Calculate f(n,x+1) by evaluating f(n,x) at x+1
     f2 = f1 @ GF2Polynomial({0, 1})
@@ -114,6 +114,14 @@ def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1 << 1, (f2 << 1) + f2
 
 
+def primitive_root(p, root=2):
+    """
+    Checks whether root=2 is a primitive root modulo prime p.
+    """
+
+    return len({root**i % p for i in range(p - 1)}) == p - 1
+
+
 @cache
 def grid_nullity(n: int) -> int:
     """
@@ -127,9 +135,7 @@ def grid_nullity(n: int) -> int:
     # Applying a result from Mazakazu Yamagishi's paper:
     # "Elliptic Curves Over Finite Fields and Reversibility of Additive Cellular Automata on Square Grids"
     # in the journal Finite Fields and Their Applications, we find that
-    # d(2^k) = d(2^k - 2) when k is odd and d(2^k - 2) + 4 when k is even.
-
-    # If n is a power of 2... (> 1 condition taken care of above)
+    # d(2^k) = d(2^k - 2) when k is odd and d(2^k - 2) + 4 when k is even.)
     if n & (n - 1) == 0:
         # n = 2^k, n.bit_length() = k+1
         return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
@@ -149,13 +155,16 @@ def grid_nullity(n: int) -> int:
     fp = f_pair(b - 1)
     g = GF2Polynomial.gcd(*fp)
     a = g.degree
-
     # k=1 means we had to brute force: calculating the gcd of f_n(x) and f_n(x+1)
     if k == 0:
         return a
     else:
-        delta = 2 * GF2Polynomial.gcd(GF2Polynomial({1}), fp[1] // g).degree
-        return (a + delta) * (2 ** k) - delta
+        # Conjecture: delta = 2 if and only if n = 3*k + 2 for some k
+        # delta = 2 if n % 3 == 2 else 0
+        f2_div_g = fp[1] // g
+        g2 = GF2Polynomial.gcd(GF2Polynomial({1}), f2_div_g)
+        delta = 2 * g2.degree
+        return (a + delta) * (2**k) - delta
 
 
 @cache
