@@ -10,6 +10,7 @@
 \newtheorem{corollary}{Corollary}
 \newtheorem{conjecture}{Conjecture}
 \newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
 
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
@@ -35,7 +36,7 @@
 	
 	Sutner was one of the first to study these games mathematically.
 	He showed that for any $G$ the initial configuration of all lights on is solvable \cite{Sutner1989}.
-	He also found that when $d(G) = \dim{\ker{(A + I)}}$ over the field $GF(2)$, where $A$ is the adjacency matrix of $G$, is 0 all initial configurations are solvable.
+	He also found that when $d(G) = \dim{\ker{(A + I)}}$ over the field $\Z_2$, where $A$ is the adjacency matrix of $G$, is 0 all initial configurations are solvable.
 	In particular, 1 out of every $2^{d(G)}$ initial configurations are solvable, while each solvable configuration has $2^{d(G)}$ distinct solutions \cite{Sutner1989}.
 	When investigating $n \times n$ grid graphs, Sutner conjectured the following relationship:
 	\begin{align*}
@@ -47,52 +48,53 @@
 	We resolve this conjecture in the affirmative.
 	We use results from Sutner that give the nullity of a $n \times n$ board as the GCD of two polynomials in the ring $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
 	We then apply identities from Hunziker, Machiavelo, and Park that relate the polynomials $(2n+1) \times (2n+1)$ grids and $n \times n$ grids \cite{HUNZIKER2004465}.
-	Finally, we use a result from Ore about the GCD of two products \cite{ore_number_theory}.
-	Together, these results allow us to prove Sutner's conjecture and describe exactly when $\delta_n$ is 0 or 2.
+	We then apply a result from Ore about the GCD of two products \cite{ore_number_theory}.
+	Together, these results allow us to prove Sutner's conjecture.
+	We then go further and show for exactly which values of $n$ $\delta_n$ is 0 or 2.
 	
 	\section{Preliminary Results}
 	Sutner showed how to calculate $d_n$ as the degree of the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
 	
 	\begin{theorem}[Sutner]\label{Sutner_gcd}
-		Let $f_n(x)$ be the degree $n$ polynomial in the ring $\Z_2[x]$ defined recursively by
+		Let $f_n(x)$ be the polynomial in the ring $\Z_2[x]$ defined recursively by
 		\begin{equation*}
 			f_n(x) = \begin{cases}
-				1 & n=0 \\
-				x & n=1 \\
+				0 & n=0 \\
+				1 & n=1 \\
 				xf_{n-1}(x) + f_{n-2}(x) & \text{otherwise }.
 			\end{cases}
 		\end{equation*}
 		Then for all $n \in \N$.
 		\begin{equation*}
-			d_n = \deg{\gcd\left(f_{n}(x), f_{n}(x+1)\right)}.
+			d_n = \deg{\gcd\left(f_{n+1}(x), f_{n+1}(x+1)\right)}.
 		\end{equation*}
 	\end{theorem}
 
 	This recursive definition gives a brute force approach to calculate $f_n(x)$.
-	However, Hunziker, Machiavelo, and Park show the following identity that can make calculating certain $f_n(x)$ easier \cite{HUNZIKER2004465}.
+	However, Hunziker, Machiavelo, and Park show the following identity that makes calculating $f_n(x)$ easier when $n$ is divisible by powers of 2 \cite{HUNZIKER2004465}.
 	
 	\begin{theorem}[Hunziker, Machiavelo, and Park]\label{HMP_identity}
-		Let $n = b\cdot2^{k-1} - 1$ where $b, k \in \N$.
+		Let $n = b\cdot2^{k}$ where $b$ and $k$ are non-negative integers.
 		Then
 		\begin{equation*}
-			f_n(x) = x^{2^{k-1}-1} f_{b-1}^{2^{k-1}}(x).
+			f_n(x) = x^{2^{k}-1} f_{b}^{2^{k}}(x).
 		\end{equation*}
 	\end{theorem}
 
-	In particular, we will use this result to relate $f_{2n+1}(x)$ and $f_{4n+3}(x)$ to $f_n(x)$.
+	In particular, we will use this result to relate $f_{2n+2}(x)$ and $f_{4n+4}(x)$ to $f_{n+1}(x)$.
 	\begin{corollary}\label{cor1}
 		The following identities hold
 		\begin{align*}
-			f_{2n+1}(x) &= xf_{n}^2(x) \\
-			f_{4n+3}(x) &= x^3f_{n}^4(x).
+			f_{2n+2}(x) &= xf_{n+1}^2(x) \\
+			f_{4n+4}(x) &= x^3f_{n+1}^4(x).
 		\end{align*}
 	\end{corollary}
 	\begin{proof}
-		Notice that $2n+1 = (n+1)2^{2-1} - 1$ and $4n+3 = (n+1)2^{3-1} - 1$.
+		Notice that $2n+2 = (n+1)2^1$ and $4n+4 = (n+1)2^{2}$.
 		Thus, our desired identities follow from Theorem \ref{HMP_identity}.
 	\end{proof}
 
-	Now that we have a way to express $f_{2n+1}(x)$ and $f_{4n+3}(x)$ as a product of $f_{n}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can calculate $d_n$.
+	Now that we have a way to express $f_{2n+2}(x)$ and $f_{4n+4}(x)$ as a product of $f_{n+1}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can relate $d_{2n+1}$ and $d_n$.
 	This is where a number-theoretic result from Ore comes in handy \cite{ore_number_theory}.
 	
 	\begin{theorem}[Ore]\label{Ore_gcd}
@@ -109,7 +111,7 @@
 
 	\section{Proof of Sutner's Conjecture}
 	Finally, we are ready to prove Sutner's conjecture \cite{Sutner1989}. 
-	\begin{theorem}
+	\begin{theorem}\label{sutners-thm}
 		For all $n \in \N$,
 		\begin{equation*}
 			d_{2n+1} = 2d_n + \delta_n,
@@ -120,36 +122,36 @@
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Applying the results from Theorems \ref{Sutner_gcd}, \ref{HMP_identity}, and \ref{Ore_gcd},
 		\begin{align*}
-			d_{2n+1} &= \deg \left(f_{2n+1}(x), f_{2n+1}(x+1)\right) \\
-				&= \deg \left(xf^2_n(x), (x+1)f^2_n(x+1)\right) \\
-				&= \deg (x,x+1)\left(f^2_n(x),f^2_n(x+1)\right)\left(\frac{x+1}{(x,x+1)},\frac{f^2_n(x)}{(f^2_n(x),f^2_n(x+1))}\right)\left(\frac{x}{(x,x+1)},\frac{f^2_n(x+1)}{(f^2_n(x),f^2_n(x+1))}\right) \\
-				&= \deg \left(f_n(x),f_n(x+1)\right)^2\left(x+1,\frac{f^2_n(x)}{(f_n(x),f_n(x+1))^2}\right)\left(x,\frac{f^2_n(x+1)}{(f_n(x),f_n(x+1))^2}\right) \\
-				&= \deg \left(f_n(x),f_n(x+1)\right)^2\left(x+1,\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right) \\
-				&= 2d_n + \deg\left(x+1,\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			d_{2n+1} &= \deg \left(f_{2n+2}(x), f_{2n+2}(x+1)\right) \\
+				&= \deg \left(xf^2_{n+1}(x), (x+1)f^2_{n+1}(x+1)\right) \\
+				&= \deg (x,x+1) \left(f^2_{n+1}(x),f^2_{n+1}(x+1)\right) \left(\frac{x+1}{(x,x+1)},\frac{f^2_{n+1}(x)}{(f^2_{n+1}(x),f^2_{n+1}(x+1))}\right) \left(\frac{x}{(x,x+1)},\frac{f^2_{n+1}(x+1)}{(f^2_{n+1}(x),f^2_{n+1}(x+1))}\right) \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^2 \left(x+1,\frac{f^2_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))^2}\right) \left(x,\frac{f^2_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))^2}\right) \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^2 \left(x+1,\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right) \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right) \\
+				&= 2d_n + \deg\left(x+1,\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right) \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right).
 		\end{align*}
 		Notice that if we substitute $x+1$ for $x$,
 		\begin{equation*}
-			\left(x+1,\frac{f_n(x)}{(f_n(x+1),f_n(x)}\right) \text{ becomes } \left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			\left(x+1,\frac{f_{n+1}(x)}{(f_{n+1}(x+1),f_{n+1}(x))}\right) \text{ becomes } \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right).
 		\end{equation*}
-		Thus, we see that these two remaining GCD terms are either both 1 nor not 1 simultaneously.
+		Thus, we see that these two remaining GCD terms in our expression for $d_{2n+1}$ are either both 1 or not 1 simultaneously.
 		This means we can further simplify to
 		\begin{equation*}
-			d_{2n+1} = 2d_{n} + 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			d_{2n+1} = 2d_{n} + 2\deg \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right).
 		\end{equation*}
 		So, we see that
 		\begin{equation*}
-			d_{2n+1} = 2d_{n} + \delta_n \text{, where }\delta_n = 2\deg\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right).
+			d_{2n+1} = 2d_{n} + \delta_n \text{, where }\delta_n = 2\deg \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right).
 		\end{equation*}
-		Thus, $\delta_n \in \{0,2\}$.
+		Thus, $\delta_n \in \{0,2\}$ as desired.
 		
 		What remains is to show that $\delta_{n} = \delta_{2n+1}$.
 		Applying Corollary \ref{cor1},
 		\begin{align*}
-			d_{4n+3} &= \deg\left(x^3f^4_n(x), (x+1)^3f^4_n(x+1)\right) \\
-				&= \deg\left(x,(x+1)^3\right)\left(f^4_n(x),f^4_n(x+1)\right)\left(x^3,\frac{f^4_n(x+1)}{(f^4_n(x),f^4_n(x+1))}\right)\left((x+1)^3,\frac{f^4_n(x)}{(f^4_n(x),f^4_n(x+1))}\right) \\
-				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x^3,\frac{f^4_n(x+1)}{(f_n(x),f_n(x+1))^4}\right)\left((x+1)^3,\frac{f^4_n(x)}{(f_n(x),f_n(x+1))^4}\right) \\
-				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x^3,\frac{f^3_n(x+1)}{(f_n(x),f_n(x+1))^3}\right)\left((x+1)^3,\frac{f^3_n(x)}{(f_n(x),f_n(x+1))^3}\right) \\
-				&= \deg\left(f_n(x),f_n(x+1)\right)^4\left(x,\frac{f_n(x+1)}{(f_n(x),f_n(x+1))}\right)^3\left((x+1),\frac{f_n(x)}{(f_n(x),f_n(x+1))}\right)^3 \\
+			d_{4n+3} &= \deg \left(x^3f^4_{n+1}(x),(x+1)^3f^4_{n+1}(x+1)\right) \\
+				&= \deg \left(x^3,(x+1)^3\right) \left(f^4_{n+1}(x),f^4_{n+1}(x+1)\right) \left(x^3,\frac{f^4_{n+1}(x+1)}{(f^4_{n+1}(x),f^4_{n+1}(x+1))}\right) \left((x+1)^3,\frac{f^4_{n+1}(x)}{(f^4_{n+1}(x),f^4_{n+1}(x+1))}\right) \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x^3,\frac{f^4_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))^4}\right) \left((x+1)^3,\frac{f^4_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))^4}\right) \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x^3,\frac{f^3_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))^3}\right) \left((x+1)^3,\frac{f^3_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))^3}\right) \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \left((x+1),\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \\
 				&= 4d_n + 3\delta_n.
 		\end{align*}
 		Also, from our work previously in this proof,
@@ -162,24 +164,198 @@
 		For these two expressions for $d_{4n+3}$ to be equal, we must have $\delta_{2n+1} = \delta_n$, as desired.
 	\end{proof}
 
+	This result seems to have been proven prior by Yamagishi \cite{YAMAGISHI20151}.
+	However, Yamagishi does not mention the connection to Sutner's conjecture, and the proof provided is not as direct as the one we provide.
+	
+	\section{Extended Results}
+	Theorem \ref{sutners-thm} proves Sutner's conjecture as stated and even gives a formula for finding $\delta_n$.
+	However, this formula is somewhat messy, containing one polynomial division and two polynomial GCDs.
+	We can improve this formula to just a modulo operation on $n$.
+	First, we'll need a few lemmas establishing divisibility properties on $f_n(x)$.
+	
+	\begin{lemma}\label{x-divides-even}
+		The polynomial $f_n(x)$ is divisible by $x$ if and only if $n$ is even.
+	\end{lemma}
+	\begin{proof}
+		First, we'll prove that if $n$ is even, then $f_n(x)$ is divisible by $x$.
+		We will proceed by induction.
+		Notice that $x$ divides $f_0(x) = 0$.
+		Assume for some integer $k \geq 0$ that $x$ divides $f_{2k}(x)$.
+		Then
+		\begin{equation*}
+			f_{2k}(x) = x g(x),
+		\end{equation*}
+		for some $g(x) \in \Z_2[x]$.
+		Applying the recursive definition of $f_n(x)$ provided in Theorem \ref{Sutner_gcd},
+		\begin{align*}
+			f_{2k+2}(x) &= xf_{2k+1}(x) + f_{2k}(x) \\
+				&= x\left(f_{2k+1}(x) + g(x)\right).
+		\end{align*}
+		So, $f_{2k+2}(x)$ is also divisible by $x$.
+
+		Second, we'll prove that if $n$ is odd, then $f_n(x)$ is not divisible by $x$.
+		We will proceed by induction.
+		Notice that $x$ does not divide $f_1(x) = 1$.
+		Assume for some natural number $k$ that $x$ does not divide $f_{2k-1}(x)$.
+		Then
+		\begin{equation*}
+			f_{2k-1}(x) = x g(x) + 1,
+		\end{equation*}
+		for some $g(x) \in \Z_2[x]$.
+		Applying the recursive definition of $f_n(x)$ provided in Theorem \ref{Sutner_gcd},
+		\begin{align*}
+			f_{2k+1}(x) &= xf_{2k}(x) + f_{2k-1}(x) \\
+				&= x\left(f_{2k}(x) + g(x)\right) + 1.
+		\end{align*}
+		So, $f_{2k+1}(x)$ is also not divisible by $x$.
+	\end{proof}
+
+	\begin{corollary}\label{x-plus1-divides-even}
+		The polynomial $f_n(x+1)$ is divisible by $x+1$ if and only if $n$ is even.
+	\end{corollary}
+	\begin{proof}
+		Substitute $x+1$ for $x$ in Lemma \ref{x-divides-even} to obtain the desired result.
+	\end{proof}
+
+	\begin{lemma}\label{x-plus1-divides-threeven}
+		The polynomial $f_n(x)$ is divisible by $x+1$ if and only if $n$ is divisible by 3.
+	\end{lemma}
+	\begin{proof}
+		First, we'll prove that if $n$ is divisible by 3, then $x+1$ divides $f_n(x)$.
+		We will proceed by induction.
+		Notice that $x+1$ divides $f_0(x) = 0$.
+		Assume for some integer $k \geq 0$ that $x+1$ divides $f_{3k}(x)$.
+		Then
+		\begin{equation*}
+			f_{3k}(x) = (x+1)g(x),
+		\end{equation*}
+		for some $g(x) \in \Z_2[x]$.
+		Applying the recursive definition of $f_n(x)$ provided in Theorem \ref{Sutner_gcd},
+		\begin{align*}
+			f_{3k+3}(x) &= xf_{3k+2}(x) + f_{3k+1}(x) \\
+				&= x\left(xf_{3k+1}(x) + f_{3k}(x)\right) + f_{3k+1}(x) \\
+				&= (x^2+1)f_{3k+1}(x) + xf_{3k}(x) \\
+				&= (x+1)^2f_{3k+1}(x) + x(x+1)g(x) \\
+				&= (x+1)\left((x+1)f_{3k+1} + xg(x)\right).
+		\end{align*}
+		So, $f_{3k+3}(x)$ is also divisible by $x+1$.
+		
+		Next, we'll prove that if $n$ is not divisible by 3, then $x+1$ does not divide $f_n(x)$.
+		We will proceed by induction.
+		Notice that $x+1$ neither divides $f_1(x) = 1$ nor $f_2(x) = x$.
+		Assume for some integer $k \geq 0$ that $x+1$ does not divide $f_{3k+1}(x)$.
+		Then
+		\begin{equation*}
+			f_{3k+1}(x) = (x+1)g_1(x) + 1,
+		\end{equation*}
+		for some $g_1(x) \in \Z_2[x]$.
+		Applying the recursive definition of $f_n(x)$ provided in Theorem \ref{Sutner_gcd},
+		\begin{equation*}
+			f_{3k+2}(x) = xf_{3k+1}(x) + f_{3k}(x).
+		\end{equation*}
+		By our work earlier in this proof, we know that $x+1$ divides $f_{3k}(x)$.
+		Thus,
+		\begin{equation*}
+			f_{3k}(x) = (x+1)g_2(x),
+		\end{equation*}
+		for some $g_1(x) \in \Z_2[x]$.
+		So,
+		\begin{align*}
+			f_{3k+2}(x) &= x\left((x+1)g_1(x) + 1\right) + (x+1)g_2(x) \\
+				&= x(x+1)g_1(x) + x + (x+1)g_2(x) \\
+				&= (x+1)\left(xg_1(x) + g_2(x) + 1\right) + 1.
+		\end{align*}
+		So, $f_{3k+2}$ is also not divisible by $x+1$.
+		
+		Now assume that for some integer $k \geq 1$ that $x+1$ does not divide $f_{3k-1}(x)$.
+		Thus,
+		\begin{equation*}
+			f_{3k-1}(x) = (x+1)g_3(x) + 1,
+		\end{equation*}
+		for some $g_3(x) \in \Z_2[x]$.
+		Applying the recursive definition of $f_n(x)$ provided in Theorem \ref{Sutner_gcd} and our work previously in this proof,
+		\begin{align*}
+			f_{3k+1}(x) &= xf_{3k}(x) + f_{3k-1}(x) \\
+				&= x(x+1)g_2(x) + (x+1)g_3(x) + 1 \\
+				&= (x+1)\left(xg_2(x) + g_3(x)\right) + 1.
+		\end{align*}
+		So, $f_{3k+1}(x)$ is also not divisible by $x+1$.
+	\end{proof}
+
+	\begin{corollary}\label{x-divides-threeven}
+		The polynomial $f_n(x+1)$ is divisible by $x$ if and only if $n$ is divisible by 3.
+	\end{corollary}
+	\begin{proof}
+		Substitute $x$ for $x+1$ in Lemma \ref{x-plus1-divides-threeven} to obtain the desired result.
+	\end{proof}
+	
+	Now with these divisibility properties about $f_n(x)$, we can state and prove a much simpler way to find when $\delta_n$ is 0 or 2.
+	
+	\begin{theorem}\label{when-is-deltan-2}
+		The value of $\delta_n$ is 2 if and only if $n+1$ is divisible by 3.
+	\end{theorem}
+	\begin{proof}
+		From our work in Theorem \ref{sutners-thm}, we know that
+		\begin{equation*}
+			\delta_n = 2\deg\left(x+1,\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right).
+		\end{equation*}
+		So we see that $\delta_n$ is 2 exactly when $f_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$.
+		
+		For $n+1$ is not divisible by 3, Lemma \ref{x-plus1-divides-threeven} tells us that $f_{n+1}(x)$ is not divisible by $x+1$.
+		So in this case, $\delta_n = 0$, as desired.
+		
+		For $n+1$ divisible by 3, let $n+1 = b \cdot 2^k$ for some integers $b, k \geq 0$ where $b$ is odd.
+		Notice that since $n+1$ is divisible by 3, $b$ must also be divisible by 3.
+		Applying Corollary \ref{cor1},
+		\begin{equation*}
+			f_{n+1}(x) = x^{2^k - 1}f_{b}^{2^k}(x) \text{ and } f_{n+1}(x+1) = (x+1)^{2^k - 1}f_{b}^{2^k}(x+1).
+		\end{equation*}
+		Since $b$ is an odd multiple of 3, Lemma \ref{x-plus1-divides-threeven} and Corollary \ref{x-plus1-divides-even} tell us that $x+1$ divides $f_b(x)$, but $x+1$ does not divide $f_b(x+1)$.
+		So,
+		\begin{equation*}
+			f_{n+1}(x) = x^{2^k - 1}(x+1)^{2^k}g^{2^k}(x) \text{ and } f_{n+1}(x+1) = (x+1)^{2^k - 1}x^{2^k}g^{2^k}(x+1),
+		\end{equation*} 
+		for some $g(x) \in \Z_2[x]$, where $g(x)$ and $g(x+1)$ are both divisible by neither $x$ nor $x+1$.
+		So, we see that $f_{n+1}(x)$ can be divided without remainder by $x+1$ one more time than $f_{n+1}(x+1)$.
+		So, $\delta_n = 2$, as desired.
+	\end{proof}
+
 	\section{Future Work}
 	There are many other relationships with $d_n$, some of which are yet to be proven.
-	For example, Sutner mentions that for all $n \in \N$, $d_{2^n - 1} = 0$ \cite{Sutner1989}.
+	For example, Sutner mentions that for all $k \in \N$, $d_{2^k - 1} = 0$ \cite{Sutner1989}.
 	We believe that the following relationships hold, but are unaware of a proof.
 	
-	\begin{conjecture}
+	\begin{conjecture}\label{conj-all-2}
 		There are infinitely many $n$ such that $d_n = 2$.
 		In particular, for all $k \in \N$, $d_{2\cdot 3^{k} - 1} = 2$.
 	\end{conjecture}
 	This conjecture is similar to Sutner's result that shows there are infinitely many $n$ such that $d_n = 0$.
 	
-	\begin{conjecture}
+	\begin{conjecture}\label{conj-powers}
 		Let $a$ be an odd natural number.
 		If $a$ is not divisible by 21, then for all $k \in \N$,
 		\begin{equation*}
 			d_{a^k - 1} = d_{a-1}.
 		\end{equation*}
 	\end{conjecture}
+	Goshima and Yamagishi conjectured a similar statement on tori instead of grids and for $a$ prime \cite{GOSHIMAYAMAGISHI2010}.
+	
+	\begin{theorem}
+		The case of $a=3$ for Conjecture \ref{conj-powers} and \ref{conj-all-2} are equivalent.
+	\end{theorem}
+	\begin{proof}
+		For $a=3$, Conjecture \ref{conj-powers} says that for all $k \in \N$,
+		\begin{equation*}
+			d_{3^k - 1} = d_{3-1} = 0.
+		\end{equation*}
+		Since $3^k$ is divisible by 3, Theorem \ref{when-is-deltan-2} tells us that $\delta_{3^k - 1} = 2$.
+		So, applying Theorem \ref{sutners-thm},
+		\begin{equation*}
+			d_{2\cdot3^{k} - 1} = 2d_{3^k - 1} + \delta_{3^k - 1} = 2,
+		\end{equation*}
+		exactly what Conjecture \ref{conj-all-2} states.
+		Apply all the same results in reverse to shows that Conjecture \ref{conj-powers} implies \ref{conj-all-2}.
+	\end{proof}
 	
 	\newpage
 	\bibliography{refs.bib}
