@@ -9,7 +9,7 @@
 \newtheorem{lemma}{Lemma}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{corollary}{Corollary}[theorem]
-\newtheorem{conjecture}{Conjecture}
+\newtheorem{conjecture}{Conjecture}[section]
 \newtheorem{example}{Example}
 \newtheorem{remark}{Remark}
 
@@ -214,7 +214,7 @@
 				&= \deg \left(x^3,(x+1)^3\right) \left(f^4_{n+1}(x),f^4_{n+1}(x+1)\right) \left(x^3,\frac{f^4_{n+1}(x+1)}{(f^4_{n+1}(x),f^4_{n+1}(x+1))}\right) \left((x+1)^3,\frac{f^4_{n+1}(x)}{(f^4_{n+1}(x),f^4_{n+1}(x+1))}\right) \\
 				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x^3,\frac{f^4_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))^4}\right) \left((x+1)^3,\frac{f^4_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))^4}\right) \\
 				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x^3,\frac{f^3_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))^3}\right) \left((x+1)^3,\frac{f^3_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))^3}\right) \\
-				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \left((x+1),\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \\
+				&= \deg \left(f_{n+1}(x),f_{n+1}(x+1)\right)^4 \left(x,\frac{f_{n+1}(x+1)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \left(x+1,\frac{f_{n+1}(x)}{(f_{n+1}(x),f_{n+1}(x+1))}\right)^3 \\
 				&= 4d_n + 3\delta_n.
 		\end{align*}
 		Also, from our work previously in this proof,
@@ -299,7 +299,7 @@
 			d_{2\cdot3^{k} - 1} = 2d_{3^k - 1} + \delta_{3^k - 1} = 2,
 		\end{equation*}
 		exactly what Conjecture \ref{conj-all-2} states.
-		Apply all the same results in reverse to shows that Conjecture \ref{conj-powers} implies \ref{conj-all-2}.
+		One can apply all same steps in reverse to shows that Conjecture \ref{conj-all-2} implies the $a=3$ case of Conjecture \ref{conj-powers}.
 	\end{proof}
 	
 	\newpage
