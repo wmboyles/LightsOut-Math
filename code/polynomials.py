@@ -8,7 +8,11 @@ from dataclasses import dataclass, field
 from functools import reduce, cached_property
 
 
-@dataclass(repr=False, eq=True, frozen=True)
+from math import log2, ceil
+from typing import Iterator
+
+
+@dataclass(repr=False, frozen=True)
 class GF2Polynomial:
     """
     Represents polynomials in Z_2[x].
@@ -36,6 +40,14 @@ class GF2Polynomial:
         """
 
         return 0 if self.is_zero else max(self.degrees)
+
+    def __eq__(self, other: GF2Polynomial | 0) -> bool:
+        if isinstance(other, int):
+            if other != 0:
+                raise ValueError("Cannot compare GF2Polynomial with non-zero value")
+            return self.is_zero
+
+        return self.degrees == other.degrees
 
     def __str__(self) -> str:
         """
@@ -94,6 +106,9 @@ class GF2Polynomial:
         """
         Compute the floor quotient and remainder.
         """
+
+        if div.is_zero:
+            raise ZeroDivisionError("Cannot divide by zero")
 
         # Remainder and quotient
         r = GF2Polynomial(self.degrees)
@@ -192,3 +207,27 @@ class GF2Polynomial:
             f, g = g, f % g
 
         return f
+
+    @staticmethod
+    def from_number(n: int) -> GF2Polynomial:
+        """
+        Create a GF2Polynomial based on the binary digits of n.
+
+        For example if n is 13 = 1101, then this method returns x^3 + x^2 + 1.
+        """
+
+        if n < 0:
+            raise ValueError("Number must be non-negative")
+
+        return GF2Polynomial({i for i in range(ceil(log2(n + 1))) if n & (1 << i)})
+
+    @staticmethod
+    def enumerate(start: int = 0) -> Iterator[GF2Polynomial]:
+        """
+        Enumerate all polynomials.
+        """
+
+        i = start
+        while True:
+            yield GF2Polynomial.from_number(i)
+            i += 1
