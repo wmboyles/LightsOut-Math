@@ -12,6 +12,7 @@
 \newtheorem{conjecture}{Conjecture}[section]
 \newtheorem{example}{Example}
 \newtheorem{remark}{Remark}
+\newtheorem{definition}{Definition}
 
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
@@ -54,10 +55,7 @@
 	We then go further and show for exactly which values of $n$ $\delta_n$ is 0 or 2.
 	
 	\section{Fibonacci Polynomials}
-	Sutner showed how to calculate $d_n$ as the degree of the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
-	In this section, we will establish some divisibility properties of these polynomials.
-	
-	\begin{theorem}[Sutner]\label{Sutner_gcd}
+	\begin{definition}
 		Let $f_n(x)$ be the polynomial in the ring $\Z_2[x]$ defined recursively by
 		\begin{equation*}
 			f_n(x) = \begin{cases}
@@ -66,15 +64,35 @@
 				xf_{n-1}(x) + f_{n-2}(x) & \text{otherwise }.
 			\end{cases}
 		\end{equation*}
-		Then for all $n \in \N$.
+	\end{definition}
+	These polynomials are often referred to as Fibonacci polynomials because when defined over the reals, evaluating $f_n(x)$ at $x=1$ gives the $n$th Fibonacci number.
+	Since coefficients of $f_n(x)$ are either 1 or 0, one can visualize them by coloring squares black or white to represent the coefficients.
+	For example,
+	\begin{equation*}
+		f(6,x) = 1x^5 + 0x^4 + 0x^3 + 0x^2 + 1x + 0 = \blacksquare\square\square\square\square\blacksquare\square.
+	\end{equation*}
+	Plotting $f(1,x)$ through $f(128,x)$ in the same way, aligning terms of the same degree, we see a Sierpinski triangle rotated 90 degrees.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=.8\textwidth]{../../code/serialization/chebyshev/chebyshev1_right_128.png}	
+	\end{figure}
+	
+	Sutner, using a well-known connection between the Sierpinski triangle and parity of binomial coefficients notes \cite{Sutner96sigma-automataand}
+	\begin{equation*}
+		f_n(x) = \sum_{i}{\binom{n+i}{2i+1}x^i \mod 2}.
+	\end{equation*}
+
+	Sutner showed how to calculate $d_n$ as the degree of the GCD of two polynomials in $\Z_2[x]$ \cite{Sutner96sigma-automataand}.
+	\begin{theorem}[Sutner]\label{Sutner_gcd}
+		For all $n \in \N$.
 		\begin{equation*}
 			d_n = \deg{\gcd\left(f_{n+1}(x), f_{n+1}(x+1)\right)}.
 		\end{equation*}
 	\end{theorem}
-	These polynomials $f$ are often referred to as Fibonacci polynomial because when defined over the reals, evaluating $f_n(x)$ at $x=1$ gives the $n$th Fibonacci number.
-
-	The recursive definition given in Theorem \ref{Sutner_gcd} provides a brute force approach to calculate $f_n(x)$.
-	However, Hunziker, Machiavelo, and Park show the following identity that makes calculating $f_n(x)$ easier when $n$ is divisible by powers of 2 \cite{HUNZIKER2004465}.
+	
+	The recursive definition given in Theorem \ref{Sutner_gcd} and Sutner's formula in terns of the parity of binomial coefficients provide brute force ways to calculate $f_n(x)$.
+	Hunziker, Machiavelo, and Park show the following identity that makes calculating $f_n(x)$ easier when $n$ is divisible by powers of 2 \cite{HUNZIKER2004465}.
 	
 	\begin{theorem}[Hunziker, Machiavelo, and Park]\label{HMP_identity}
 		Let $n = b\cdot2^{k}$ where $b$ and $k$ are non-negative integers.
@@ -97,8 +115,8 @@
 		Thus, our desired identities follow from Theorem \ref{HMP_identity}.
 	\end{proof}
 
-	Now that we have a way to express $f_{2n+2}(x)$ and $f_{4n+4}(x)$ as a product of $f_{n+1}(x)$ and a power of $x$, we simply need a way to express the GCD of products so we can relate $d_{2n+1}$ and $d_n$.
-	This is where a number-theoretic result from Ore comes in handy \cite{ore_number_theory}.
+	Now that we have a way to express $f_{2n+2}(x)$ and $f_{4n+4}(x)$ as a product of $f_{n+1}(x)$ and a power of $x$, we need a way to express the GCD of products so we can relate $d_{2n+1}$ and $d_n$.
+	This is exactly what a number-theoretic result from Ore provides \cite{ore_number_theory}.
 	
 	\begin{theorem}[Ore]\label{Ore_gcd}
 		Let $a$, $b$, $c$, and $d$ be integers.
@@ -123,7 +141,7 @@
 	We specifically will use the following corollary:
 	\begin{corollary}\label{cor_HMP_gcd}
 		For some polynomial $\tau(x)$ in $\Z_2[x]$, let $n \geq 0$ be the smallest integer such that $\tau(x)$ divides $f_n(x)$.
-		Then for all $m \geq 0$, $tau(x)$ divides $f_m(x)$ if and only if $n$ divides $m$.
+		Then for all $m \geq 0$, $\tau(x)$ divides $f_m(x)$ if and only if $n$ divides $m$.
 	\end{corollary}
 	\begin{proof}
 		Let $\tau(x)$ be some polynomial in $\Z_2[x]$.
@@ -227,10 +245,10 @@
 		For these two expressions for $d_{4n+3}$ to be equal, we must have $\delta_{2n+1} = \delta_n$, as desired.
 	\end{proof}
 
-	This result seems to have been proven prior by Yamagishi \cite{YAMAGISHI20151}.
-	However, Yamagishi does not mention the connection to Sutner's conjecture, and the proof provided is not as direct as the one we provide.
+	This result may have been proven prior by Yamagishi \cite{YAMAGISHI20151}.
+	However, Yamagishi does not mention the connection to Sutner's conjecture, and the proof provided is not as direct as the one we provide because Yamagishi's work is concerned with tori rather than grids.
 	
-	\section{Extended Results}
+	\section{When does $\delta_n = 2$?}
 	Theorem \ref{sutners-thm} proves Sutner's conjecture as stated and even gives a formula for finding $\delta_n$.
 	However, this formula is somewhat messy, containing one polynomial division and two polynomial GCDs.
 	We can improve this formula to just a modulo operation on $n$.
@@ -250,7 +268,7 @@
 		So in this case, $\delta_n = 0$, as desired.
 		
 		For $n+1$ divisible by 3, let $n+1 = b \cdot 2^k$ for some integers $b, k \geq 0$ where $b$ is odd.
-		Notice that since $n+1$ is divisible by 3, $b$ must also be divisible by 3.
+		Since $n+1$ is divisible by 3, $b$ must also be divisible by 3.
 		Applying Corollary \ref{cor1},
 		\begin{equation*}
 			f_{n+1}(x) = x^{2^k - 1}f_{b}^{2^k}(x) \text{ and } f_{n+1}(x+1) = (x+1)^{2^k - 1}f_{b}^{2^k}(x+1).
@@ -266,7 +284,7 @@
 	\end{proof}
 
 	\section{Future Work}
-	There are many other relationships with $d_n$, some of which are yet to be proven.
+	There are many other relationships with $d_n$, many yet to be proven.
 	For example, Sutner mentions that for all $k \in \N$, $d_{2^k - 1} = 0$ \cite{Sutner1989}.
 	We believe that the following relationships hold, but are unaware of a proof.
 	
