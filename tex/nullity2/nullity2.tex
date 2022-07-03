@@ -8,10 +8,10 @@
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
-\newtheorem{lemma}{Lemma}
-\newtheorem{theorem}{Theorem}
-\newtheorem{corollary}{Corollary}
-\newtheorem{conjecture}{Conjecture}
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{conjecture}{Conjecture}[section]
 
 \newcommand{\Z}{\mathbb{Z}}
 \newcommand{\N}{\mathbb{N}}
@@ -30,7 +30,7 @@
 	
 	\begin{abstract}
 		Consider a game played on a simple graph $G = (V, E)$ where each vertex consists of a clickable light. Clicking any vertex $v$ toggles the on/off state of $v$ and its neighbors. Starting from an initial configuration of lights, one wins the game by finding a solution: a sequence of clicks that turns off all the lights. When $G$ is a $5 \times 5$ grid, this game was commercially available from Tiger Electronics as \textit{Lights Out}. Restricting ourselves to solvable initial configurations, we pose a natural question about this game, the Most Clicks Problem (MCP): How many clicks does a worst-case initial configuration
-		on $G$ require to solve? The answer to the MCP is already known for nullity 0 graphs: those on which every initial configuration is solvable. Generalizing a technique from Scherphius, we give an upper bound to the MCP for all grids of size $(6k - 1) \times (6k - 1)$. We show the value given by this upper bound exactly solves the MCP for all nullity 2 grids of this size. We conjecture that all nullity 2 grids are of size $(6k - 1) \times (6k - 1)$, which would mean we solve the MCP for all nullity 2 square grids.
+		on $G$ require to solve? The answer to the MCP is already known for nullity 0 graphs: those on which every initial configuration is solvable. Generalizing a technique from Scherphius, we give an upper bound to the MCP for all grids of size $(6k - 1) \times (6k - 1)$. We show the value given by this upper bound exactly solves the MCP for all nullity 2 grids of this size. We show that all nullity 2 grids are of size $(6k - 1) \times (6k - 1)$, which means we solve the MCP for all nullity 2 square grids.
 	\end{abstract}
 	
 	\section{Introduction}
@@ -318,24 +318,78 @@
 	The $5 \times 5$, $17 \times 17$, $41 \times 41$, $53 \times 53$, $77 \times 77$, grids are those of size $(6k-1) \times (6k-1)$ less than 100 with nullity 2.
 	Thus, we find that the answers to the MCP for these grids are 15, 199, 1191, 1999, and 4239 respectively.
 	
-	\section{Conjectures}
+	We will now show that all nullity 2 grids are of size $(6k-1) \times (6k-1)$, meaning the results of Theorem \ref{min-moves-problem-6k-1x6k-1} exactly solve the MCP for all nullity 2 grids.
+	
+	\begin{lemma}\label{all_nullity2_even}
+		If $d(n) = 2$, then $n$ is odd.
+	\end{lemma}
+	\begin{proof}
+		Assume for the sake of contradiction that $d(n) = 2$, but $n$ is even.
+		Then $n = 2k$ for some natural number $k$.
+		Then
+		\begin{equation*}
+			\deg{\gcd{\left(f_{2k+1}(x), f_{2k+1}(x+1)\right)}} = 2,
+		\end{equation*}
+		where $f_n(x)$ is the $n$th Fibonacci polynomial as defined by Boyles \cite{Boyles2022}.
+		Since $2k+1$ is odd, $x \not\mid f_{2k+1}(x)$ and $x+1 \not\mid f_{2k+1}(x)$, as Boyles shows \cite{Boyles2022}.
+		So, both $x$ and $x+1$ do not divide $\gcd{\left(f_{2k+1}(x), f_{2k+1}(x+1)\right)}$.
+		Instead, the result of this GCD must be the degree 2 polynomial that is not divisible by $x$ or $x+1$.
+		The only such polynomial is the irreducible polynomial $x^2 + x + 1$.
+		
+		However, as Hunziker, Machiavelo, and Park show, since $2k+1$ is odd, $f_{2k+1}(x)$ is the square of a square-free polynomial \cite{HUNZIKER2004465}.
+		So, since $x^2 + x + 1$ is irreducible and $f_{2k+1}(x)$ is a square, we must have
+		\begin{equation*}
+			(x^2+x+1)^2 \mid f_{2k+1}(x).
+		\end{equation*}
+		Further, since $(x+1)^2 + (x+1) + 1 = x^2 + x + 1$, we also have 
+		\begin{equation*}
+			(x^2+x+1)^2 \mid f_{2k+1}(x+1).
+		\end{equation*}
+		Therefore, $(x^2+x+1)^2 \mid \gcd{\left(f_{2k+1}(x), f_{2k+1}(x+1)\right)}$, meaning $d(n) \geq 4$, a contradiction.
+	\end{proof}
+
+	\begin{theorem}\label{nullity2-5mod6}
+		If $d(n) = 2$, then $n \equiv -1 \mod 6$.
+	\end{theorem}
+	\begin{proof}
+		Let $n$ bw a natural number such that $d(n) = 2$.
+		Let $n = b\cdot2^k - 1$ for some odd natural number $b$ and natural number $k$.
+		As Boyles shows, there are 2 cases \cite{Boyles2022},
+		\begin{enumerate}
+			\item
+				$d(b-1) = 0$ and $b \equiv 0 \mod 3$, meaning $d(n) = d(2b-1) = 2$.
+			\item
+				$d(b-1) = d(n) = 2$.
+		\end{enumerate}
+		As we've shown in Lemma \ref{all_nullity2_even}, case 2 is not possible.
+		So, $k = 1$ and $b$ is a multiple of 3.
+		Let $b = 3m$ for some natural number $m$.
+		So, $n = 2b - 1 = 2(3m) - 1 = 6m - 1 \equiv -1 \mod 6$, as desired. 
+	\end{proof}
+
+	Together, Theorems \ref{min-moves-problem-6k-1x6k-1} and \ref{nullity2-5mod6} mean that we have exactly solved the MCP for all square nullity 2 boards.
+
+	\begin{corollary}\label{nullity2-5mod12}
+		If $d(n) = 2$, then $n \equiv -7 \mod 12$.
+	\end{corollary}
+	\begin{proof}
+		Let $n$ be a natural number such that $d(n) = 2$.
+		We showed in the proof to Theorem \ref{nullity2-5mod6} that $n = 2b - 1$, where $b$ is an odd multiple of 3.
+		Thus, $b = 6k - 3$ for some natural number $k$.
+		So, $n = 2(6k - 3) - 1 = 12k - 7 \equiv -7 \mod 12$, as desired.
+	\end{proof}
+
+	\section{Conjectures \& Future Work}
 	\begin{conjecture}\label{infinite-nullity-2}
 		There are infinitely many $n$ such that $d(n) = 2$.
 	\end{conjecture}
-	The version of this conjecture with $d(n) = 0$ is true because Sutner shows that $d(2^k - 1) = 0$ \cite{Sutner1989}.
-	We suspect that $d(2 \cdot 3^k - 1) = 2$ for all $k \in \N$, but we are not aware of a proof.
+	The version of this conjecture with $d(n) = 0$ was proven by Sutner, who showed that $d(2^k - 1) = 0$ \cite{Sutner1989}.
+	We suspect that $d(2 \cdot 3^k - 1) = 2$.
 	Theorem \ref{tiling-quiet-patterns} tells us that if there exists one grid with nullity $q$, there are infinitely many $n$ such that $d(n) \geq q$.
 	So, there are certainly infinitely many grids with nullity at least 2.
-	By computer search, we found for $n \leq 25000$ there are 1242 nullity 2 grids.
+	By computer search, we found for $n \leq 25000$ there are 1242 nullity 2 grids, about 5\% of all $n$.
+	This is well below our best estimate of about 1 in 12  boards being nullity 2 as given by Corollary \ref{nullity2-5mod12}.
 	
-	\begin{conjecture}\label{all-nullity2-conj}
-		If $d(n) = 2$, then $n \equiv -1 \mod 6$.
-	\end{conjecture}
-	That is, the even parity covers of all nullity 2 grids are tilings of the $5 \times 5$ even parity covers.
-	If true, this would mean that we have solved the MCP for all nullity 2 grids.
-	We performed a computer search, applying Theorem \ref{tiling-quiet-patterns} in a sieve approach to eliminate grids we know have nullity greater than 2, and found no counterexamples for $n \leq 25000$.
-	
-	\section{Future Work}
 	We'd like future work to focus on resolving these conjectures and solving the MCP on grids with nullities greater than 2.
 	For any sized grid (in fact, any graph), we can apply the same technique as in Theorem \ref{min-moves-problem-6k-1x6k-1} of finding the answer to the MCP as the solution to an ILP.
 	
@@ -343,7 +397,6 @@
 	Theorem \ref{tiling-quiet-patterns} is a good start to this, but there seem to be many other relationships to discover.
 	For example, Knuth shows that if an even parity cover of an $n \times n$ grid is perfect -- every row and column contains elements from the cover -- then we can construct a perfect even parity cover for a $(2n+1) \times (2n+1)$ grid \cite{Knuth_AOCP4A}.
 	All the even parity covers constructed in Theorem \ref{tiling-quiet-patterns} are not perfect.
-	Also, Sutner conjectures that $d(2n+1) = 2d(n) + \delta_n$, where $\delta_n \in \{0,2\}$, and $\delta_{2n+1} = \delta_n$ \cite{Sutner1989}.
 	
 	\newpage
 	\bibliography{refs.bib}
