@@ -1,0 +1,18 @@
+[package]
+name = "gf2_polynomial"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "gf2_polynomial"
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+cached = "0.40.0"
+itertools = "0.10.5"
+
+[dependencies.pyo3]
+version = "0.17.3"
+features = ["extension-module"]
