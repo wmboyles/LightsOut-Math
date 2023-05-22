@@ -1,2 +1,5 @@
 *.p -linguist-detectable
 *.p linguist-vendored
+
+*.mps -linguist-detectable
+*.mps linguist-vendored
