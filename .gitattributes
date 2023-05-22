@@ -3,3 +3,6 @@
 
 *.mps -linguist-detectable
 *.mps linguist-vendored
+
+*.lp -linguist-detectable
+*.lp linguist-vendored
