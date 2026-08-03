@@ -21,6 +21,7 @@
 \newcommand{\abs}[1]{\left| #1 \right|}
 \renewcommand{\dim}[1]{\operatorname{dim}\!\left( #1 \right)}
 \newcommand{\ord}[2][]{\operatorname{ord}_{#1}\!\left( #2 \right)}
+\newcommand{\Tr}[2][]{\operatorname{Tr}_{#1}\!\left( #2 \right)}
 
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
@@ -756,7 +757,167 @@
 	% So, p^2 \mid a^(p-1) - 1 if and only if p^2 \mid a^{\ord[p]{a}} - 1.
 	% Should we prehaps include this argument?
 	
+	\begin{definition}
+		Let $a$ be a primitive root of $n$.
+		Then ``signed order" of $a$ modulo $n$ is
+		\begin{equation*}
+			\rho_b(n) = \min{\{r > 0 : b^r \equiv \pm 1 \pmod{n}\}}.
+		\end{equation*}
+	\end{definition}
+	This is also sometimes called the ``index" of $"\pm 1$ relative to $a$, written $\operatorname{ind}_{a}(\pm 1)$.
 	
+	\begin{lemma}\label{signedOrder}
+		Let $H_j = \ord[p^j]{2}$.
+		Then
+		\begin{equation*}
+			\rho_{2}{(p^j)} = \begin{cases}
+				H_j / 2 & H_j \text{ is even} \\
+				h_j & H_j \text{ is odd}
+			\end{cases}.
+		\end{equation*}
+		Moreover, when $H_j$ is even,
+		\begin{equation*}
+			2^{H_j / 2} \equiv -1 \pmod{p^j}.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Assume $H_j$ is even.
+		Then by definition of $H_j$,
+		\begin{equation*}
+			\left(2^{H_j / 2}\right)^2 \equiv 1 \pmod{p^j}.
+		\end{equation*}
+		Thus the only solutions are $2^{H_j / 2} \equiv \pm 1 \pmod{p^j}$.
+		However, 1 cannot be a solution; otherwise, $H_j$ would not be minimal.
+		So,
+		\begin{equation*}
+			2^{H_j / 2} \equiv -1 \pmod{p^j}.
+		\end{equation*}
+		Notice that if $r \leq H_j / 2$, and $2^r \equiv -1 \pmod{p^j}$, then $2^{2r} \equiv 1 \pmod{p^j}$; since $H_j$ is minimal, $H_j \leq 2r$.
+		Thus to satisfy both constraints we must have $H_j = r$.
+		
+		Now assume $H_j$ is odd.
+		Notice that by definition, 
+		\begin{equation*}
+			H_j = \ord[p^j]{2} = \min{\{h > 0 : 2^h \equiv 1 \pmod{p^j}\}},
+		\end{equation*} 
+		so smaller solutions can only be of the form $2^r \equiv -1 \pmod{p^j}$.
+		Then $2^{2r} \equiv 1 \pmod{p^j}$, which means $H_j \mid 2r$, and since $H_j$ is odd, $H_j \mid r$.
+		Thus $H_j \leq r$, so $H_j$ is minimal, as desired.
+	\end{proof}
+	
+	We can use this notion of a signed order to find the extension degree of extensions of $\F_2$.
+	\begin{lemma}\label{fieldExtensionSize}
+		Let $M > 1$ be odd; let $\zeta$ have exact order $M$; set $\alpha = \zeta + \zeta^{-1}$.
+		Then
+		\begin{equation*}
+			\left[\F_2(\alpha) : \F_2\right] = \rho_2(M).
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		A standard finite field fact says
+		\begin{equation*}
+			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}.
+		\end{equation*}
+		% TODO: Find a reference for this "standard fact". Maybe Lidl & Niederreiter?
+		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^2} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
+		
+		For any non-zero $a,b \in \F_2$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
+		So, either $a = b$ or $a = b^{-1}$.
+		Taking $a = \zeta^{2^r}$ and $b = \zeta$, we obtain
+		\begin{equation*}
+			\zeta^{2^r} = \zeta \quad\text{ or }\quad \zeta^{2^r} = \zeta^{-1}.
+		\end{equation*}
+		Since $\zeta$ has exact order $M$, we can equivalently write
+		\begin{equation*}
+			2^{r} \equiv 1 \pmod{M} \quad\text{ or }\quad 2^r \equiv -1 \pmod{M}.
+		\end{equation*}
+		So, $\alpha^{2^r} = \alpha \iff 2^r \equiv \pm 1 \pmod{M}$, and
+		\begin{equation*}
+			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}} = \rho_2(M),
+		\end{equation*}
+		as desired.
+	\end{proof}
+	
+	\begin{lemma}\label{fieldTrace}
+		Let $a$ be algebraic over $\F_q$.
+		Then
+		\begin{equation*}
+			\Tr[\F_q(a) / \F_q]{a} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{a^{q^r}}.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		See \cite{lidl-niederreiter}.
+	\end{proof}
+
+	\begin{corollary}
+		\begin{equation*}
+			\Tr[\F_q(a) / \F_q]{1} = \left[\F_q(a) : \F_q\right].
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		Immediate from setting $a=1$ in lemma \ref{fieldTrace}.
+	\end{proof}
+	
+	\begin{lemma}\label{fieldTraceSumRoots}
+		Let $M > 1$ be odd, and let $\zeta$ have exact order $M$.
+		Let $\alpha = \zeta + \zeta^{-1}$.
+		Define
+		\begin{equation*}
+			G_M = \{\pm 2^r \pmod{M} : r \geq 0\} \subseteq (\Z / M\Z)^{\times}.
+		\end{equation*}
+		Then
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_m}{\zeta^{u}}.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Lemma \ref{fieldExtensionSize} showed that
+		\begin{equation*}
+			\left[\F_2(\alpha) : \F_2\right] = \rho_2(M).
+		\end{equation*}
+		So, by lemma \ref{fieldTrace},
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)}{\zeta^{2^r} + \zeta^{-2^r}}.
+		\end{equation*}
+		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)}, 2^{-\rho_2(M)}$. are all distinct modulo $M$.
+		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < d$, which contradicts $\rho_2(M)$ being minimal.
+	
+		The residues are exactly the elements of $G_M$, so
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_M}{\zeta^u},
+		\end{equation*}
+		as desired.
+	\end{proof}
+
+	\begin{corollary}
+		If $G_M = (\Z / M\Z)^{\times}$, then
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(M) \pmod 2,
+		\end{equation*}
+		where $\mu$ is the number-theoretic Möbius function.
+	\end{corollary}
+	\begin{proof}
+		From lemma \ref{fieldTraceSumRoots}, we know that
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_M}{\zeta^{u}}.
+		\end{equation*}
+		When $G_M = (\Z / M\Z)^{\times}$, we also have
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{0 \leq u < M, \gcd{(u,M)} = 1}{\zeta^{u}} = \mu(M) \pmod 2,
+		\end{equation*}
+		as desired.
+		% TODO: Find a better/any reasoning for going from sum to mu
+	\end{proof}
+	
+	% TODO: If p is a non-Wieferich prime, then d(p^k - 1) = d(p-1)
+	% TODO: If p = 3 mod 4 and G_M is the multiplicative group, then d(p-1) = 0
+	% TODO: Corollaries: d(3^k - 1) = 0, d(5^k - 1) = 4, ...
+	% TODO: Corollary: d(2*3^k - 1) = 2.
+	
+	% TODO: Section on MCP
+	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
+	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
+	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
 	\newpage
 	\bibliography{refs.bib}
 	\bibliographystyle{amsplain}
