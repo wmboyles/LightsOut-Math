@@ -288,7 +288,10 @@
 		\begin{align*}
 			0 &= \alpha F_n(\alpha) \\
 			&= \zeta^{n} + \zeta^{-n} \\
-			&= \zeta^{2n} + 1 \\
+		\end{align*}
+		Since a field has no nonzero nilpotents, we may multiply by $\zeta^n$.
+		\begin{align*}
+			0 &= \zeta^{2n} + 1 \\
 			&= \left(\zeta^{n}+1\right)^2 \\
 			&= \zeta^{n} + 1 \\
 			\zeta^{n} &= 1.
@@ -344,6 +347,7 @@
 			&= \Phi_G(V_1) \triangle \Phi_G(V_2)
 		\end{align*}
 	\end{proof}
+	% TODO: An AI review said this proof wasn't entirely correct. Double check.
 
 	\begin{corollary}
 		If $V_1$ and $V_2$ have the same image under $\Phi_{G}$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
@@ -441,8 +445,15 @@
 		\begin{equation*}
 			\gcd{\left(F_n(x),F_n(x+1)\right)} \mid \gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)}.
 		\end{equation*}
-		Taking the degrees, we obtain $d(n-1)$ divides $d(nk-1)$, as desired.
+		So we may write
+		\begin{equation*}
+			\gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)} = 	\gcd{\left(F_n(x),F_n(x+1)\right)} Q(x),
+		\end{equation*}
+		for some $Q(x) \in \F_2[x]$.
+		Taking the degrees, we obtain $d(nk-1) = d(n-1) + \deg{Q(x)}$, and so the desired inequality follows.
 	\end{proof}
+	Note that although the smaller GCD polynomial divides the larger, it's not the case that $d(n-1)$ divides $d(nk-1)$.
+	For example, if $n=5$ and $k=6$, then $d(n-1) = d(4) = 4$, which does not divide $d(nk-1) = d(29) = 10$.
 
 	\section{Number Theory}
 	We may also understand $d(n)$ and the Fibonacci polynomials with some results from number theory.
@@ -452,7 +463,7 @@
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Then
 		\begin{equation*}
-			(ad,cd) = (a,c)(b,d)\left(\frac{a}{(a,c)},\frac{d}{(b,d)}\right)\left(\frac{c}{(a,c)},\frac{b}{(b,d)}\right).
+			(ab,cd) = (a,c)(b,d)\left(\frac{a}{(a,c)},\frac{d}{(b,d)}\right)\left(\frac{c}{(a,c)},\frac{b}{(b,d)}\right).
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
@@ -477,7 +488,7 @@
 		\begin{align*}
 			d(2n+1) &= \deg{\left(F_{2n+2}(x),F_{2n+2}(x+1)\right)} \\
 			&= \deg{\left(xF_{n+1}(x)^2,(x+1)F_{n+1}(x+1)^2\right)} \\
-			&= \deg{(x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)\left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{x+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)} \\
+			&= \deg{(x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)\left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)} \\
 			&= \deg{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2\left(x+1,\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)} \\
 			&= 2d(n) + 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}
 		\end{align*}
@@ -486,8 +497,8 @@
 			\delta_n = 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}.
 		\end{equation*}
 		So, $\delta_n$ is 2 exactly when $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$.
-		When $n+1$ is not divisible by 3, corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not devisible by $x+1$, so $\delta_n = 0$.
-		When $n+1$ is divisible by 3, let $n+1 = b 2^{n}$ for $b,k \geq 0$ and $b$ odd.
+		When $n+1$ is not divisible by 3, corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
+		When $n+1$ is divisible by 3, let $n+1 = b 2^{k}$ for $b,k \geq 0$ and $b$ odd.
 		Then $b$ must be divisible by 3.
 		Applying Lemma \ref{Fibonacci2k},
 		\begin{equation*}
@@ -502,6 +513,8 @@
 		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
 	This result resolves a conjecture of Sutner's \cite{Sutner1989}.
+	
+	% TODO: An AI review of the above proof flagged "(x+1) occurs with multiplicity (2) in odd" and "(F_b) when (3\mid b). Rewrite this part using valuations" but I'm not really sure what these mean.
 	
 	We can repeatedly apply theorem \ref{2nPlus1} to obtain explicit formulas for $d(n)$.
 	\begin{corollary}\label{2nPlus1Explicit}
@@ -589,6 +602,8 @@
 		so $n \equiv -1 \pmod 6$, as desired.
 	\end{proof}
 	
+	% TODO: We may also need to show a lemma that if rank(P) is the least r such that P divides F_r, then P divides F_m if and only if rank(P) divides m.
+	
 	We can now use this recurrence result to prove the impossibility of certain values of $d(n)$.
 	\begin{theorem}
 		The smallest even $k$ such that for all $n \in \N$, $d(n) \neq k$ is $k=26$.
@@ -618,7 +633,7 @@
 		\begin{equation*}
 			d(m) = 2^s d(b-1) + 2(2^s - 1) = 12.
 		\end{equation*}
-		The only possible integer solutions here are $d(b-1)=12$ and $s=0$ or $d(b-1)=5$ and $s-1$.
+		The only possible integer solutions here are $d(b-1)=12$ and $s=0$ or $d(b-1)=5$ and $s=1$.
 		Since lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
 		Thus, $m$ must be even.
 		
@@ -640,7 +655,7 @@
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
 		\end{equation*}
-		There are only three possible square-free cubic polynomials in $\F_2[y]$:
+		There are only three possible square-free cubic polynomials in $\F_2[y]$ that are also 1 at $y=0$:
 		\begin{enumerate}
 			\item $C_1(y) = y^3 + 1$
 			\item $C_2(y) = y^3 + y + 1$
@@ -657,7 +672,7 @@
 		\end{align*}
 		If either rank-63 polynomials $C_2$ or $C_3$ divides $R_{m+1}(x)$, then 63 divides $m+1$.
 		However, by definition of rank, both polynomials would divide $R_{m+1}(x)$.
-		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_1(x)} + \deg{C_2(x)} = 12$, contradicting our assumption that the degree was 6.
+		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
 		If $C_1$ $R_{m+1}$, then 85 divides $m+1$.
 		Combining this with the fact that 3 divides $m+1$ we showed earlier, we see that 255 must divide $m+1$.
 		
@@ -666,8 +681,8 @@
 			P(x) = x^4 + x^3 + 1 \qquad Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
 		$P$ and $Q$ are coprime to each other and $C_1$.
-		The ranks of $P(x)$ and $Q(x)$ are 17 and 15 respectively.
-		Since both 17 and 15 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
+		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
+		Since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
 		Therefore,
 		\begin{equation*}
 			\deg{H_{m+1}(x)} \geq \deg{C_1(x)} + \deg{P(x)} + \deg{Q(x)} = 14,
@@ -676,6 +691,7 @@
 		
 		Thus, there is no $3 \mid m+1$ such that $d(m) = 12$ and therefore no $n$ such that $d(n) = 26$.
 	\end{proof}
+
 
 	Now that we know that one impossible even value of $d(n)$ exists, we can show an entire family of impossible even values also exists.
 	\begin{corollary}
@@ -703,7 +719,7 @@
 	
 	\begin{lemma}\label{ordpj2}
 		Let $p$ be an odd prime.
-		Define $h = \ord[p]{n}$ and $c = v_p(2^h - 1)$, where
+		Define $h = \ord[p]{2}$ and $c = v_p(2^h - 1)$, where
 		$v_p(a)$ is the $p$-adic valuation of $a$.
 		Then for every $j \geq 1$,
 		\begin{equation*}
@@ -758,13 +774,13 @@
 	% Should we prehaps include this argument?
 	
 	\begin{definition}
-		Let $a$ be a primitive root of $n$.
+		Let $b$ be coprime to $n$.
 		Then ``signed order" of $a$ modulo $n$ is
 		\begin{equation*}
 			\rho_b(n) = \min{\{r > 0 : b^r \equiv \pm 1 \pmod{n}\}}.
 		\end{equation*}
 	\end{definition}
-	This is also sometimes called the ``index" of $"\pm 1$ relative to $a$, written $\operatorname{ind}_{a}(\pm 1)$.
+	This is also sometimes called the ``index" of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
 	
 	\begin{lemma}\label{signedOrder}
 		Let $H_j = \ord[p^j]{2}$.
@@ -772,7 +788,7 @@
 		\begin{equation*}
 			\rho_{2}{(p^j)} = \begin{cases}
 				H_j / 2 & H_j \text{ is even} \\
-				h_j & H_j \text{ is odd}
+				H_j & H_j \text{ is odd}
 			\end{cases}.
 		\end{equation*}
 		Moreover, when $H_j$ is even,
@@ -793,7 +809,7 @@
 			2^{H_j / 2} \equiv -1 \pmod{p^j}.
 		\end{equation*}
 		Notice that if $r \leq H_j / 2$, and $2^r \equiv -1 \pmod{p^j}$, then $2^{2r} \equiv 1 \pmod{p^j}$; since $H_j$ is minimal, $H_j \leq 2r$.
-		Thus to satisfy both constraints we must have $H_j = r$.
+		Thus to satisfy both constraints we must have $H_j / 2 = r$.
 		
 		Now assume $H_j$ is odd.
 		Notice that by definition, 
@@ -819,9 +835,9 @@
 			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}.
 		\end{equation*}
 		% TODO: Find a reference for this "standard fact". Maybe Lidl & Niederreiter?
-		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^2} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
+		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^r} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
 		
-		For any non-zero $a,b \in \F_2$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
+		For any non-zero $a,b \in \F_2(\alpha)$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
 		So, either $a = b$ or $a = b^{-1}$.
 		Taking $a = \zeta^{2^r}$ and $b = \zeta$, we obtain
 		\begin{equation*}
@@ -855,7 +871,7 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Immediate from setting $a=1$ in lemma \ref{fieldTrace}.
+		Immediate from evaluating at $a=1$ in lemma \ref{fieldTrace}.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -867,7 +883,7 @@
 		\end{equation*}
 		Then
 		\begin{equation*}
-			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_m}{\zeta^{u}}.
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_M}{\zeta^{u}}.
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
@@ -877,9 +893,9 @@
 		\end{equation*}
 		So, by lemma \ref{fieldTrace},
 		\begin{equation*}
-			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)}{\zeta^{2^r} + \zeta^{-2^r}}.
+			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
-		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)}, 2^{-\rho_2(M)}$. are all distinct modulo $M$.
+		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, 2^{-(\rho_2(M)-1)}$. are all distinct modulo $M$.
 		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < d$, which contradicts $\rho_2(M)$ being minimal.
 	
 		The residues are exactly the elements of $G_M$, so
@@ -905,8 +921,7 @@
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{0 \leq u < M, \gcd{(u,M)} = 1}{\zeta^{u}} = \mu(M) \pmod 2,
 		\end{equation*}
-		as desired.
-		% TODO: Find a better/any reasoning for going from sum to mu
+		by Ramanujan's sum identity of roots of unity, as desired.
 	\end{proof}
 	
 	% TODO: If p is a non-Wieferich prime, then d(p^k - 1) = d(p-1)
