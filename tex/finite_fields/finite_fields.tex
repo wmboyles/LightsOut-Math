@@ -137,7 +137,7 @@
 	\end{proof}
 	
 	% TODO: Check is this proof is immediate
-	\begin{corollary}
+	\begin{corollary}\label{rootMultiplicity2}
 		If $n$ is odd, then every root of $F_n(x)$ has multiplicity 2.
 	\end{corollary}
 	\begin{proof}
@@ -721,6 +721,7 @@
 	In other words, 26, 54, 110, 222, 446, ... are also all impossible values of $d(n)$.
 	
 	\section{Finite Fields}
+	% TODO: This is a long section and has many of our most important and new theorems. Split it up?
 	Although we have already been working in $\F_2$, we will now more directly use results from the study of finite fields.
 	
 	\begin{lemma}\label{ordpj2}
@@ -751,7 +752,7 @@
 	% TODO: Do we need a citation for the lifting the exponent lemma?
 	% Maybe Ireland & Rosen: A classical introduction to modern number theory chapter 2 (ss 2.7)?
 
-	\begin{corollary}
+	\begin{corollary}\label{nonWieferichOrd}
 		Let $p$ be an odd prime.
 		If $p$ isn't a Wieferich prime, then
 		\begin{equation*}
@@ -931,9 +932,130 @@
 	\end{proof}
 	
 	% TODO: If p is a non-Wieferich prime, then d(p^k - 1) = d(p-1)
+	Now we may combine together many of our partial results to state a more significant result. 
+	\begin{theorem}\label{pk-1Equalsp-1}
+		If $p$ is not a Wieferich prime, then for all $k \in \N$,
+		\begin{equation*}
+			d(p^k - 1) = d(p-1).
+		\end{equation*}
+	\end{theorem}
+	\begin{proof}
+		Let $p$ be a non-Wieferich prime.
+		The case for $p=2$ was shown in \cite{Sutner1989}, so we will consider the case when $p$ is odd.
+		For $1 \leq j \leq k$, let
+		\begin{equation*}
+			R_j = \{\zeta + \zeta^{-1} : \ord{\zeta} = p^j\}.
+		\end{equation*}
+		By lemma \ref{RootParameterization},
+		\begin{equation}
+			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
+		\end{equation}
+		Furthermore, since $p^k$ is odd, corollary \ref{rootMultiplicity2} and lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
+		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
+		Let $h = \ord[p]{2}$.
+		Since $p$ is not Wieferich, corollary \ref{nonWieferichOrd} tells us that
+		\begin{equation*}
+			\ord[p^j]{2} = \ord[p]{2} p^{j-1},
+		\end{equation*}
+		and lemma \ref{signedOrder} tells us that
+		\begin{equation*}
+			\rho_2(p^j) = \rho(p) p^{j-1}.
+		\end{equation*}
+		So, by lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
+		\begin{equation*}
+			\left[\F_2(\alpha) : \F_2\right] = \rho(p) p^{j-1}.
+		\end{equation*}
+	
+		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
+		Since $\F_2(\alpha) = \F_2(\alpha + 1)$, that is they are the same field with the same degree, $\alpha$ and $\alpha+1$ must both be members of the same $R_j$ and so $j = \ell$.
+		
+		Suppose for the sake of contradiction that $\alpha$ and $\alpha+1$ are both members of $R_j$ for some $j \geq 2$.
+		Set $M = p^j$ and $m = p^{j-1}$ and choose a primitive $M$th root $\zeta$ such that $\alpha = \zeta + \zeta^{-1}$.
+		Since $\alpha+1$ is also in $R_j$, there must exist $s$ such that $\gcd{(s,p)} = 1$ and $\alpha + 1 = \zeta^{s} + \zeta^{-s}$.
+		Then
+		\begin{equation*}
+			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-1} = 0.
+		\end{equation*}
+		Equivalently, $\zeta$ is a root of
+		\begin{equation*}
+			P_s(x) = 1 + x + x^{M-1} + x^{s} + x^{M-s}.
+		\end{equation*}
+		Notice that $\zeta^m$ is a primitive $p$th root.
+		Let $f(x)$ be the minimal polynomial of $\zeta^m$ over $\F_2$.
+		The degree of $f(x)$ is $\ord[p]{2}$.
+		Since $f(\zeta^m) = 0$, $\zeta$ is a root of $f(x^m)$.
+		The degree of $f(x^m)$ is $\ord[p]{2}m = \ord[p^j]{2}$.
+		This is also the degree of the minimal polynomial of $\zeta$ and so
+		\begin{equation*}
+			f(x^m) \mid P_s(x).
+		\end{equation*}
+		So, every polynomial can be decomposed by exponents modulo $M$:
+		\begin{equation}
+			P_s(x) = \sum_{a=0}^{M-1}{X^a P_a(X^M)}.
+		\end{equation}
+		% TODO: Check case m vs M here
+		In $P_{s-1}$ the only exponent dividing $M$ is 0, so $P_0(X^M) = 1$.
+		But if $f(x^m) \mid P_s(x)$, then $f(x)$ must divide every compoenent $P_a(x)$, including $P_0(x) = 1$.
+		This is impossible because $f$ isn't constant.
+		Thus we have arrived at a contradiction and must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
+		
+		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
+		\begin{equation*}
+			d(p^k - 1) = d(p-1).
+		\end{equation*}
+	\end{proof}
+
+	We can combine this result with our recurrence when doubling $n$ and adding 1.
+	\begin{corollary}
+		Let $p$ be an odd non-Wieferich prime.
+		Then for all $n,m \geq 0$,
+		\begin{equation*}
+			d(2^np^m - 1) = \begin{cases}
+				0 & m = 0 \\
+				2^n d(p-1) & m \geq 1, p \neq 3 \\
+				2^{n+1} - 2 & m \geq 1, p  = 3
+			\end{cases}.
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		The $m=0$ case reduces to what Sutner already showed \cite{Sutner1989}.
+		For the other cases, we first apply corollary \ref{2nPlus1Explicit} to obtain
+		\begin{equation*}
+			d(2^np^m - 1) = \begin{cases}
+				0 & m = 0 \\
+				2^n d(p^m-1) & m \geq 1, p \neq 3 \\
+				2^{n+1} - 2 & m \geq 1, p  = 3
+			\end{cases}.
+		\end{equation*}
+		We then apply theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
+	\end{proof}
+
+	\begin{corollary}
+		For all $n,m \geq 1$, the following relationships hold
+		\begin{enumerate}
+			\item $d(2^n - 1) = 0$
+			\item $d(3^n - 1) = 0$
+			\item $d(5^n - 1) = 4$
+			\item $d(7^n - 1) = 0$
+			\item $d(11^n - 1) = 0$
+			\item $d(13^n - 1) = 0$
+			\item $d(17^n - 1) = 8$
+			\item $d(19^n - 1) = 0$
+			\item $d(23^n - 1) = 0$
+			\item $d(29^n - 1) = 0$
+			\item $d(31^n - 1) = 0$
+			\item $d(37^n - 1) = 0$
+			\item $d(41^n - 1) = 0$
+			\item $d(43^n - 1) = 0$
+			\item $d(2^n 3^m - 1) = 2^{n+1} - 2$
+			\item $d(2^n 5^m - 1) = 2^{n+2}$
+			\item $d(2^n 7^m - 1) = 0$
+		\end{enumerate}
+	\end{corollary}
+
+	You may have noticed that for many sizes, we have $d(p-1) = 0$.
+	We can actually classify some $p$ for which this is the case.
 	% TODO: If p = 3 mod 4 and G_M is the multiplicative group, then d(p-1) = 0
-	% TODO: Corollaries: d(3^k - 1) = 0, d(5^k - 1) = 4, ...
-	% TODO: Corollary: d(2*3^k - 1) = 2.
 	
 	% TODO: Section on MCP
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
