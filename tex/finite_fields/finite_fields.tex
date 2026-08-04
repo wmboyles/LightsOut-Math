@@ -38,7 +38,11 @@
 	    A move is clicking any $v \in V$, which toggles the on/off state of $v$ and its neighbors.
 	    Given an initial configuration, one wins the game by finding a sequence of moves that turns off all of the lights.
 	    This game was commercially available from Tiger Electronics as \textit{Lights Out} for $G$ a $5 \times 5$ grid.
-	    We explore this game for an $n \times n$ grid and show several new results.
+	    
+	    Let $\Phi_G: P(V) \rightarrow P(V)$ be the function which maps the vertices clicked to the vertices that change state.
+	    For $G$ and $n \times n$ grid, let $d(n) = \dim{\ker{\Phi_G}}$.
+	    We show several that many values of $d(n)$ never occur.
+	    We show more general formulas for the value of $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ a Wieferich prime. 
 	\end{abstract}
 
 	\section{Fibonacci Polynomials}
