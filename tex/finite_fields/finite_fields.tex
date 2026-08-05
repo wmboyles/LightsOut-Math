@@ -44,7 +44,7 @@
 	    Let $\Phi_G: P(V) \rightarrow P(V)$ be the function which maps the vertices clicked to the vertices that change state.
 	    For $G$ and $n \times n$ grid, let $d(n) = \dim{\ker{\Phi_G}}$.
 	    We show several that many values of $d(n)$ never occur.
-	    We show more general formulas for the value of $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ a Wieferich prime. 
+	    We show more general formulas for the value of $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ not a Wieferich prime. 
 	\end{abstract}
 
 	\section{Fibonacci Polynomials}
@@ -298,8 +298,11 @@
 		Since a field has no nonzero nilpotents, we may multiply by $\zeta^n$.
 		\begin{align*}
 			0 &= \zeta^{2n} + 1 \\
-			&= \left(\zeta^{n}+1\right)^2 \\
-			&= \zeta^{n} + 1 \\
+			&= \left(\zeta^{n}+1\right)^2,
+		\end{align*}
+		and
+		\begin{align*}
+			0 &= \zeta^{n} + 1 \\
 			\zeta^{n} &= 1.
 		\end{align*}
 		Thus the order of $\zeta$ divides $n$.
@@ -463,6 +466,8 @@
 
 	\section{Number Theory}
 	We may also understand $d(n)$ and the Fibonacci polynomials with some results from number theory.
+	Many of the results in this section were first discussed by the author in \cite{boylesResolutionSutner} and \cite{boylesMostClicks}.
+	However, this writing restates several proofs for clarity and to correct some small mistakes in those earlier proofs.
 	
 	\begin{lemma}[Ore]\label{OreGcd}
 		Let $a$, $b$, $c$, and $d$ be integers.
@@ -686,7 +691,7 @@
 		\begin{equation*}
 			P(x) = x^4 + x^3 + 1 \qquad Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
-		$P$ and $Q$ are coprime to each other and $C_1$.
+		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), coprime to each other, and coprime with $C_1$.
 		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
 		Since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
 		Therefore,
@@ -743,7 +748,7 @@
 			&= c + v_p(t).
 		\end{align*}
 		So, $p^j \mid 2^{ht} - 1$ exactly when $c + v_p(t) \geq j$.
-		The smallest possible $t$ satisfying this inequality is $t = \max{(0, j-c)}$, so
+		The smallest possible $t$ satisfying this inequality is $t = p^{\max{(0, j-c)}}$, so
 		\begin{equation*}
 			\ord[p^j]{2} = h p^{\max{(0, j-c)}},
 		\end{equation*}
@@ -768,7 +773,7 @@
 		By definition of $\ord[p]{2}$, $c \geq 1$.
 		Since $p$ is not a Wieferich prime, for all $t \geq 2$,
 		\begin{equation*}
-			p^{t} \nmid 2^{\ord[2]{p}} - 1,
+			p^{t} \nmid 2^{\ord[p]{2}} - 1,
 		\end{equation*}
 		so $c \ngeq 2$ and therefore must be exactly 1, as desired.
 	\end{proof}
@@ -844,7 +849,7 @@
 		% TODO: Find a reference for this "standard fact". Maybe Lidl & Niederreiter?
 		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^r} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
 		
-		For any non-zero $a,b \in \F_2(\alpha)$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
+		For any non-zero $a,b \in \overline{\F_2}$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
 		So, either $a = b$ or $a = b^{-1}$.
 		Taking $a = \zeta^{2^r}$ and $b = \zeta$, we obtain
 		\begin{equation*}
@@ -872,13 +877,17 @@
 		See \cite{lidl-niederreiter}.
 	\end{proof}
 
-	\begin{corollary}
+	\begin{corollary}\label{traceAt1}
 		\begin{equation*}
 			\Tr[\F_q(a) / \F_q]{1} = \left[\F_q(a) : \F_q\right].
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Immediate from evaluating at $a=1$ in lemma \ref{fieldTrace}.
+		Evaluating lemma \ref{fieldTrace} to 1,
+		\begin{equation*}
+			\Tr[\F_q(a) / \F_q]{1} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{1^{q^r}} = \left[\F_q(a) : \F_q\right],
+		\end{equation*}
+		as desired.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -912,7 +921,7 @@
 		as desired.
 	\end{proof}
 
-	\begin{corollary}
+	\begin{corollary}\label{traceMobius}
 		If $G_M = (\Z / M\Z)^{\times}$, then
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(M) \pmod 2,
@@ -967,6 +976,7 @@
 		\end{equation*}
 	
 		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
+		% TODO: Why do we need p to not be Wieferich here?
 		Since $\F_2(\alpha) = \F_2(\alpha + 1)$, that is they are the same field with the same degree, $\alpha$ and $\alpha+1$ must both be members of the same $R_j$ and so $j = \ell$.
 		
 		Suppose for the sake of contradiction that $\alpha$ and $\alpha+1$ are both members of $R_j$ for some $j \geq 2$.
@@ -974,7 +984,7 @@
 		Since $\alpha+1$ is also in $R_j$, there must exist $s$ such that $\gcd{(s,p)} = 1$ and $\alpha + 1 = \zeta^{s} + \zeta^{-s}$.
 		Then
 		\begin{equation*}
-			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-1} = 0.
+			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-s} = 0.
 		\end{equation*}
 		Equivalently, $\zeta$ is a root of
 		\begin{equation*}
@@ -989,15 +999,13 @@
 		\begin{equation*}
 			f(x^m) \mid P_s(x).
 		\end{equation*}
-		So, every polynomial can be decomposed by exponents modulo $M$:
+		So, every polynomial can be decomposed by exponents modulo $m$:
 		\begin{equation}
-			P_s(x) = \sum_{a=0}^{M-1}{X^a P_a(X^M)}.
+			P_s(x) = \sum_{a=0}^{m-1}{x^a P_a(x^m)}.
 		\end{equation}
-		% TODO: Check case m vs M here
-		In $P_{s-1}$ the only exponent dividing $M$ is 0, so $P_0(X^M) = 1$.
-		But if $f(x^m) \mid P_s(x)$, then $f(x)$ must divide every compoenent $P_a(x)$, including $P_0(x) = 1$.
-		This is impossible because $f$ isn't constant.
-		Thus we have arrived at a contradiction and must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
+		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
+		However, only exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$, so $P_0(y) = 1$, a contradiction
+		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
 		
 		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
 		\begin{equation*}
@@ -1033,31 +1041,69 @@
 	\begin{corollary}
 		For all $n,m \geq 1$, the following relationships hold
 		\begin{enumerate}
-			\item $d(2^n - 1) = 0$
-			\item $d(3^n - 1) = 0$
-			\item $d(5^n - 1) = 4$
-			\item $d(7^n - 1) = 0$
-			\item $d(11^n - 1) = 0$
-			\item $d(13^n - 1) = 0$
-			\item $d(17^n - 1) = 8$
-			\item $d(19^n - 1) = 0$
-			\item $d(23^n - 1) = 0$
-			\item $d(29^n - 1) = 0$
-			\item $d(31^n - 1) = 0$
-			\item $d(37^n - 1) = 0$
-			\item $d(41^n - 1) = 0$
-			\item $d(43^n - 1) = 0$
+			\item $d(3^n - 1) = 0$ % Fermat, Mersenne
+			\item $d(5^n - 1) = 4$ % Fermat
+			\item $d(7^n - 1) = 0$ % Mersenne
+			\item $d(17^n - 1) = 8$ % Fermat
+			\item $d(31^n - 1) = 20$ % Mersenne
+			\item $d(127^n - 1) = 56$ % Mersenne
+			\item $d(257^n - 1) = 144$ % Fermat
+			\item $d(8191^n - 1) = 4004$ % Mersenne
 			\item $d(2^n 3^m - 1) = 2^{n+1} - 2$
 			\item $d(2^n 5^m - 1) = 2^{n+2}$
 			\item $d(2^n 7^m - 1) = 0$
+			\item $d(2^n 17^m - 1) = 2^{n+3}$
+			\item $d(2^n 31^m - 1) = 2^{n+2} 5$
+			\item $d(2^n 127^m - 1) = 2^{n+3} 7$
+			\item $d(2^n 257^m - 1) = 2^{n+4} 9$
+			\item $d(2^n 8191^n - 1) = 2^{n+2} 1001$
 		\end{enumerate}
 	\end{corollary}
+	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
+	% TODO: It seems like there's some pattern of Mersenne primes != 3 where d(p^n - 1) often != 0. Can we check d(131071 - 1)?
+	% TODO: It seems like we only get non-zero d when p is a Fermat or Mersenne prime.
 
 	You may have noticed that for many sizes, we have $d(p-1) = 0$.
 	We can actually classify some $p$ for which this is the case.
-	% TODO: If p = 3 mod 4 and G_M is the multiplicative group, then d(p-1) = 0
+	\begin{theorem}
+		Let $p$ be a prime one less than a multiple of 4 where
+		\begin{equation*}
+			\{\pm 2^r \pmod p : r \geq 0\} = (\Z / p \Z)^{\times}.
+		\end{equation*}
+		Then $d(p - 1) = 0$.
+		% TODO: Check if this condition for equaling the multiplicatve group is correct
+	\end{theorem}
+	\begin{proof}
+		Assume for the sake of contradiction that $d(p-1) \neq 0$.
+		Then $F_{p}(x)$ and $F_{p}(x+1)$ have a common factor and thus a common root $\alpha$, so
+		\begin{equation*}
+			F_{p}(\alpha) = F_{p}(\alpha+1) = 0.
+		\end{equation*}
+		By lemma \ref{RootParameterization}, there must exist non-trivial $p$th roots of unity $\zeta$ and $\eta$ such that
+		\begin{equation*}
+			\alpha = \zeta + \zeta^{-1} \qquad \alpha+1 = \eta + \eta^{-1}.
+		\end{equation*}
+		By lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
+		\begin{equation*}
+			[\F_2(\alpha) : \F_2] = [\F_2(\alpha+1) : \F_2] = \rho_2(p) = \frac{p-1}{2}.
+		\end{equation*}
+		Since $p \equiv 3 \pmod 4$, this value is odd.
+		Applying the linearity of the trace and corollary \ref{traceAt1},
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1,
+		\end{equation*}
+		which is even.
+		However, we can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by corollary \ref{traceMobius}, 
+		\begin{equation*}
+			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1,
+		\end{equation*}
+		which is odd.
+		Thus we have reached a contradiction.
+	\end{proof}
+	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
 	
 	% TODO: Section on MCP
+	% TODO: Maybe most of the even parity covers section could move to a different paper?
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
 	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
 	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
