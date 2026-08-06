@@ -513,23 +513,22 @@
 		Then $b$ must be divisible by 3.
 		Applying Lemma \ref{Fibonacci2k},
 		\begin{equation*}
-			F_{n+1}(x) = x^{2^{k}-1}F_{b}(x)^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}F_{b}(x+1)^{2^k}.
+			F_{n+1}(x) = x^{2^{k}-1}{F_{b}(x)}^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}{F_{b}(x+1)}^{2^k}.
 		\end{equation*}
 		Since $b$ is an odd multiple of 3, corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
 		So,
 		\begin{equation*}
-			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^k}g(x)^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}x^{2^k}g(x+1)^{2^k},
+			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^k}{g(x)}^{2^k} \qquad F_{n+1}(x+1) = x^{2^k}(x+1)^{2^{k}-1}{g(x+1)}^{2^k},
 		\end{equation*}
+		% TODO: An AI review flagged the above 2 equations has having the wrong degree. I think it's confused about F_{b}(x)^{2^k} meaning the same as (F_{b}(x))^{2^k}. I wrote it this way instead of putting the exponent closer to F to avoid confusing this with the notation for repeatedly applying F. If the AI is flagging something else, then I'm not sure how the multiplicities would be different from what Hunziker, Machiavelo, and Park state in their lemma 2.6.
 		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both divisible by neither $x$ nor $x+1$.
 		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
-	This result resolves a conjecture of Sutner's \cite{Sutner1989}.
-	
-	% TODO: An AI review of the above proof flagged "(x+1) occurs with multiplicity (2) in odd" and "(F_b) when (3\mid b). Rewrite this part using valuations" but I'm not really sure what these mean.
+	This result was first proven by Boyles in \cite{boylesResolutionSutner} and resolves a conjecture of Sutner's \cite{Sutner1989}.
 	
 	We can repeatedly apply theorem \ref{2nPlus1} to obtain explicit formulas for $d(n)$.
 	\begin{corollary}\label{2nPlus1Explicit}
-		Write odd $n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
+		$n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
 		Then
 		\begin{equation*}
 			d(n) = 2^s d(b-1) + \begin{cases}
@@ -539,6 +538,8 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
+		The result is a tautology for even $n$ ($s=0$ and $n+1 = b$), so we may continue assuming $n$ is odd.
+		
 		By induction on $s$.
 		For $s=0$,
 		\begin{align*}
@@ -756,6 +757,40 @@
 	\end{proof}
 	% TODO: Do we need a citation for the lifting the exponent lemma?
 	% Maybe Ireland & Rosen: A classical introduction to modern number theory chapter 2 (ss 2.7)?
+	
+	\begin{definition}
+		A prime number $p$ is a Wieferich prime when
+		\begin{equation*}
+			p^2 \mid 2^{p-1} - 1.
+		\end{equation*}
+	\end{definition}
+	Although infinitely any Wieferich primes are conjectured to exist,
+	the only ones known to date are 1093 and 3511 \cite{CrandallSearch}, and any larger ones must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
+
+	We will show an equivalent definition of Wieferich primes.
+	\begin{lemma}\label{wieferichEquivalence}
+		A prime number $p$ is a Wieferich prime if and only if
+		\begin{equation*}
+			p^2 \mid 2^{\ord[p]{2}} - 1.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Let $n = \ord[p]{2}$.
+		Then $p-1 = kn$ for some natural number $k$, and
+		\begin{equation*}
+			2^{p-1} - 1 = 2^{kn} - 1.
+		\end{equation*}
+		So, by the Lifting the Exponent lemma,
+		\begin{equation*}
+			v_p(2^{kn} - 1) = v_p(2^n - 1) + v_p(k).
+		\end{equation*}
+		However, $k = (p-1)/n$ is smaller than $p$ and thus not divisible by $p$, so $v_p(k) = 0$.
+		Thus,
+		\begin{equation*}
+			v_p(2^(p-1) - 1) = v_p(2^n - 1).
+		\end{equation*}
+		So, $p^2 \mid 2^{p-1} - 1$ if and only if $p^2 \mid 2^{\ord[p]{2}} - 1$, as desired.
+	\end{proof}
 
 	\begin{corollary}\label{nonWieferichOrd}
 		Let $p$ be an odd prime.
@@ -771,23 +806,16 @@
 		\end{equation*}
 		Thus it is sufficient to show that $c=1$.
 		By definition of $\ord[p]{2}$, $c \geq 1$.
-		Since $p$ is not a Wieferich prime, for all $t \geq 2$,
+		$p$ is not a Wieferich prime, so by lemma \ref{wieferichEquivalence}, for all $t \geq 2$,
 		\begin{equation*}
-			p^{t} \nmid 2^{\ord[p]{2}} - 1,
+			p^{t} \nmid 2^{\ord[p]{2}} - 1.
 		\end{equation*}
-		so $c \ngeq 2$ and therefore must be exactly 1, as desired.
+		Thus $c < 2$ and therefore must be exactly 1, as desired.
 	\end{proof}
-	% TODO: The standard definition of Wieferich prime is p^2 \mid 2^{p-1} - 1. Our proof uses p^2 \mid 2^{\ord[p]{2}} - 1.
-	% This is equivalent by a lifting the exponent argument: If n = \ord[p]{a}, then p-1 = k*n, and a^(p-1) - 1 = a^(kn) - 1.
-	% So, v_p(a^(kn) - 1) = v_p(a^n - 1) + v_p(k).
-	% However, k = (p-1)/n is smaller than p and thus not divisible by p, so v_p(k) = 0.
-	% So, v_p(a^(p-1) - 1) = v_p(a^n - 1).
-	% So, p^2 \mid a^(p-1) - 1 if and only if p^2 \mid a^{\ord[p]{a}} - 1.
-	% Should we prehaps include this argument?
 	
 	\begin{definition}
 		Let $b$ be coprime to $n$.
-		Then ``signed order" of $a$ modulo $n$ is
+		Then ``signed order" of $b$ modulo $n$ is
 		\begin{equation*}
 			\rho_b(n) = \min{\{r > 0 : b^r \equiv \pm 1 \pmod{n}\}}.
 		\end{equation*}
@@ -795,7 +823,7 @@
 	This is also sometimes called the ``index" of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
 	
 	\begin{lemma}\label{signedOrder}
-		Let $H_j = \ord[p^j]{2}$.
+		Let $p$ be an odd prime, $j \ge 1$, and $H_j = \ord[p^j]{2}$.
 		Then
 		\begin{equation*}
 			\rho_{2}{(p^j)} = \begin{cases}
@@ -868,9 +896,9 @@
 	
 	\begin{lemma}\label{fieldTrace}
 		Let $a$ be algebraic over $\F_q$.
-		Then
+		Then for every $z \in \F_q(a)$,
 		\begin{equation*}
-			\Tr[\F_q(a) / \F_q]{a} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{a^{q^r}}.
+			\Tr[\F_q(a) / \F_q]{z} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{z^{q^r}}.
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
@@ -883,11 +911,7 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Evaluating lemma \ref{fieldTrace} to 1,
-		\begin{equation*}
-			\Tr[\F_q(a) / \F_q]{1} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{1^{q^r}} = \left[\F_q(a) : \F_q\right],
-		\end{equation*}
-		as desired.
+		Immediate from evaluating lemma \ref{fieldTrace} at $z=1$.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -911,7 +935,7 @@
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
-		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, 2^{-(\rho_2(M)-1)}$. are all distinct modulo $M$.
+		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, -2^{\rho_2(M)-1}$. are all distinct modulo $M$.
 		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < d$, which contradicts $\rho_2(M)$ being minimal.
 	
 		The residues are exactly the elements of $G_M$, so
@@ -940,7 +964,6 @@
 		by Ramanujan's sum identity of roots of unity, as desired.
 	\end{proof}
 	
-	% TODO: If p is a non-Wieferich prime, then d(p^k - 1) = d(p-1)
 	Now we may combine together many of our partial results to state a more significant result. 
 	\begin{theorem}\label{pk-1Equalsp-1}
 		If $p$ is not a Wieferich prime, then for all $k \in \N$,
@@ -968,11 +991,11 @@
 		\end{equation*}
 		and lemma \ref{signedOrder} tells us that
 		\begin{equation*}
-			\rho_2(p^j) = \rho(p) p^{j-1}.
+			\rho_2(p^j) = \rho_2(p) p^{j-1}.
 		\end{equation*}
 		So, by lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
 		\begin{equation*}
-			\left[\F_2(\alpha) : \F_2\right] = \rho(p) p^{j-1}.
+			\left[\F_2(\alpha) : \F_2\right] = \rho_2(p) p^{j-1}.
 		\end{equation*}
 	
 		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
@@ -1048,6 +1071,7 @@
 			\item $d(31^n - 1) = 20$ % Mersenne
 			\item $d(127^n - 1) = 56$ % Mersenne
 			\item $d(257^n - 1) = 144$ % Fermat
+			\item $d(683^n - 1) = 132$
 			\item $d(8191^n - 1) = 4004$ % Mersenne
 			\item $d(2^n 3^m - 1) = 2^{n+1} - 2$
 			\item $d(2^n 5^m - 1) = 2^{n+2}$
@@ -1056,16 +1080,16 @@
 			\item $d(2^n 31^m - 1) = 2^{n+2} 5$
 			\item $d(2^n 127^m - 1) = 2^{n+3} 7$
 			\item $d(2^n 257^m - 1) = 2^{n+4} 9$
-			\item $d(2^n 8191^n - 1) = 2^{n+2} 1001$
+			\item $d(2^n 683^m - 1) = 2^{n+2} 33$
+			\item $d(2^n 8191^m - 1) = 2^{n+2} 1001$
 		\end{enumerate}
 	\end{corollary}
 	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
 	% TODO: It seems like there's some pattern of Mersenne primes != 3 where d(p^n - 1) often != 0. Can we check d(131071 - 1)?
-	% TODO: It seems like we only get non-zero d when p is a Fermat or Mersenne prime.
 
 	You may have noticed that for many sizes, we have $d(p-1) = 0$.
 	We can actually classify some $p$ for which this is the case.
-	\begin{theorem}
+	\begin{theorem}\label{dp-1isZero}
 		Let $p$ be a prime one less than a multiple of 4 where
 		\begin{equation*}
 			\{\pm 2^r \pmod p : r \geq 0\} = (\Z / p \Z)^{\times}.
@@ -1090,14 +1114,12 @@
 		Since $p \equiv 3 \pmod 4$, this value is odd.
 		Applying the linearity of the trace and corollary \ref{traceAt1},
 		\begin{equation*}
-			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1,
+			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1 = 0.
 		\end{equation*}
-		which is even.
 		However, we can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by corollary \ref{traceMobius}, 
 		\begin{equation*}
-			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1,
+			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1.
 		\end{equation*}
-		which is odd.
 		Thus we have reached a contradiction.
 	\end{proof}
 	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
