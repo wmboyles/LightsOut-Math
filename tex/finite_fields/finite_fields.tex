@@ -341,7 +341,7 @@
 	\end{proof}
 
 	% TODO: Find a reference for this
-	\begin{lemma}
+	\begin{lemma}\label{linearityPhiG}
 		$\Phi_G$ is linear with respect to symmetric difference.
 		That is, for all $V_1, V_2 \subseteq V$,
 		\begin{equation*}
@@ -349,29 +349,34 @@
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
+		Notice that for any $v \in V$,
+		\begin{equation*}
+			\abs{\{N(v) \cap (V_1 \triangle V_2)\}} \equiv \abs{\{N(v) \cap V_1\}} + \abs{\{N(v) \cap V_2\}} \pmod 2.
+		\end{equation*}
+		So, we can write
 		\begin{align*}
 			\Phi_G(V_1 \triangle V_2) &= \{v \in V : \abs{N(v) \cap (V_1 \triangle V_2)} \text{ is odd}\} \\
-			&= \left(\{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \cup \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\}\right) \setminus \{v \in V : \abs{N(v) \cap (V_1 \cap V_2)} \text{ is odd}\} \\
-			&= \{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \triangle \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\} \\
-			&= \Phi_G(V_1) \triangle \Phi_G(V_2)
+			&= \left(\{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \cup \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\}\right) \setminus \{v \in V : \abs{N(v) \cap (V_1 \cap V_2)} \text{ is odd}\}
+			&= \Phi_G(V_1) \triangle \Phi_G(V_2),
 		\end{align*}
+		as desired.
 	\end{proof}
-	% TODO: An AI review said this proof wasn't entirely correct. Double check.
 
 	\begin{corollary}
 		If $V_1$ and $V_2$ have the same image under $\Phi_{G}$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
 	\end{corollary}
 	\begin{proof}
 		Assume that $V_1$ and $V_2$ have the same image under $\Phi_G$.
-		Then
+		Then by lemma \ref{linearityPhiG},
 		\begin{align*}
 			\Phi_{G}(V_1 \triangle V_2) &= \Phi_{G}(V_1) \triangle \Phi_{}(V_2) \\
 			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_2) \\
 			&= \emptyset.
 		\end{align*}
 		Thus, $V_1 \triangle V_2 \in \ker{\Phi_G}$.
+	
 		Now assume $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-		Then
+		Then by lemma \ref{linearityPhiG},
 		\begin{align*}
 			\Phi_G(V_1) &= \Phi_G(V_1) \triangle \emptyset \\
 			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_1 \triangle V_2) \\
@@ -515,20 +520,20 @@
 		\begin{equation*}
 			F_{n+1}(x) = x^{2^{k}-1}{F_{b}(x)}^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}{F_{b}(x+1)}^{2^k}.
 		\end{equation*}
-		Since $b$ is an odd multiple of 3, corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
+		Since $b$ is odd, lemma \ref{SquareSquareFree} tells us $F_b(x)$ is the square of a square-free polynomial.
+		Since $b$ is a multiple of 3, corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
 		So,
 		\begin{equation*}
-			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^k}{g(x)}^{2^k} \qquad F_{n+1}(x+1) = x^{2^k}(x+1)^{2^{k}-1}{g(x+1)}^{2^k},
+			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^{k+1}}g(x)^{2^{k+1}} \qquad F_{n+1}(x+1) = x^{2^{k+1}}(x+1)^{2^{k}-1}g(x+1)^{2^{k+1}},
 		\end{equation*}
-		% TODO: An AI review flagged the above 2 equations has having the wrong degree. I think it's confused about F_{b}(x)^{2^k} meaning the same as (F_{b}(x))^{2^k}. I wrote it this way instead of putting the exponent closer to F to avoid confusing this with the notation for repeatedly applying F. If the AI is flagging something else, then I'm not sure how the multiplicities would be different from what Hunziker, Machiavelo, and Park state in their lemma 2.6.
-		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both divisible by neither $x$ nor $x+1$.
+		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both square-free and divisible by neither $x$ nor $x+1$.
 		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
 	This result was first proven by Boyles in \cite{boylesResolutionSutner} and resolves a conjecture of Sutner's \cite{Sutner1989}.
 	
 	We can repeatedly apply theorem \ref{2nPlus1} to obtain explicit formulas for $d(n)$.
 	\begin{corollary}\label{2nPlus1Explicit}
-		$n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
+		Write $n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
 		Then
 		\begin{equation*}
 			d(n) = 2^s d(b-1) + \begin{cases}
@@ -613,10 +618,40 @@
 		\end{align*}
 		so $n \equiv -1 \pmod 6$, as desired.
 	\end{proof}
+
+	\begin{definition}
+		Let $P$ be a polynomial in $\F_2[x]$.
+		Then 
+		\begin{equation*}
+			\operatorname{rank}(P) = \min{\{r > 0 : P(x) \mid F_r(x)\}}.
+		\end{equation*}
+	\end{definition}
+	Hunziker, Machiavelo, and Park proved that every polynomial divides some $F_r(x)$ and therefore has a finite $\operatorname{rank}$ \cite{HUNZIKER2004465} (see Corollary 2.8).
 	
-	% TODO: We may also need to show a lemma that if rank(P) is the least r such that P divides F_r, then P divides F_m if and only if rank(P) divides m.
+	We now show a relationship between divisibility of polynomials and divisibility of their ranks.
+	\begin{lemma}\label{rankApparition}
+		\begin{equation*}
+			P(x) \mid F_m(x) \iff \operatorname{rank}(P) \mid m.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Let $r = \operatorname{rank}(P)$.
+		
+		Assume that $P(x)$ divides $F_m(x)$.
+		$P(x)$ must also divide $F_r(x)$.
+		So by lemma \ref{FibonacciDivisibility},
+		\begin{align*}
+			P(x) &\mid \gcd{(F_r(x), F_m(x))} \\
+			P(x) &\mid F_{\gcd(r, m)}(x).
+		\end{align*}
+		Since $r$ is minimal, $\gcd{(r,m)} = r$, and so $r \mid m$.
+		
+		Now assume that $r \mid m$.
+		Then $\gcd{(r,m)} = r$.
+		By lemma \ref{FibonacciDivisibility}, $F_r(x) \mid F_m(x)$, and so $P(x) \mid F_m(x)$.
+	\end{proof}
 	
-	We can now use this recurrence result to prove the impossibility of certain values of $d(n)$.
+	We can now use this recurrence result to prove certain even values of $d(n)$ are impossible.
 	\begin{theorem}
 		The smallest even $k$ such that for all $n \in \N$, $d(n) \neq k$ is $k=26$.
 	\end{theorem}
@@ -675,15 +710,14 @@
 		\end{enumerate}
 		We will handle these case-by-case.
 		
-		Define the ``$\operatorname{rank}$" of a polynomial $P$ to be the smallest integer $r$ such that $P$ divides $F_{r}$.
-		Calculating the rank of our three candidates for $h_{m+1}(x)$,
+		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$,
 		\begin{align*}
 			\operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
 			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
 			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
 		\end{align*}
-		If either rank-63 polynomials $C_2$ or $C_3$ divides $R_{m+1}(x)$, then 63 divides $m+1$.
-		However, by definition of rank, both polynomials would divide $R_{m+1}(x)$.
+		By lemma \ref{rankApparition}, if either rank-63 polynomials $C_2$ or $C_3$ divides $R_{m+1}(x)$, then 63 divides $m+1$.
+		However, both polynomials would divide $R_{m+1}(x)$.
 		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
 		If $C_1$ $R_{m+1}$, then 85 divides $m+1$.
 		Combining this with the fact that 3 divides $m+1$ we showed earlier, we see that 255 must divide $m+1$.
@@ -694,7 +728,7 @@
 		\end{equation*}
 		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), coprime to each other, and coprime with $C_1$.
 		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
-		Since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
+		By lemma \ref{rankApparition}, since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
 		Therefore,
 		\begin{equation*}
 			\deg{H_{m+1}(x)} \geq \deg{C_1(x)} + \deg{P(x)} + \deg{Q(x)} = 14,
@@ -769,7 +803,7 @@
 
 	We will show an equivalent definition of Wieferich primes.
 	\begin{lemma}\label{wieferichEquivalence}
-		A prime number $p$ is a Wieferich prime if and only if
+		A odd prime number $p$ is a Wieferich prime if and only if
 		\begin{equation*}
 			p^2 \mid 2^{\ord[p]{2}} - 1.
 		\end{equation*}
@@ -787,7 +821,7 @@
 		However, $k = (p-1)/n$ is smaller than $p$ and thus not divisible by $p$, so $v_p(k) = 0$.
 		Thus,
 		\begin{equation*}
-			v_p(2^(p-1) - 1) = v_p(2^n - 1).
+			v_p(2^{p-1} - 1) = v_p(2^n - 1).
 		\end{equation*}
 		So, $p^2 \mid 2^{p-1} - 1$ if and only if $p^2 \mid 2^{\ord[p]{2}} - 1$, as desired.
 	\end{proof}
@@ -966,7 +1000,7 @@
 	
 	Now we may combine together many of our partial results to state a more significant result. 
 	\begin{theorem}\label{pk-1Equalsp-1}
-		If $p$ is not a Wieferich prime, then for all $k \in \N$,
+		If $p$ is not a Wieferich prime, then for all $k \ge 1$,
 		\begin{equation*}
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
@@ -1036,7 +1070,7 @@
 		\end{equation*}
 	\end{proof}
 
-	We can combine this result with our recurrence when doubling $n$ and adding 1.
+	We can combine this result with our recurrence for $d(2n + 1)$.
 	\begin{corollary}
 		Let $p$ be an odd non-Wieferich prime.
 		Then for all $n,m \geq 0$,
@@ -1077,11 +1111,11 @@
 			\item $d(2^n 5^m - 1) = 2^{n+2}$
 			\item $d(2^n 7^m - 1) = 0$
 			\item $d(2^n 17^m - 1) = 2^{n+3}$
-			\item $d(2^n 31^m - 1) = 2^{n+2} 5$
-			\item $d(2^n 127^m - 1) = 2^{n+3} 7$
-			\item $d(2^n 257^m - 1) = 2^{n+4} 9$
-			\item $d(2^n 683^m - 1) = 2^{n+2} 33$
-			\item $d(2^n 8191^m - 1) = 2^{n+2} 1001$
+			\item $d(2^n 31^m - 1) = 2^{n+2} \cdot 5$
+			\item $d(2^n 127^m - 1) = 2^{n+3} \cdot 7$
+			\item $d(2^n 257^m - 1) = 2^{n+4} \cdot 9$
+			\item $d(2^n 683^m - 1) = 2^{n+2} \cdot 33$
+			\item $d(2^n 8191^m - 1) = 2^{n+2} \cdot 7 \cdot 11 \cdot 13$
 		\end{enumerate}
 	\end{corollary}
 	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
