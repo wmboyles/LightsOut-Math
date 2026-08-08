@@ -5,6 +5,7 @@
 \usepackage{fullpage}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{hyperref}
 
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{theorem}{Theorem}[section]
@@ -119,11 +120,11 @@
 		Notice,
 		\begin{enumerate}[label=(\roman*)]
 			\item
-			We find that $f_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
 			\item
 			Follows from (i) by substituting $x+1$ for $x$.
 			\item
-			We find that $f_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
 			\item
 			Follows from (iii) by substituting $x+1$ for $x$.
 		\end{enumerate}
@@ -349,15 +350,19 @@
 		\end{equation*}
 	\end{lemma}
 	\begin{proof}
-		Notice that for any $v \in V$,
-		\begin{equation*}
-			\abs{\{N(v) \cap (V_1 \triangle V_2)\}} \equiv \abs{\{N(v) \cap V_1\}} + \abs{\{N(v) \cap V_2\}} \pmod 2.
-		\end{equation*}
-		So, we can write
+		Let $N(v)$ be the neighborhood of vertex $v$: $v$ and its immediate neighbors.
+		Expanding and taking the cardinalities modulo 2,
 		\begin{align*}
-			\Phi_G(V_1 \triangle V_2) &= \{v \in V : \abs{N(v) \cap (V_1 \triangle V_2)} \text{ is odd}\} \\
-			&= \left(\{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \cup \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\}\right) \setminus \{v \in V : \abs{N(v) \cap (V_1 \cap V_2)} \text{ is odd}\}
-			&= \Phi_G(V_1) \triangle \Phi_G(V_2),
+			N(v) \cap (V_1 \triangle V_2) &= ((N(v) \cap V_1) \cup (N(v) \cap V_2)) \setminus (N(v) \cap V_1 \cap V_2) \\
+			\abs{N(v) \cap (V_1 \triangle V_2)} &= \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} - 2\abs{N(v) \cap V_1 \cap V_2} \\
+			&\equiv \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} \pmod 2.
+		\end{align*}
+		Thus, for any $v \in V$,
+		\begin{align*}
+			v \in \Phi_G(V_1 \triangle V_2) &\iff \abs{N(v) \cap (V_1 \triangle V_2)} \equiv 1 \pmod 2 \\
+			&\iff \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} \equiv 1 \pmod 2 \\
+			&\iff (v \in \Phi_{G}(V_1)) \text{ XOR } (v \in \Phi_G(V_2)) \\
+			&\iff v \in \Phi_G(V_1) \triangle \Phi_G(V_2),
 		\end{align*}
 		as desired.
 	\end{proof}
@@ -620,7 +625,7 @@
 	\end{proof}
 
 	\begin{definition}
-		Let $P$ be a polynomial in $\F_2[x]$.
+		Let $P$ be a non polynomial in $\F_2[x]$.
 		Then 
 		\begin{equation*}
 			\operatorname{rank}(P) = \min{\{r > 0 : P(x) \mid F_r(x)\}}.
@@ -665,7 +670,7 @@
 		We will show than $d(n)=26$ is impossible.
 		
 		Assume for the sake of contradiction that there exists $n \in \N$ such that $d(n) = 26$.
-		Since 26 is not divisible by 4, corollary \ref{NEvenDDivisible4} that $n$ must be odd.
+		Since 26 is not divisible by 4, corollary \ref{NEvenDDivisible4} says $n$ must be odd.
 		So, we may write $n = 2m+1$.
 		By theorem \ref{2nPlus1},
 		\begin{equation*}
@@ -675,34 +680,31 @@
 			\end{cases}.
 		\end{equation*}
 		Since lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
-		Let $m+1 = 2^s b$ for odd $b$ and $s \geq 0$.
+		Let $m+1 = 2^s b$ for odd $b$ divisible by 3 and $s \geq 0$.
 		By corollary \ref{2nPlus1Explicit},
 		\begin{equation*}
 			d(m) = 2^s d(b-1) + 2(2^s - 1) = 12.
 		\end{equation*}
-		The only possible integer solutions here are $d(b-1)=12$ and $s=0$ or $d(b-1)=5$ and $s=1$.
-		Since lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
+		The only possible integer solutions here are $d(b-1)=12$, $s=0$ or $d(b-1)=5$, $s=1$.
+		Lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, so the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
 		Thus, $m$ must be even.
 		
-		We know from lemma \ref{FibonacciPolynomialGCD} that
-		\begin{equation*}
-			d(m) = \deg{\left(\gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)}\right)}.
-		\end{equation*}
-		Since $m+1$ is odd lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
+		Since $m+1$ is odd, lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
 		\begin{equation*}
 			F_{m+1}(x) = R_{m+1}(x)^2.
 		\end{equation*}
-		Define $H_{m+1}(x)$
+		Define $H_{m+1}(x)$ such that
 		\begin{equation*}
-			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)} \qquad \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)} = H(x)^2.
+			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)} \text{ and } \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)} = H_{m+1}(x)^2.
 		\end{equation*}
-		Since $R_{m+1}(x)$ is square-free, then $H_{m+1}(x)$ is too.
+		Since $R_{m+1}(x)$ is square-free, $H_{m+1}(x)$ is too.
+		Notice too that $H_{m+1}(x) = H_{m+1}(x+1)$.
 		Since $d(m) = 12$, $\deg H_{m+1}(x) = 6$.
-		Notice too that $H_{m+1}(x) = H_{m+1}(x+1)$, so our work in lemma \ref{FibonacciFormulaT} tells us that for $y = x^2 + x$, there exists square-free a cubic polynomial $h_{m+1}(y) \in \F_2[y]$ such that
+		Lemma \ref{FibonacciFormulaT} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
 		\end{equation*}
-		There are only three possible square-free cubic polynomials in $\F_2[y]$ that are also 1 at $y=0$:
+		There are only three possible square-free cubic polynomials in $\F_2[y]$ that evaluate to 1 at $y=0$:
 		\begin{enumerate}
 			\item $C_1(y) = y^3 + 1$
 			\item $C_2(y) = y^3 + y + 1$
@@ -711,22 +713,27 @@
 		We will handle these case-by-case.
 		
 		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$,
+		% TODO: Actually show calculations for the ranks in an appendix
 		\begin{align*}
 			\operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
 			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
 			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
 		\end{align*}
-		By lemma \ref{rankApparition}, if either rank-63 polynomials $C_2$ or $C_3$ divides $R_{m+1}(x)$, then 63 divides $m+1$.
+		If either rank-63 polynomial $C_2(x)$ or $C_3(x)$ is actually $h_{m+1}(x)$, it must also divide $F_{m+1}(x)$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
+		Thus, by lemma \ref{rankApparition}, 63 would divide $m+1$.
 		However, both polynomials would divide $R_{m+1}(x)$.
 		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
-		If $C_1$ $R_{m+1}$, then 85 divides $m+1$.
-		Combining this with the fact that 3 divides $m+1$ we showed earlier, we see that 255 must divide $m+1$.
+		Thus neither $C_2$ nor $C_3$ can be $h_{m+1}(x)$.
 		
-		Define
+		Similarly, if the rank-85 polynomial $C_1(x)$ is actually $h_{m+1}(x)$, then lemma \ref{rankApparition} tells us 85 divides $m+1$.
+		We also showed earlier that 3 also divides $m+1$.
+		Since $\operatorname{lcm}{(85,3)} = 255$ must divide $m+1$.
+		
+		Let
 		\begin{equation*}
-			P(x) = x^4 + x^3 + 1 \qquad Q(x) = x^4 + x^3 + x^2 + x + 1.
+			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
-		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), coprime to each other, and coprime with $C_1$.
+		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), are coprime to each other, and are coprime with $C_1$.
 		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
 		By lemma \ref{rankApparition}, since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
 		Therefore,
@@ -735,7 +742,7 @@
 		\end{equation*}
 		which contradicts our assumption that the degree was 6.
 		
-		Thus, there is no $3 \mid m+1$ such that $d(m) = 12$ and therefore no $n$ such that $d(n) = 26$.
+		We showed there are no suitable polynomials, so we conclude there is no $3 \mid m+1$ such that $d(m) = 12$ and therefore no $n$ such that $d(n) = 26$.
 	\end{proof}
 
 
@@ -776,7 +783,7 @@
 	\begin{proof}
 		Suppose $2^r \equiv 1 \pmod{p^j}$.
 		Then $h$ divides $r$, so we may write $r = ht$.
-		By the Lifting the Exponent Lemma,
+		By the Lifting the Exponent Lemma \cite{ireland_rosen_1990},
 		\begin{align*}
 			v_p(2^r - 1) &= v_p(2^{ht} - 1) \\
 			&= v_p(2^h - 1) + v_p(t) \\
@@ -789,8 +796,6 @@
 		\end{equation*}
 		as desired.
 	\end{proof}
-	% TODO: Do we need a citation for the lifting the exponent lemma?
-	% Maybe Ireland & Rosen: A classical introduction to modern number theory chapter 2 (ss 2.7)?
 	
 	\begin{definition}
 		A prime number $p$ is a Wieferich prime when
@@ -798,7 +803,7 @@
 			p^2 \mid 2^{p-1} - 1.
 		\end{equation*}
 	\end{definition}
-	Although infinitely any Wieferich primes are conjectured to exist,
+	Although infinitely many Wieferich primes are conjectured to exist,
 	the only ones known to date are 1093 and 3511 \cite{CrandallSearch}, and any larger ones must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
 
 	We will show an equivalent definition of Wieferich primes.
@@ -814,7 +819,7 @@
 		\begin{equation*}
 			2^{p-1} - 1 = 2^{kn} - 1.
 		\end{equation*}
-		So, by the Lifting the Exponent lemma,
+		So, by the Lifting the Exponent lemma \cite{ireland_rosen_1990},
 		\begin{equation*}
 			v_p(2^{kn} - 1) = v_p(2^n - 1) + v_p(k).
 		\end{equation*}
@@ -970,7 +975,7 @@
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
 		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, -2^{\rho_2(M)-1}$. are all distinct modulo $M$.
-		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < d$, which contradicts $\rho_2(M)$ being minimal.
+		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < \rho_2(M)$, which contradicts $\rho_2(M)$ being minimal.
 	
 		The residues are exactly the elements of $G_M$, so
 		\begin{equation*}
@@ -1013,9 +1018,9 @@
 			R_j = \{\zeta + \zeta^{-1} : \ord{\zeta} = p^j\}.
 		\end{equation*}
 		By lemma \ref{RootParameterization},
-		\begin{equation}
+		\begin{equation*}
 			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
-		\end{equation}
+		\end{equation*}
 		Furthermore, since $p^k$ is odd, corollary \ref{rootMultiplicity2} and lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
 		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
 		Let $h = \ord[p]{2}$.
@@ -1057,9 +1062,9 @@
 			f(x^m) \mid P_s(x).
 		\end{equation*}
 		So, every polynomial can be decomposed by exponents modulo $m$:
-		\begin{equation}
+		\begin{equation*}
 			P_s(x) = \sum_{a=0}^{m-1}{x^a P_a(x^m)}.
-		\end{equation}
+		\end{equation*}
 		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
 		However, only exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$, so $P_0(y) = 1$, a contradiction
 		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
@@ -1164,6 +1169,6 @@
 	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
 	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
 	\newpage
+	\bibliographystyle{amsalpha}
 	\bibliography{refs.bib}
-	\bibliographystyle{amsplain}
 \end{document}
