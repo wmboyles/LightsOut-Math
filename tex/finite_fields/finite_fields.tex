@@ -7,13 +7,14 @@
 \usepackage{enumitem}
 \usepackage{hyperref}
 
-\newtheorem{lemma}{Lemma}[section]
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[lemma]
-\newtheorem{conjecture}{Conjecture}[section]
-\newtheorem{example}{Example}
-\newtheorem{remark}{Remark}
-\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
 
 \newcommand{\F}{\mathbb{F}}
 \newcommand{\N}{\mathbb{N}}
@@ -29,26 +30,23 @@
 
 \begin{document}
     \title{Fibonacci Polynomials \& \textit{Lights Out}}
-    \author{William Boyles \thanks{Independent (williamboyles22900@gmail.com)}}
+    \author{William Boyles}
     \date{\today}
     \maketitle
 	
-	% TODO: Better abstract
 	% TODO: More copy editing
-	% TODO: Some of my proofs are restatements of my unpublished ArXiv-only work. Do I cite myself (where I have some small mistakes in my proof) or combine into a larger work
     \begin{abstract}
-	    Consider a game played on a simple graph $G = (V,E)$ where each vertex consists of clickable light.
-	    A move is clicking any $v \in V$, which toggles the on/off state of $v$ and its neighbors.
-	    Given an initial configuration, one wins the game by finding a sequence of moves that turns off all of the lights.
-	    This game was commercially available from Tiger Electronics as \textit{Lights Out} for $G$ a $5 \times 5$ grid.
-	    
-	    Let $\Phi_G: P(V) \rightarrow P(V)$ be the function which maps the vertices clicked to the vertices that change state.
-	    For $G$ and $n \times n$ grid, let $d(n) = \dim{\ker{\Phi_G}}$.
-	    We show several that many values of $d(n)$ never occur.
-	    We show more general formulas for the value of $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ not a Wieferich prime. 
+    	\textit{Lights Out} is a game on a simple graph $G = (V,E)$ where clicking a vertex toggles the on/off state of it and its neighbors.
+	    Identifying subsets of $V$ with their indicator vectors over $\F_2$, let $\Phi_G: \F_2^V \rightarrow \F_2^V$ be the function which maps the set of vertices clicked to the set of vertices that change state, .
+	    For the $n \times n$ grid, define $d(n) = \dim{\ker{\Phi_G}}$.
+	    We recover the known fact that $d(n)$ is always even and prove infinitely many even values are also impossible.
+	    We provide formulas and bounds for $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ not a Wieferich prime.
 	\end{abstract}
 
 	\section{Fibonacci Polynomials}
+	We begin by introducing Fibonacci polynomials.
+	We first develop some basic properties of these polynomials that will be useful in relating them to the Lights Out problem.
+	
 	\begin{definition}[Fibonacci Polynomial]
 		Let $F_n(x)$ be the polynomial in the ring $\F_2[x]$ defined recursively by
 		\begin{equation*}
@@ -59,7 +57,7 @@
 			\end{cases}.
 		\end{equation*}
 	\end{definition}
-	These polynomials are called "Fibonacci" because when defined over the real numbers, $F_n(1)$ is the $n$th Fibonacci number.
+	These polynomials are called "Fibonacci" because $F_n(1)$ is the $n$th Fibonacci number.
 	
 	In $\F_2[x]$, the coefficients of $F_n(x)$ are either 1 or 0, so we can visualize them by coloring squares black or white to represent the coefficients.
 	For example,
@@ -75,16 +73,14 @@
 		\caption{$F_1(x)$ through $F_{128}(x)$, right-aligned.}
 	\end{figure}
 	
-	Using a well-known connection between the Sierpinski triangle and the parity of binomial coefficients, we may see that
+	The Sierpinski arises from the parity of the binomial coefficients in Pascal's triangle, giving the formula
 	\begin{equation*}
 		F_n(x) = \sum_{i=0}^{n-1}{\binom{n+i}{2i+1}x^i \mod 2}.
 	\end{equation*}
 
-	The above construction and formula was also shown by Sutner \cite{Sutner96sigma-automataand}.
-	Sutner also showed the following relationship between square \textit{Lights Out} grids and Fibonacci Polynomials.
+	Sutner also showed the above construction and formula, along with the following relationship between rectangular grids and Fibonacci Polynomials \cite[Theorem 5.1]{Sutner00sigma-automataand}.
 	\begin{lemma}[Sutner]\label{FibonacciPolynomialGCD}
 		Let $G = (V,E)$ be an $n \times m$ grid graph.
-		Let $\Phi_G: P(V) \rightarrow P(V)$ be the function that maps which lights are clicked to which lights change state.
 		Then
 		\begin{equation*}
 			\dim{\ker{\Phi_G}}
@@ -92,9 +88,14 @@
 			= \deg{\left(\gcd{\left(F_{n+1}(x+1), F_{m+1}(x)\right)}\right)}.
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}See \cite{Sutner96sigma-automataand} theorem 5.1.\end{proof}
 	
-	Sutner and others also shows several divisibility rules for these polynomials
+	In particular, this lemma allows us to define $d(n)$ in terms of Fibonacci polynomials.
+	\begin{equation*}
+		d(n) = \deg{\left(\gcd{\left(F_{n+1}(x), F_{n+1}(x+1)\right)}\right)}.
+	\end{equation*}
+	
+	% TODO: Check Knuth citation. It may be a different set of exercises.
+	Sutner and others also established several divisibility properties of Fibonacci polynomials \cite[Proposition 2.2]{HUNZIKER2004465}\cite[Proposition 2.1]{Sutner00sigma-automataand}\cite{Knuth_AOCP4A}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{FibonacciDivisibility}
 		A polynomial $\tau(x)$ in $\F_2[x]$ divides both $F_n(x)$ and $F_m(x)$ if and only if it divides $F_{\gcd(m,n)}(x)$.
 		In particular,
@@ -102,10 +103,6 @@
 			\gcd{\left(F_m(x),F_n(x)\right)} = F_{\gcd(m,n)}(x).
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{HUNZIKER2004465} proposition 2.2, \cite{Sutner96sigma-automataand} proposition 2.1, and \cite{Knuth_AOCP4A}.
-	\end{proof}
-	% TODO: Check Knuth citation. It may be a different set of exercises.
 	
 	\begin{corollary}\label{Threeven}
 		The following are true:
@@ -134,7 +131,7 @@
 		If $n$ is odd, then $F_n(x)$ is the square of a square-free polynomial.
 	\end{lemma}
 	\begin{proof}
-		See \cite{HUNZIKER2004465} proposition 2.11 and \cite{Sutner96sigma-automataand} Theorem 2.1 claim 2.
+		See \cite{HUNZIKER2004465} proposition 2.11 and \cite{Sutner00sigma-automataand} Theorem 2.1 claim 2.
 	\end{proof}
 	
 	% TODO: Check is this proof is immediate
@@ -317,11 +314,17 @@
 		Thus, $\alpha$ is a root of $F_n$.
 	\end{proof}
 
-	\section{Even Parity Covers}
-	$\ker{\Phi_G}$ may also be understood via parity covers and dominating sets.
+	\section{Even Dominating Sets}
+	We identify a subset $S \subseteq V$ with its indicator vector $\mathbf{1}_{S} \in \F_2^V$.
+	Under this identification, symmetric difference of subsets corresponds to addition in $\F_2^V$.
+	The map $\Phi_G$ is linear since the state change of each vertex is determined by the parity of the clicks on its closed neighborhood.
+	Consequently, two configurations $V_1, V_2 \subseteq V$ have the same image under $\Phi_G$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
+	Thus, configurations producing the same state change form cosets of $\ker{\Phi_G}$.
+	In particular, whenever an initial configuration is solvable, the set of all solutions is a coset of $\ker{\Phi_G}$, and hence has $2^d$ elements, where $d = \dim{\ker{\Phi_G}}$.
+	$\ker{\Phi_G}$ also has a natural interpretation in terms of even dominating sets.
 	
 	\begin{definition}
-		An \textit{even dominating set} of a graph $G = (V,E)$ is a subset $V' \subseteq V$ such that every vertex contains an even number of vertices from $V'$ in its neighborhood. 
+		An \textit{even dominating set} of a graph $G = (V,E)$ is a subset $V' \subseteq V$ such that the closed neighborhood $N[v]$ of every vertex contains an even number of vertices from $V'$. 
 	\end{definition}
 	Odd dominating sets can be analogously defined.
 	Sutner specifically studied odd dominating sets as the solution to \textit{Lights Out} when all lights are initially on.
@@ -332,66 +335,16 @@
 	\end{lemma}
 	\begin{proof}
 		Let $V' \in \ker{\Phi_G}$.
-		Let $N(v)$ be the neighborhood of vertex $v$: $v$ and its immediate neighbors.
-		Then for every $v \in V$,
+		Then every vertex is toggled an even number of times when the vertices in $V'$ are clicked.
+		Since each vertex is toggled exactly when the vertices in its closed neighborhood are clicked, for every $v \in V$,
 		\begin{equation*}
-			\abs{N(v) \cap V'} \text{ is even}.
+			\abs{N[v] \cap V'} \text{ is even}.
 		\end{equation*}
 		Thus, $V'$ is an even dominating set of $G$.
-		We can apply the same steps in reverse to show the converse.
+		The converse follows by reversing the same argument.
 	\end{proof}
 
-	% TODO: Find a reference for this
-	\begin{lemma}\label{linearityPhiG}
-		$\Phi_G$ is linear with respect to symmetric difference.
-		That is, for all $V_1, V_2 \subseteq V$,
-		\begin{equation*}
-			\Phi_G(V_1 \triangle V_2) = \Phi_G(V_1) \triangle \Phi_G(V_2).
-		\end{equation*}
-	\end{lemma}
-	\begin{proof}
-		Let $N(v)$ be the neighborhood of vertex $v$: $v$ and its immediate neighbors.
-		Expanding and taking the cardinalities modulo 2,
-		\begin{align*}
-			N(v) \cap (V_1 \triangle V_2) &= ((N(v) \cap V_1) \cup (N(v) \cap V_2)) \setminus (N(v) \cap V_1 \cap V_2) \\
-			\abs{N(v) \cap (V_1 \triangle V_2)} &= \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} - 2\abs{N(v) \cap V_1 \cap V_2} \\
-			&\equiv \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} \pmod 2.
-		\end{align*}
-		Thus, for any $v \in V$,
-		\begin{align*}
-			v \in \Phi_G(V_1 \triangle V_2) &\iff \abs{N(v) \cap (V_1 \triangle V_2)} \equiv 1 \pmod 2 \\
-			&\iff \abs{N(v) \cap V_1} + \abs{N(v) \cap V_2} \equiv 1 \pmod 2 \\
-			&\iff (v \in \Phi_{G}(V_1)) \text{ XOR } (v \in \Phi_G(V_2)) \\
-			&\iff v \in \Phi_G(V_1) \triangle \Phi_G(V_2),
-		\end{align*}
-		as desired.
-	\end{proof}
-
-	\begin{corollary}
-		If $V_1$ and $V_2$ have the same image under $\Phi_{G}$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-	\end{corollary}
-	\begin{proof}
-		Assume that $V_1$ and $V_2$ have the same image under $\Phi_G$.
-		Then by lemma \ref{linearityPhiG},
-		\begin{align*}
-			\Phi_{G}(V_1 \triangle V_2) &= \Phi_{G}(V_1) \triangle \Phi_{}(V_2) \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_2) \\
-			&= \emptyset.
-		\end{align*}
-		Thus, $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-	
-		Now assume $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-		Then by lemma \ref{linearityPhiG},
-		\begin{align*}
-			\Phi_G(V_1) &= \Phi_G(V_1) \triangle \emptyset \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_1 \triangle V_2) \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_1) \triangle \Phi_{G}(V_2) \\
-			&= \Phi_{G}(V_2).
-		\end{align*}
-		Thus $V_1$ and $V_2$ have the same image under $\Phi_G$.
-	\end{proof}
-	
-	We may now use our geometric understanding of $\ker{\Phi_G}$ as even parity covers to construct a lower bound on $d(n)$.
+	We may now use our graph-theoretic understanding of $\ker{\Phi_G}$ as even dominating sets to construct even dominating sets on larger grids by tiling those from smaller grids.
 	\begin{theorem}
 		For all $n,k \in \N$,
 		\begin{equation*}
@@ -403,7 +356,7 @@
 		Since $nk-1 = k(n-1) + (k-1)$, an $G$ may be broken into a $k \times k$ grid of $n-1 \times n-1$ grids, each separated by a horizontal or vertical strip of size 1.
 		
 		Let $Q$ be an even dominating set of $G_\ell$.
-		Let $R$ be $Q$ tiles $k$ times horizontally and vertically, with size 1 separators between each tile, onto $G_L$ where each tile is the reflection across its neighboring separators, as shown below.
+		Let $R$ be $Q$ tiled $k$ times horizontally and vertically, with size 1 separators between each tile, onto $G_L$ where each tile is the reflection across its neighboring separators, as shown below.
 		
 		\begin{figure}[H]
 			\centering
@@ -437,17 +390,19 @@
 		\begin{enumerate}
 			\item
 				$v$ is within a tile.
-				Then $\abs{N(v) \cap R}$ is even because $Q$ being is an even parity cover.
+				Then $\abs{N[v] \cap R}$ is even because $Q$ being is an even dominating set.
+				Vertices next to tile separators are unaffected by the tiling because the separator vertices are not included in $R$ and thus don't contribute to the parity of $N[v] \cap R$.
+				Thus, $\abs{N[v] \cap R}$ has the same parity as the corresponding closed neighborhood in $Q$, which is even.
 			\item
 				$v$ is on a separator between two tiles.
-				Then only two elements in $N(v)$, the vertices within a tile, are also in $R$.
+				Then only two elements in $N[v]$, the vertices within a tile, are also in $R$.
 				Because neighboring tiles are reflections of each other across separators, these two vertices are either both in $R$ or both not in $R$.
-				In either case, $\abs{N(v) \cap R}$ is even.
+				In either case, $\abs{N[v] \cap R}$ is even.
 			\item
 				$v$ is in the intersection of two separators.
-				Then all of $N(v)$ is in a separator and thus not in $R$, so $\abs{N(v) \cap R} = 0$, which is even.
+				Then all of $N[v]$ is in a separator and thus not in $R$, so $\abs{N[v] \cap R} = 0$, which is even.
 		\end{enumerate}
-		Since for every vertex $v$ of $G_L$, $\abs{N(v) \cap R}$ is even, so $R$ is an even dominating set of $G_L$.
+		Since for every vertex $v$ of $G_L$, $\abs{N[v] \cap R}$ is even, so $R$ is an even dominating set of $G_L$.
 		Thus, for every even dominating set of $G_\ell$, there exists an even dominating set of $G_L$ obtained through tiling.
 		This tiling function is also injective because we can recover $Q$ by restricting $R$ to just the top left tile.
 		Thus,
@@ -457,10 +412,11 @@
 		as desired.
 	\end{proof}
 	Sutner shows a similar result \cite{Sutner1988_2}.
-	There is also a simple proof in terms of Fibonacci polynomials that also provides a divisibility relationship.
+	There is also a simple proof in terms of Fibonacci polynomials.
 	\begin{proof}
 		Since $n$ divides $nk$, lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
-		So,
+		Substituting $x+1$, we also have $F_{n}(x+1)$ divides $F_{nk}(x+1)$.
+		Thus, the first GCD divides the second:
 		\begin{equation*}
 			\gcd{\left(F_n(x),F_n(x+1)\right)} \mid \gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)}.
 		\end{equation*}
@@ -469,7 +425,7 @@
 			\gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)} = 	\gcd{\left(F_n(x),F_n(x+1)\right)} Q(x),
 		\end{equation*}
 		for some $Q(x) \in \F_2[x]$.
-		Taking the degrees, we obtain $d(nk-1) = d(n-1) + \deg{Q(x)}$, and so the desired inequality follows.
+		Taking the degrees, we obtain $d(nk-1) = d(n-1) + \deg{Q(x)}$, and the desired inequality follows.
 	\end{proof}
 	Note that although the smaller GCD polynomial divides the larger, it's not the case that $d(n-1)$ divides $d(nk-1)$.
 	For example, if $n=5$ and $k=6$, then $d(n-1) = d(4) = 4$, which does not divide $d(nk-1) = d(29) = 10$.
@@ -1164,7 +1120,7 @@
 	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
 	
 	% TODO: Section on MCP
-	% TODO: Maybe most of the even parity covers section could move to a different paper?
+	% TODO: Maybe most of the even dominating set section could move to a different paper?
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
 	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
 	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
