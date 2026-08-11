@@ -117,39 +117,19 @@
 	\begin{proof}
 		Notice,
 		\begin{enumerate}[label=(\roman*)]
-			\item
-			We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
-			\item
-			Follows from (i) by substituting $x+1$ for $x$.
-			\item
-			We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
-			\item
-			Follows from (iii) by substituting $x+1$ for $x$.
+			\item We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item Follows from (i) by substituting $x+1$ for $x$.
+			\item We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item Follows from (iii) by substituting $x+1$ for $x$.
 		\end{enumerate}
 	\end{proof}
 	
+	Hunziker, Machiavelo, and Park give the following characterization of the square-free factors of Fibonacci polynomials \cite[Proposition 2.11]{HUNZIKER2004465}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{SquareSquareFree}
 		If $n$ is odd, then $F_n(x)$ is the square of a square-free polynomial.
 	\end{lemma}
-	\begin{proof}
-		See \cite{HUNZIKER2004465} proposition 2.11 and \cite{Sutner00sigma-automataand} Theorem 2.1 claim 2.
-	\end{proof}
-	
-	% TODO: Check is this proof is immediate
-	\begin{corollary}\label{rootMultiplicity2}
-		If $n$ is odd, then every root of $F_n(x)$ has multiplicity 2.
-	\end{corollary}
-	\begin{proof}
-		Let $n$ be odd and $\alpha$ a root of $F_n(x)$.
-		By \ref{SquareSquareFree}, there exists $\tau_n \in \F_2[x]$ such that
-		\begin{equation*}
-			F_n(x) = \tau_n(x)^2,
-		\end{equation*}
-		and $\tau(x)$ is square-free.
-		Since $\alpha$ is a root of $F_n(x)$, it must also be a root of $\tau_n(x)$ and thus has multiplicity 2.
-	\end{proof}
-	
-	We can now prove some of our own facts about these polynomials and their GCDs, particularly on square grids.
+
+	We can now use these properties to prove several facts about $d(n)$.
 	\begin{lemma}\label{DEven}
 		Let $d(n) = \dim{\ker{\Phi_G}}$ for $G$ an $n \times n$ grid graph.
 		Then $d(n)$ is always even.
@@ -172,7 +152,7 @@
 			A(y)+(x+1)B(y) &= A(y) + xB(y) \\
 			B(y) &= 0.
 		\end{align*}
-		In other words, $P(x)$ in unchanged by translation when $P$ is a polynomial in $x^2 + x$.
+		In other words, $P(x)$ in unchanged by translation exactly when when $P(x) \in \F_2[x^2 + x]$.
 		
 		Since $G_n$ is also unchanged by translation, there exists $H_n \in \F_2[x]$ such that
 		\begin{equation*}
@@ -184,6 +164,7 @@
 		\end{equation*}
 		and thus $d(n)$ is even.
 	\end{proof}
+	% TODO: There must be other proofs in the literature of this fact that we should cite.
 
 	\begin{corollary}\label{NEvenDDivisible4}
 		If $n$ is even, then $d(n)$ is divisible by 4.
@@ -197,7 +178,7 @@
 			&= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}^2 \\
 			\sqrt{G_{n+1}(x)} &= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}
 		\end{align*}
-		We can see from the right-hand side of the equation that this function is also unaffected by translation.
+		Since translation by 1 exchanges the the arguments of the GCD, $\sqrt{G_{n+1}(x)} = \sqrt{G_{n+1}(x+1)}$.
 		So, by lemma \ref{DEven}, there exists $H_{n+1} \in \F_2[x]$ such that
 		\begin{align*}
 			\sqrt{G_{n+1}(x)} &= H_{n+1}(x^2+x) \\
@@ -209,7 +190,7 @@
 		\end{equation*}
 		as desired.
 	\end{proof}
-	Note that the implication does not hold in the other direction: $d(n)$ also be divisible by 4 when $n$ is odd.
+	Note that the implication does not hold in the other direction: $d(n)$ may also be divisible by 4 when $n$ is odd.
 	For example, $d(9) = 8$.
 
 	\begin{lemma}\label{FibonacciFormulaT}
@@ -252,21 +233,19 @@
 			xF_n(x) = G_{n-1}(t) = t^{n} + t^{-n}.
 		\end{equation*}
 	\end{proof}
-	This was also proven in \cite{HUNZIKER2004465}, who also prove the following identities.
+	This was also proven by Hunziker, Machiavelo, and Park \cite[Proposition 2.3]{HUNZIKER2004465}.
 	
+	The following identity is a specialization of a result of Hunziker, Machiavelo, and Park \cite[Lemma 2.6]{HUNZIKER2004465}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{Fibonacci2k}
-		Let $n = 2^k b$ where $b,k \in \N$.
+		Let $n = 2^k b$ where $k \geq 0$ and $b$ is odd.
 		Then
 		\begin{equation*}
 			F_n(x) = x^{2^k-1}F_b(x)^{2^k}.
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{HUNZIKER2004465} lemma 2.6.
-	\end{proof}
-
+	
 	\begin{lemma}\label{RootParameterization}
-		The distinct roots of $F_n(x)$ are $\{\zeta + \zeta^{-1} : \zeta^{n} = 1, \zeta \neq 1\}$, plus 0 when $n$ is even.
+		The distinct roots of $F_n(x)$ in $\overline{\F_2}$ are $\{\zeta + \zeta^{-1} : \zeta^{n} = 1, \zeta \neq 1\}$ together with 0 when $n$ is even.
 	\end{lemma}
 	\begin{proof}
 		Notice that $F_n(0) = F_{n-2}(0)$, so
@@ -314,6 +293,8 @@
 		\end{equation*}
 		Thus, $\alpha$ is a root of $F_n$.
 	\end{proof}
+
+	This parameterization gives a convenient description of the roots of Fibonacci polynomials in terms of roots of unity.
 
 	\section{Even Dominating Sets}
 	We identify a subset $S \subseteq V$ with its indicator vector $\mathbf{1}_{S} \in \F_2^V$.
@@ -413,7 +394,8 @@
 		as desired.
 	\end{proof}
 	Sutner shows a similar result \cite{Sutner1988_2}.
-	There is also a simple proof in terms of Fibonacci polynomials.
+
+	The same inequality also follows from the Fibonacci polynomial characterization.
 	\begin{proof}
 		Since $n$ divides $nk$, lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
 		Substituting $x+1$, we also have $F_{n}(x+1)$ divides $F_{nk}(x+1)$.
@@ -432,9 +414,9 @@
 	For example, if $n=5$ and $k=6$, then $d(n-1) = d(4) = 4$, which does not divide $d(nk-1) = d(29) = 10$.
 
 	\section{Number Theory}
-	We may also understand $d(n)$ and the Fibonacci polynomials with some results from number theory.
-	Many of the results in this section were first discussed by the author in \cite{boylesResolutionSutner} and \cite{boylesMostClicks}.
-	However, this writing restates several proofs for clarity and to correct some small mistakes in those earlier proofs.
+	We now use results from number theory to study the GCDs of Fibonacci polynomials and, consequently, the values of $d(n)$.
+	Many of the results in this section first appeared in the author's earlier works \cite{boylesMostClicks, boylesResolutionSutner}.
+	We restate several proofs here for completeness and to correct minor errors in those earlier versions.
 	
 	\begin{lemma}[Ore]\label{OreGcd}
 		Let $a$, $b$, $c$, and $d$ be integers.
@@ -444,11 +426,10 @@
 			(ab,cd) = (a,c)(b,d)\left(\frac{a}{(a,c)},\frac{d}{(b,d)}\right)\left(\frac{c}{(a,c)},\frac{b}{(b,d)}\right).
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{ore_number_theory}.
-	\end{proof}
-	Although Ore's result deals specifically with integers, both the integers and $\F_2[x]$ are Euclidean domains, so the result will still hold for our purposes.
+	We will also use the analogous identity in $\F_2[x]$.
+	Since $\F_2[x]$ is a Euclidean domain, the same proof applies with divisibility and GCDs interpreted in $\F_2[x]$ \cite{ore_number_theory}.
 	
+	We can not combine the preceding polynomial identity to obtain a recurrence for $d(n)$.
 	\begin{theorem}\label{2nPlus1}
 		For all $n \in \N$,
 		\begin{equation*}
@@ -474,7 +455,7 @@
 		\begin{equation*}
 			\delta_n = 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}.
 		\end{equation*}
-		So, $\delta_n$ is 2 exactly when $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$.
+		So, $\delta_n$ is 2 exactly when $x+1$ occurs with greater multiplicity in $F_{n+1}(x)$ than in $F_{n+1}(x+1)$.
 		When $n+1$ is not divisible by 3, corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
 		When $n+1$ is divisible by 3, let $n+1 = b 2^{k}$ for $b,k \geq 0$ and $b$ odd.
 		Then $b$ must be divisible by 3.
@@ -491,9 +472,9 @@
 		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both square-free and divisible by neither $x$ nor $x+1$.
 		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
-	This result was first proven by Boyles in \cite{boylesResolutionSutner} and resolves a conjecture of Sutner's \cite{Sutner1989}.
+	This result was first proven by Boyles \cite{boylesResolutionSutner}, resolving a conjecture of Sutner \cite{Sutner1989}.
 	
-	We can repeatedly apply theorem \ref{2nPlus1} to obtain explicit formulas for $d(n)$.
+	Repeated application of Theorem \ref{2nPlus1} gives the following explicit formula for $d(n)$.
 	\begin{corollary}\label{2nPlus1Explicit}
 		Write $n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
 		Then
@@ -505,40 +486,23 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		The result is a tautology for even $n$ ($s=0$ and $n+1 = b$), so we may continue assuming $n$ is odd.
-		
-		By induction on $s$.
-		For $s=0$,
+		We proceed by induction on $s$.
+		For $s=0$, we have $d(n) = d(b-1)$, which is the desired formula.
+		Now suppose the result holds for some $s \geq 0$.
+		For $n+1 = 2^{s+1}b$, Theorem \ref{2nPlus1Explicit} gives
 		\begin{align*}
-			n+1 &= 2^0 b \\
-			n &= b-1 \\
-			d(n) &= d(b-1) \\
-			&= 2^0 d(b-1) + \begin{cases}
-				2(2^0 - 1) & 3 \mid b \\
-				0 & \text{otherwise}
-			\end{cases},
-		\end{align*}
-		as desired.
-		Assume that our claim holds for $s \geq 0$.
-		Then for $n+1 = 2^{s+1}b$,
-		\begin{align*}
-			d(n) &= d\left(2^{s+1}b - 1\right) \\
-			&= d\left(2\left(2^s b - 1\right) + 1\right) \\
+			d(n) &= d\left(2\left(2^s b - 1\right) + 1\right) \\
 			&= 2d\left(2^s b - 1\right) + \begin{cases}
 				2 & 3 \mid 2^s b \\
 				0 & \text{otherwise}
-			\end{cases} \\
-			&= 2\left(2^s d(b-1) + \begin{cases}
+			\end{cases}.
+		\end{align*}
+		Since $3 \mid 2^s b$ if and only if $3 \mid b$, the induction hypothesis gives
+		\begin{align*}
+			d(n) &= 2\left(2^s d(b-1) + \begin{cases}
 				2(2^s - 1) & 3 \mid b \\
 				0 & \text{otherwise}
 			\end{cases}\right) + \begin{cases}
-				2 & 3 \mid 2^s b \\
-				0 & \text{otherwise}
-			\end{cases} \\
-			&= 2^{s+1}d(b-1) + \begin{cases}
-				2(2^{s+1} - 1) - 2 & 3 \mid b \\
-				0 & \text{otherwise}
-			\end{cases} + \begin{cases}
 				2 & 3 \mid b \\
 				0 & \text{otherwise}
 			\end{cases} \\
@@ -549,29 +513,29 @@
 		\end{align*}
 		as desired.
 	\end{proof}
+	Thus, the values of $d(n)$ are determined by the values $d(b-1)$ for odd $b$, together with whether $b$ is divisible by 3.
 	
-	We can also use theorem \ref{2nPlus1} to narrow down more when $d(n) = 2$.
+	We can also use theorem \ref{2nPlus1} to further restrict when $d(n) = 2$.
 	\begin{corollary}\label{D2Minus1Mod6}
 		If $d(n) = 2$, then $n \equiv -1 \pmod 6$.
 	\end{corollary}
 	\begin{proof}
 		Since 2 is not divisible by 4, corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
 		So, we can write $n = 2^k b - 1$ for $b$ odd and $k \geq 1$.
-		Using corollary \ref{2nPlus1Explicit}, we can define
+		Using corollary \ref{2nPlus1Explicit}, we can know for $i \in \N$,
 		\begin{equation*}
-			D_i = d(2^i b - 1) = \begin{cases}
-				2^i d(b-1) + 2(2^i - 1) & 3 \mid b \\
-				2^i d(b-1) & \text{otherwise}
+			d(2^k b - 1) = \begin{cases}
+				2^k d(b-1) + 2(2^k - 1) & 3 \mid b \\
+				2^k d(b-1) & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		If $3 \nmid b$, then we must have $D_k = 2 = 2^k d(b-1)$.
-		However, corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4, which cannot be the case.
+		If $3 \nmid b$, then we must have $d(n) = 2 = 2^k d(b-1)$.
+		This is impossible because corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4.
 		
-		If $3 \mid b$, then we must have $D_k = 2 = 2^k d(b-1) + 2(2^k - 1)$.
-		If $k \geq 2$, then this expression is greater than 2, which cannot be the case.
-		Thus, we must have $k=1$ and $D_1 = 2 = 2 d(b-1) + 2$, which simplifies to $d(b-1) = 0$.
-		Thus we may write $b = 3j$.
-		
+		If $3 \mid b$, then we may write we may write $b = 3j$.
+		We also must have $d(n) = 2 = 2^k d(b-1) + 2(2^k - 1)$.
+		If $k \geq 2$, then this expression is greater than 2.
+		Thus, we must have $k=1$ and $2 = 2 d(b-1) + 2$, which simplifies to $d(b-1) = 0$.
 		Solving for $n$, we find
 		\begin{align*}
 			n &= 2^k b - 1 \\
@@ -581,6 +545,9 @@
 		so $n \equiv -1 \pmod 6$, as desired.
 	\end{proof}
 
+	The preceding results can help us find values of $d(n)$ from smaller known values, but they do not rule out any values of $d(n)$.
+	To obtain such restrictions, we need to understand when individual polynomial factors can occur in the Fibonacci polynomial sequence.
+	We introduce the notation of $\operatorname{rank}$ to record the first index at which a given polynomial appears as a factor.
 	\begin{definition}
 		Let $P$ be a non-zero polynomial in $\F_2[x]$.
 		Then 
@@ -588,10 +555,11 @@
 			\operatorname{rank}(P) = \min{\{r > 0 : P(x) \mid F_r(x)\}}.
 		\end{equation*}
 	\end{definition}
-	Hunziker, Machiavelo, and Park proved that every polynomial divides some $F_r(x)$ and therefore has a finite $\operatorname{rank}$ \cite{HUNZIKER2004465} (see Corollary 2.8).
+	Hunziker, Machiavelo, and Park proved that every polynomial divides some $F_r(x)$ and therefore has a finite $\operatorname{rank}$ \cite[Corollary 2.8]{HUNZIKER2004465}.
 	
-	We now show a relationship between divisibility of polynomials and divisibility of their ranks.
+	We now show a relationship between the divisibility of polynomials and the divisibility of their ranks.
 	\begin{lemma}\label{rankApparition}
+		For any non-zero $P(x) \in \F_2[x]$,
 		\begin{equation*}
 			P(x) \mid F_m(x) \iff \operatorname{rank}(P) \mid m.
 		\end{equation*}
@@ -613,13 +581,14 @@
 		By lemma \ref{FibonacciDivisibility}, $F_r(x) \mid F_m(x)$, and so $P(x) \mid F_m(x)$.
 	\end{proof}
 	
-	We can now use this recurrence result to prove certain even values of $d(n)$ are impossible.
-	\begin{theorem}
+	Thus, the rank of a polynomial completely determines the indices at which it can divide a Fibonacci polynomial.
+	We can now use the ranks to restrict the possible factors of the GCD defining $d(n)$, allowing us to rule out the smallest even value not attained by $d(n)$.
+	\begin{theorem}\label{nodn26}
 		The smallest even $k$ such that for all $n \in \N$, $d(n) \neq k$ is $k=26$.
 	\end{theorem}
 	\begin{proof}
 		Recall from lemma \ref{DEven} that $d(n)$ is always even.
-		Through calculation, we can find that
+		The following computations show that every positive even value less than 26 occurs:
 		\begin{alignat*}{12}
 			d(5) &= 2 \qquad & d(4) &= 4 \qquad & d(11) &= 6 \qquad & d(16) &= 8 \qquad & d(29) &= 10 \qquad & d(84) &= 12 \\
 			d(23) &= 14 \qquad & d(19) &= 16 \qquad & d(101) &= 18 \qquad & d(30) &= 20 \qquad & d(59) &= 22 \qquad & d(62) &= 24.
@@ -637,11 +606,14 @@
 			\end{cases}.
 		\end{equation*}
 		Since lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
+		
 		Let $m+1 = 2^s b$ for odd $b$ divisible by 3 and $s \geq 0$.
 		By corollary \ref{2nPlus1Explicit},
-		\begin{equation*}
-			d(m) = 2^s d(b-1) + 2(2^s - 1) = 12.
-		\end{equation*}
+		\begin{align*}
+			d(m) = 12 &= 2^s d(b-1) + 2(2^s - 1) \\
+			14 &= 2^s(d(b-1) + 2) \\
+			7 &= 2^{s-1}(d(b-1) + 2).
+		\end{align*}
 		The only possible integer solutions here are $d(b-1)=12$, $s=0$ or $d(b-1)=5$, $s=1$.
 		Lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, so the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
 		Thus, $m$ must be even.
@@ -652,11 +624,15 @@
 		\end{equation*}
 		Define $H_{m+1}(x)$ such that
 		\begin{equation*}
-			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)} \text{ and } \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)} = H_{m+1}(x)^2.
+			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)}.
+		\end{equation*}
+		Since squaring $R_{m+1}$ gives $F_{m+1}$,
+		\begin{equation*}
+			 H_{m+1}(x)^2 = \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)}.
 		\end{equation*}
 		Since $R_{m+1}(x)$ is square-free, $H_{m+1}(x)$ is too.
-		Notice too that $H_{m+1}(x) = H_{m+1}(x+1)$.
-		Since $d(m) = 12$, $\deg H_{m+1}(x) = 6$.
+		Notice too that $H_{m+1}(x)$ is unaffected by translation: $H_{m+1}(x) = H_{m+1}(x+1)$.
+		Since $d(m)$ is 12, $\deg H_{m+1}(x)$ must be 6.
 		Lemma \ref{DEven} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
@@ -672,46 +648,47 @@
 		
 		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$ with respect to $x$,
 		% TODO: Actually show calculations for the ranks in an appendix
-		\begin{align*}
-			\operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
-			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
-			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
-		\end{align*}
-		If either rank-63 polynomial $C_2(x)$ or $C_3(x)$ is actually $h_{m+1}(x)$, it must also divide $F_{m+1}(x)$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
-		Thus, by lemma \ref{rankApparition}, 63 would divide $m+1$.
-		However, both polynomials would divide $R_{m+1}(x)$.
+		\begin{alignat*}{3}
+			\operatorname{rank}(C_1(y)) &= \operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
+			\operatorname{rank}(C_2(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
+			\operatorname{rank}(C_3(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
+		\end{alignat*}
+		Since both $C_2$ and $C_3$ have rank 63, $63 \mid m+1$ implies that both divide $F_{m+1}$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
 		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) \ge \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
-		Thus neither $C_2$ nor $C_3$ can be $h_{m+1}(x)$.
+		Thus both $C_2$ and $C_3$ are excluded as candidates.
 		
-		Similarly, if the rank-85 polynomial $C_1(x)$ is actually $h_{m+1}(x)$, then lemma \ref{rankApparition} tells us 85 divides $m+1$.
-		We also showed earlier that 3 also divides $m+1$.
+		Similarly, since has rank 85, then 85 must divide $m+1$.
+		We also showed earlier that 3 divides $m+1$.
 		Since $\operatorname{lcm}{(85,3)} = 255$ must divide $m+1$.
 		
+		Other polynomials with ranks dividing 255 must also divide $F_{m+1}$.
 		Let
+		% TODO: Do we really nede both P and Q? Wouldn't 1 of them be enough?
 		\begin{equation*}
 			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
+		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are factors of 255.
 		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), are coprime to each other, and are coprime with $C_1$.
-		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
-		By lemma \ref{rankApparition}, since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
-		Therefore,
+		Therefore, by lemma \ref{rankApparition},
 		\begin{equation*}
 			\deg{H_{m+1}(x)} \geq \deg{C_1(x)} + \deg{P(x)} + \deg{Q(x)} = 14,
 		\end{equation*}
 		which contradicts our assumption that the degree was 6.
+		Thus $C_1$ must also be excluded as a candidate.
 		
-		We showed there are no suitable polynomials, so we conclude there is no $3 \mid m+1$ such that $d(m) = 12$ and therefore no $n$ such that $d(n) = 26$.
+		We have shown that no such polynomial $h_{m+1}$ can exist.
+		Therefore, there is no $3 \mid m+1$ and $d(m) = 12$, and hence no $n$ with $d(n) = 26$.
 	\end{proof}
 
-
-	Now that we know that one impossible even value of $d(n)$ exists, we can show an entire family of impossible even values also exists.
+	Theorem \ref{nodn26} gives one impossible vlaue of $d(n)$.
+	The recurrence in Theorem \ref{2nPlus1Explicit} allows us to propogate this obstruction to infinitely many more values.
 	\begin{corollary}
 		Suppose $a \in \N$ is even and an impossible value of $d(n)$.
 		Then $2a+2$ is also an impossible value of $d(n)$.
 	\end{corollary}
 	\begin{proof}
 		Suppose for the sake of contradiction that there exists $n$ such that $d(n) = 2a+2$.
-		Since $2a+2$ is not divisible by 4, then corollary \ref{NEvenDDivisible4} tells us that n must be odd, so we may write $n = 2m+1$.
+		Since $2a+2$ is not divisible by 4, then corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd, so we may write $n = 2m+1$.
 		So, by theorem \ref{2nPlus1},
 		\begin{equation*}
 			2a+2 = d(n) = d(2m+1) = 2d(m) + \delta_m \qquad \delta_m = \begin{cases}
@@ -719,10 +696,12 @@
 				0 & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		If $\delta_m = 0$, then $2d(m)$ is divisible by 4, which cannot be the case since we know the value is $2a+2$.
+		If $\delta_m = 0$, then $2a+2 = 2d(m)$.
+		By lemma \ref{DEven}, $d(m)$ is even, so $2d(m)$ is divisibleby 4.
+		This contradicts the fact that $2a+2$ is not divisible by 4 since $a$ is even.
 		If $\delta_m = 2$, then $d(m)=a$, contradicting the impossibility of $a$ as an output of $d$.
 	\end{proof}
-	Expanding the recurrence, if $a$ is an impossible value, then $2^t(a+2)-2$ is also impossible for all $t \geq 0$.
+	Expanding the recurrence, if $a$ is an impossible even value, then $2^t(a+2)-2$ is also impossible for all $t \geq 0$.
 	In other words, 26, 54, 110, 222, 446, ... are also all impossible values of $d(n)$.
 	
 	\section{Finite Fields}
@@ -979,7 +958,7 @@
 		\begin{equation*}
 			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
 		\end{equation*}
-		Furthermore, since $p^k$ is odd, corollary \ref{rootMultiplicity2} and lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
+		Furthermore, since $p^k$ is odd, lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
 		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
 		Let $h = \ord[p]{2}$.
 		Since $p$ is not Wieferich, corollary \ref{nonWieferichOrd} tells us that
