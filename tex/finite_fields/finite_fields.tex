@@ -37,7 +37,7 @@
 	% TODO: More copy editing
     \begin{abstract}
     	\textit{Lights Out} is a game on a simple graph $G = (V,E)$ where clicking a vertex toggles the on/off state of it and its neighbors.
-	    Identifying subsets of $V$ with their indicator vectors over $\F_2$, let $\Phi_G: \F_2^V \rightarrow \F_2^V$ be the function which maps the set of vertices clicked to the set of vertices that change state, .
+	    Identifying subsets of $V$ with their indicator vectors over $\F_2$, let $\Phi_G: \F_2^V \rightarrow \F_2^V$ be the function which maps the set of vertices clicked to the set of vertices that change state.
 	    For the $n \times n$ grid, define $d(n) = \dim{\ker{\Phi_G}}$.
 	    We recover the known fact that $d(n)$ is always even and prove infinitely many even values are also impossible.
 	    We provide formulas and bounds for $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ not a Wieferich prime.
@@ -57,7 +57,8 @@
 			\end{cases}.
 		\end{equation*}
 	\end{definition}
-	These polynomials are called "Fibonacci" because $F_n(1)$ is the $n$th Fibonacci number.
+	These polynomials are called "Fibonacci" because $F_n(1)$ is the $n$th Fibonacci number when evaluated over $\Z[x]$.
+	Evaluated over $\F_2$, $F_n(1)$ is the $n$th Fibonacci number modulo 2.
 	
 	In $\F_2[x]$, the coefficients of $F_n(x)$ are either 1 or 0, so we can visualize them by coloring squares black or white to represent the coefficients.
 	For example,
@@ -390,7 +391,7 @@
 		\begin{enumerate}
 			\item
 				$v$ is within a tile.
-				Then $\abs{N[v] \cap R}$ is even because $Q$ being is an even dominating set.
+				Then $\abs{N[v] \cap R}$ is even because $Q$ is an even dominating set.
 				Vertices next to tile separators are unaffected by the tiling because the separator vertices are not included in $R$ and thus don't contribute to the parity of $N[v] \cap R$.
 				Thus, $\abs{N[v] \cap R}$ has the same parity as the corresponding closed neighborhood in $Q$, which is even.
 			\item
@@ -488,7 +489,7 @@
 			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^{k+1}}g(x)^{2^{k+1}} \qquad F_{n+1}(x+1) = x^{2^{k+1}}(x+1)^{2^{k}-1}g(x+1)^{2^{k+1}},
 		\end{equation*}
 		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both square-free and divisible by neither $x$ nor $x+1$.
-		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$, so $\delta_n = 2$.
+		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
 	This result was first proven by Boyles in \cite{boylesResolutionSutner} and resolves a conjecture of Sutner's \cite{Sutner1989}.
 	
@@ -581,7 +582,7 @@
 	\end{proof}
 
 	\begin{definition}
-		Let $P$ be a non polynomial in $\F_2[x]$.
+		Let $P$ be a non-zero polynomial in $\F_2[x]$.
 		Then 
 		\begin{equation*}
 			\operatorname{rank}(P) = \min{\{r > 0 : P(x) \mid F_r(x)\}}.
@@ -623,7 +624,7 @@
 			d(5) &= 2 \qquad & d(4) &= 4 \qquad & d(11) &= 6 \qquad & d(16) &= 8 \qquad & d(29) &= 10 \qquad & d(84) &= 12 \\
 			d(23) &= 14 \qquad & d(19) &= 16 \qquad & d(101) &= 18 \qquad & d(30) &= 20 \qquad & d(59) &= 22 \qquad & d(62) &= 24.
 		\end{alignat*}
-		We will show than $d(n)=26$ is impossible.
+		We will show that $d(n)=26$ is impossible.
 		
 		Assume for the sake of contradiction that there exists $n \in \N$ such that $d(n) = 26$.
 		Since 26 is not divisible by 4, corollary \ref{NEvenDDivisible4} says $n$ must be odd.
@@ -656,11 +657,12 @@
 		Since $R_{m+1}(x)$ is square-free, $H_{m+1}(x)$ is too.
 		Notice too that $H_{m+1}(x) = H_{m+1}(x+1)$.
 		Since $d(m) = 12$, $\deg H_{m+1}(x) = 6$.
-		Lemma \ref{FibonacciFormulaT} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
+		Lemma \ref{DEven} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
 		\end{equation*}
-		There are only three possible square-free cubic polynomials in $\F_2[y]$ that evaluate to 1 at $y=0$:
+		Since $m+1$ is odd, we must also require that $h_{m+1}(0) = 1$.
+		There are only three such polynomials in $\F_2[y]$ that satisfy all these requirements:
 		\begin{enumerate}
 			\item $C_1(y) = y^3 + 1$
 			\item $C_2(y) = y^3 + y + 1$
@@ -668,7 +670,7 @@
 		\end{enumerate}
 		We will handle these case-by-case.
 		
-		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$,
+		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$ with respect to $x$,
 		% TODO: Actually show calculations for the ranks in an appendix
 		\begin{align*}
 			\operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
@@ -678,7 +680,7 @@
 		If either rank-63 polynomial $C_2(x)$ or $C_3(x)$ is actually $h_{m+1}(x)$, it must also divide $F_{m+1}(x)$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
 		Thus, by lemma \ref{rankApparition}, 63 would divide $m+1$.
 		However, both polynomials would divide $R_{m+1}(x)$.
-		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
+		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) \ge \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
 		Thus neither $C_2$ nor $C_3$ can be $h_{m+1}(x)$.
 		
 		Similarly, if the rank-85 polynomial $C_1(x)$ is actually $h_{m+1}(x)$, then lemma \ref{rankApparition} tells us 85 divides $m+1$.
@@ -764,7 +766,7 @@
 
 	We will show an equivalent definition of Wieferich primes.
 	\begin{lemma}\label{wieferichEquivalence}
-		A odd prime number $p$ is a Wieferich prime if and only if
+		An odd prime number $p$ is a Wieferich prime if and only if
 		\begin{equation*}
 			p^2 \mid 2^{\ord[p]{2}} - 1.
 		\end{equation*}
@@ -994,7 +996,6 @@
 		\end{equation*}
 	
 		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
-		% TODO: Why do we need p to not be Wieferich here?
 		Since $\F_2(\alpha) = \F_2(\alpha + 1)$, that is they are the same field with the same degree, $\alpha$ and $\alpha+1$ must both be members of the same $R_j$ and so $j = \ell$.
 		
 		Suppose for the sake of contradiction that $\alpha$ and $\alpha+1$ are both members of $R_j$ for some $j \geq 2$.
@@ -1085,9 +1086,13 @@
 	You may have noticed that for many sizes, we have $d(p-1) = 0$.
 	We can actually classify some $p$ for which this is the case.
 	\begin{theorem}\label{dp-1isZero}
-		Let $p$ be a prime one less than a multiple of 4 where
+		Let $p \equiv 3 \pmod 4$ be a prime where
 		\begin{equation*}
-			\{\pm 2^r \pmod p : r \geq 0\} = (\Z / p \Z)^{\times}.
+			\{\pm 2^r \pmod p : r \geq 0\} = (\Z / p \Z)^{\times},
+		\end{equation*}
+		or equivalently,
+		\begin{equation*}
+			\ord[p]{2} \in \{p-1, \frac{p-1}{2}\}
 		\end{equation*}
 		Then $d(p - 1) = 0$.
 		% TODO: Check if this condition for equaling the multiplicatve group is correct
@@ -1102,7 +1107,13 @@
 		\begin{equation*}
 			\alpha = \zeta + \zeta^{-1} \qquad \alpha+1 = \eta + \eta^{-1}.
 		\end{equation*}
-		By lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
+	
+		We can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by corollary \ref{traceMobius}, 
+		\begin{equation*}
+			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1.
+		\end{equation*}
+	
+		However, by lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
 		\begin{equation*}
 			[\F_2(\alpha) : \F_2] = [\F_2(\alpha+1) : \F_2] = \rho_2(p) = \frac{p-1}{2}.
 		\end{equation*}
@@ -1110,10 +1121,6 @@
 		Applying the linearity of the trace and corollary \ref{traceAt1},
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1 = 0.
-		\end{equation*}
-		However, we can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by corollary \ref{traceMobius}, 
-		\begin{equation*}
-			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1.
 		\end{equation*}
 		Thus we have reached a contradiction.
 	\end{proof}
