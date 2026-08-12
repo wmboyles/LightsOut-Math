@@ -489,7 +489,7 @@
 		We proceed by induction on $s$.
 		For $s=0$, we have $d(n) = d(b-1)$, which is the desired formula.
 		Now suppose the result holds for some $s \geq 0$.
-		For $n+1 = 2^{s+1}b$, Theorem \ref{2nPlus1Explicit} gives
+		For $n+1 = 2^{s+1}b$, Theorem \ref{2nPlus1} gives
 		\begin{align*}
 			d(n) &= d\left(2\left(2^s b - 1\right) + 1\right) \\
 			&= 2d\left(2^s b - 1\right) + \begin{cases}
@@ -653,25 +653,25 @@
 			\operatorname{rank}(C_2(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
 			\operatorname{rank}(C_3(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
 		\end{alignat*}
+		We'll check if $C_2$ or $C_3$ are viable candidates.
 		Since both $C_2$ and $C_3$ have rank 63, $63 \mid m+1$ implies that both divide $F_{m+1}$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
-		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) \ge \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
+		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1} \ge \deg{C_2} + \deg{C_3} = 12$, contradicting our assumption that the degree was 6.
 		Thus both $C_2$ and $C_3$ are excluded as candidates.
 		
-		Similarly, since has rank 85, then 85 must divide $m+1$.
+		We'll check if $C_1$ is a viable candidate.
+		Since $C_1$ has rank 85, 85 must divide $m+1$.
 		We also showed earlier that 3 divides $m+1$.
-		Since $\operatorname{lcm}{(85,3)} = 255$ must divide $m+1$.
-		
+		So, $\operatorname{lcm}{(85,3)} = 255$ must divide $m+1$.
 		Other polynomials with ranks dividing 255 must also divide $F_{m+1}$.
 		Let
-		% TODO: Do we really nede both P and Q? Wouldn't 1 of them be enough?
 		\begin{equation*}
 			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
-		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are factors of 255.
+		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are both factors of 255.
 		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), are coprime to each other, and are coprime with $C_1$.
 		Therefore, by lemma \ref{rankApparition},
 		\begin{equation*}
-			\deg{H_{m+1}(x)} \geq \deg{C_1(x)} + \deg{P(x)} + \deg{Q(x)} = 14,
+			\deg{H_{m+1}} \geq \deg{C_1} + \deg{P} + \deg{Q} = 14,
 		\end{equation*}
 		which contradicts our assumption that the degree was 6.
 		Thus $C_1$ must also be excluded as a candidate.
@@ -705,9 +705,10 @@
 	In other words, 26, 54, 110, 222, 446, ... are also all impossible values of $d(n)$.
 	
 	\section{Finite Fields}
-	% TODO: This is a long section and has many of our most important and new theorems. Split it up?
-	Although we have already been working in $\F_2$, we will now more directly use results from the study of finite fields.
+	We now turn to finite field methods to syudy the Fibonacci polynomial GCDs that determine $d(n)$.
+	In particular, we use properties of roots of unity and traces to analyze $d(p^k - 1)$ for prime $p$ and to characterize when $d(p-1) = 0$.
 	
+	\subsection{Orders of Prime Powers}
 	\begin{lemma}\label{ordpj2}
 		Let $p$ be an odd prime.
 		Define $h = \ord[p]{2}$ and $c = v_p(2^h - 1)$, where
@@ -719,15 +720,18 @@
 	\end{lemma}
 	\begin{proof}
 		Suppose $2^r \equiv 1 \pmod{p^j}$.
-		Then $h$ divides $r$, so we may write $r = ht$.
+		Since $2^r \equiv 1 \pmod p$, the definition of $h$ gives $h \mid r$, so we may write $r = ht$.
 		By the Lifting the Exponent Lemma \cite{ireland_rosen_1990},
 		\begin{align*}
 			v_p(2^r - 1) &= v_p(2^{ht} - 1) \\
 			&= v_p(2^h - 1) + v_p(t) \\
 			&= c + v_p(t).
 		\end{align*}
-		So, $p^j \mid 2^{ht} - 1$ exactly when $c + v_p(t) \geq j$.
-		The smallest possible $t$ satisfying this inequality is $t = p^{\max{(0, j-c)}}$, so
+		Thus,
+		\begin{equation*}
+			p^j \mid 2^{ht} - 1 \iff c + v_p(t) \geq j.
+		\end{equation*}
+		The smallest possible integer $t$ satisfying this inequality is $t = p^{\max{(0, j-c)}}$, so
 		\begin{equation*}
 			\ord[p^j]{2} = h p^{\max{(0, j-c)}},
 		\end{equation*}
@@ -735,15 +739,18 @@
 	\end{proof}
 	
 	\begin{definition}
-		A prime number $p$ is a Wieferich prime when
+		A prime number $p$ is a \textit{Wieferich prime} when
 		\begin{equation*}
 			p^2 \mid 2^{p-1} - 1.
 		\end{equation*}
 	\end{definition}
-	Although infinitely many Wieferich primes are conjectured to exist,
-	the only ones known to date are 1093 and 3511 \cite{CrandallSearch}, and any larger ones must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
+	For an odd prime $p$, the Wieferich primes are precisely the primes for much $v_p(2^{\ord[p]{2}-1}) > 1$.
+	Thus, they are exactly the exceptional primes for which the order formulation in Lemma \ref{ordpj2} does not take its simplest form.
+	
+	It is conjectured that infinitely many Wieferich primes exist, but only two are currently known: 1093 and 3511 \cite{CrandallSearch}.
+	Computer searches have shown any more Wieferich primes must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
 
-	We will show an equivalent definition of Wieferich primes.
+	The following equivalent characterization of will be useful because it expresses the Wieferich condition in terms of the multiplicative order appearing in Lemma \ref{ordpj2}.
 	\begin{lemma}\label{wieferichEquivalence}
 		An odd prime number $p$ is a Wieferich prime if and only if
 		\begin{equation*}
@@ -760,13 +767,15 @@
 		\begin{equation*}
 			v_p(2^{kn} - 1) = v_p(2^n - 1) + v_p(k).
 		\end{equation*}
-		However, $k = (p-1)/n$ is smaller than $p$ and thus not divisible by $p$, so $v_p(k) = 0$.
+		Since $1 \leq k \leq p-1$, we have $v_p(k) = 0$.
 		Thus,
 		\begin{equation*}
 			v_p(2^{p-1} - 1) = v_p(2^n - 1).
 		\end{equation*}
 		So, $p^2 \mid 2^{p-1} - 1$ if and only if $p^2 \mid 2^{\ord[p]{2}} - 1$, as desired.
 	\end{proof}
+	Consequently, if $p$ is not a Wieferich prime, then $v_p(2^{\ord[p]{2}} - 1) = 1$.
+	So, $c = 1$ and $\ord[p^j]{2} = \ord[p]{2} p^{j-1}$.
 
 	\begin{corollary}\label{nonWieferichOrd}
 		Let $p$ be an odd prime.
@@ -776,27 +785,32 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Lemma \ref{ordpj2} tells us that
+		By Lemma \ref{ordpj2},
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{\max{(0, j-c)}}, \qquad c = v_p(2^{\ord[p]{2}} - 1).
 		\end{equation*}
 		Thus it is sufficient to show that $c=1$.
-		By definition of $\ord[p]{2}$, $c \geq 1$.
-		$p$ is not a Wieferich prime, so by lemma \ref{wieferichEquivalence}, for all $t \geq 2$,
+		By definition of $\ord[p]{2}$, we have $c \geq 1$.
+		Since $p$ is not a Wieferich prime, Lemma \ref{wieferichEquivalence} implies that
 		\begin{equation*}
-			p^{t} \nmid 2^{\ord[p]{2}} - 1.
+			p^2 \nmid 2^{\ord[p]{2}} - 1.
 		\end{equation*}
 		Thus $c < 2$ and therefore must be exactly 1, as desired.
 	\end{proof}
 	
+	\subsection{Extension Degrees \& Traces}
+	We next turn to finite-field extensions and traces.
+	These tools will allow is to relate the roots of Fibonacci polynomials to their behavior over finite fields.
+	
 	\begin{definition}
 		Let $b$ be coprime to $n$.
-		Then ``signed order" of $b$ modulo $n$ is
+		Then \textit{signed order} of $b$ modulo $n$ is
 		\begin{equation*}
 			\rho_b(n) = \min{\{r > 0 : b^r \equiv \pm 1 \pmod{n}\}}.
 		\end{equation*}
 	\end{definition}
-	This is also sometimes called the ``index" of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
+	This is also sometimes called the \textit{index} of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
+	Note that compared to the typical order, the signed order is either the same value or half as much.
 	
 	\begin{lemma}\label{signedOrder}
 		Let $p$ be an odd prime, $j \ge 1$, and $H_j = \ord[p^j]{2}$.
@@ -837,7 +851,7 @@
 		Thus $H_j \leq r$, so $H_j$ is minimal, as desired.
 	\end{proof}
 	
-	We can use this notion of a signed order to find the extension degree of extensions of $\F_2$.
+	We can use the signed order to find the degree of certain extensions of $\F_2$.
 	\begin{lemma}\label{fieldExtensionSize}
 		Let $M > 1$ be odd; let $\zeta$ have exact order $M$; set $\alpha = \zeta + \zeta^{-1}$.
 		Then
@@ -870,6 +884,8 @@
 		as desired.
 	\end{proof}
 	
+	We will also need the trace of elements in finite field extensions.
+	We first recall its standard expression in terms of the Frobenius automorphism.
 	\begin{lemma}\label{fieldTrace}
 		Let $a$ be algebraic over $\F_q$.
 		Then for every $z \in \F_q(a)$,
@@ -940,7 +956,8 @@
 		by Ramanujan's sum identity of roots of unity, as desired.
 	\end{proof}
 	
-	Now we may combine together many of our partial results to state a more significant result. 
+	\subsection{Applications to $d(n)$}
+	We can now combine the preceding results on orders, extension degrees, and traces to obtain our main result concerning powers of non Wieferich primes.
 	\begin{theorem}\label{pk-1Equalsp-1}
 		If $p$ is not a Wieferich prime, then for all $k \ge 1$,
 		\begin{equation*}
@@ -1010,8 +1027,9 @@
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
 	\end{proof}
+	% TODO: AI review had flagged "However, only exponent 0 among 0, 1, M-1, s, M-s is divisible by m, so P_0(y) = 1." as possibly not true because s may be divisible by m. Double check this.
 
-	We can combine this result with our recurrence for $d(2n + 1)$.
+	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit ofmrula for a broad family of indices.
 	\begin{corollary}
 		Let $p$ be an odd non-Wieferich prime.
 		Then for all $n,m \geq 0$,
@@ -1062,8 +1080,7 @@
 	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
 	% TODO: It seems like there's some pattern of Mersenne primes != 3 where d(p^n - 1) often != 0. Can we check d(131071 - 1)?
 
-	You may have noticed that for many sizes, we have $d(p-1) = 0$.
-	We can actually classify some $p$ for which this is the case.
+	We can also use the trace results to identify primes for which $d(p-1) = 0$.
 	\begin{theorem}\label{dp-1isZero}
 		Let $p \equiv 3 \pmod 4$ be a prime where
 		\begin{equation*}
@@ -1074,7 +1091,6 @@
 			\ord[p]{2} \in \{p-1, \frac{p-1}{2}\}
 		\end{equation*}
 		Then $d(p - 1) = 0$.
-		% TODO: Check if this condition for equaling the multiplicatve group is correct
 	\end{theorem}
 	\begin{proof}
 		Assume for the sake of contradiction that $d(p-1) \neq 0$.
@@ -1104,6 +1120,10 @@
 		Thus we have reached a contradiction.
 	\end{proof}
 	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
+	
+	Taken together, these results give several ways to determine and constrain the values of $d(n)$.
+	In particular, the behavior of $d(n)$ at prime powers is controller by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
+	The final theorem also gives a broad family of primes for which $d(p-1) = 0$.
 	
 	% TODO: Section on MCP
 	% TODO: Maybe most of the even dominating set section could move to a different paper?
