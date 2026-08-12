@@ -1,0 +1,581 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{graphicx}
+\usepackage{fullpage}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\nul}{\operatorname{null}}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+	\title{The Maximum Nullity Bound $5d(n) \leq 4(n+1)$:\\ a Reduction to an Elliptic Curve and Kloosterman Sums}
+	\author{William Boyles}
+	\date{\today}
+	\maketitle
+
+	\begin{abstract}
+		Let $d(n)$ be the nullity over $\F_2$ of the $n \times n$ bounded \textit{Lights Out} grid.
+		Computation suggests $5d(n) \leq 4(n+1)$, with equality exactly at $n = 5 \cdot 2^k - 1$.
+		We give a complete reduction of this inequality to a point-counting problem: writing $n + 1 = 2^k b$ with $b$ odd, the inequality for all $n$ is equivalent to
+		\begin{equation*}
+			\abs{E \cap (\mu_b \times \mu_b)} \leq \tfrac{8}{5} b \qquad \text{for every odd } b,
+		\end{equation*}
+		where $\mu_b \subset \overline{\F}_2^{\,*}$ is the group of $b$-th roots of unity and $E$ is the elliptic curve
+		\begin{equation*}
+			E : \quad t + t^{-1} + s + s^{-1} = 1, \qquad\text{i.e.}\qquad t^2 s + t s^2 + ts + t + s = 0,
+		\end{equation*}
+		an ordinary curve over $\F_2$ with $\#E(\F_2) = 4$ and complex multiplication by $\Z\left[\frac{1 + \sqrt{-7}}{2}\right]$.
+		For the two families $b = 2^r \pm 1$ we evaluate the count exactly in terms of the Kloosterman sum $K_r = \sum_{y \in \F_{2^r}^*} (-1)^{\Tr(y + y^{-1})}$, obtaining
+		\begin{equation*}
+			G(2^r - 1) = \frac{2^r - 3 + K_r}{2}, \qquad G(2^r + 1) = \frac{2^r + 1 + K_r}{2},
+		\end{equation*}
+		and we deduce the bound unconditionally for those families, with $b = 5$ (i.e.\ $n = 5 \cdot 2^k - 1$) as the unique case of equality.
+		A general Weil-type criterion settles all $b$ that are large relative to $2^{\operatorname{ord}_b(2)/2}$.
+		These regimes contain every near-extremal $b$, but they are a density-zero subset of all $b$, and we explain precisely why no soft, symplectic, Bézout-type, or coding-theoretic argument can give a constant smaller than $1$, and why the outstanding cases lie in the range where no known character-sum estimate is nontrivial.
+	\end{abstract}
+
+	\section{Introduction}
+	Consider the game played on a simple graph $G = (V, E)$ in which every vertex carries a light, and clicking a vertex toggles that vertex and all of its neighbours.
+	The state space is $\F_2^V$ and the click-to-effect map is $A + I$, where $A$ is the adjacency matrix of $G$ \cite{Sutner1989}.
+	When $G$ is the $n \times n$ grid graph $P_n \times P_n$ (no wraparound), we write
+	\begin{equation*}
+		d(n) = \dim_{\F_2} \ker (A + I),
+	\end{equation*}
+	the \emph{nullity} of the $n \times n$ board; this is sequence A159257 in the OEIS \cite{OEISA159257}.
+	Exactly $2^{-d(n)}$ of all configurations are solvable, and each solvable configuration has $2^{d(n)}$ solutions \cite{Sutner1989}.
+
+	Sutner \cite{Sutner96sigma-automataand} reduced $d(n)$ to a polynomial gcd, Hunziker, Machiavelo and Park \cite{HUNZIKER2004465} developed the Chebyshev-polynomial structure further, and the doubling law $d(2n+1) = 2 d(n) + \delta_n$ conjectured in \cite{Sutner1989} was proved in \cite{Boyles2022}.
+	Empirically, the largest nullities are attained on the families $n + 1 \in \{5, 31, 33\} \cdot 2^{k}$, and in every computed case
+	\begin{equation}\label{eq:main}
+		5 d(n) \leq 4(n+1),
+	\end{equation}
+	with equality precisely when $n = 5 \cdot 2^k - 1$.
+	We could find no statement of \eqref{eq:main} in the literature; see Section~\ref{sec:lit}.
+	The purpose of this note is to reduce \eqref{eq:main} to a sharply-stated arithmetic problem, to solve that problem for every family in which the bound is nearly attained, and to explain precisely which part resists all standard techniques.
+
+	\subsection{Results}
+	Throughout, $b$ denotes an odd positive integer, $\mu_b \subset \overline{\F}_2^{\,*}$ is the group of $b$-th roots of unity, $D_m$ is the Dickson polynomial over $\F_2$ determined by $D_m(t + t^{-1}) = t^m + t^{-m}$, and
+	\begin{equation*}
+		G(m) = \deg \gcd \left( D_m(x), D_m(x+1) \right).
+	\end{equation*}
+
+	\begin{theorem}[Reduction]\label{thm:reduction}
+		For all $n \geq 1$,
+		\begin{equation*}
+			d(n) = G(n+1) - 2 \cdot [\, 3 \mid n+1 \,],
+			\qquad\text{and}\qquad
+			G(2m) = 2 G(m).
+		\end{equation*}
+		Consequently \eqref{eq:main} holds for all $n$ if and only if $5 G(b) \leq 4b$ for every odd $b$.
+	\end{theorem}
+
+	\begin{theorem}[Curve form]\label{thm:curve}
+		Let $E$ be the smooth plane cubic over $\F_2$ with affine equation $t^2 s + ts^2 + ts + t + s = 0$, equivalently $t + t^{-1} + s + s^{-1} = 1$.
+		Then $E$ is an elliptic curve with $\#E(\F_2) = 4$, its Frobenius satisfies $\pi^2 + \pi + 2 = 0$, and for every odd $b$
+		\begin{equation*}
+			N(b) := \#\left(E \cap (\mu_b \times \mu_b)\right) = 2 G(b).
+		\end{equation*}
+		Hence \eqref{eq:main} is equivalent to $N(b) \leq \frac{8}{5} b$ for all odd $b$.
+	\end{theorem}
+
+	\begin{theorem}[Exact evaluation for $b = 2^r \pm 1$]\label{thm:kloos}
+		Let $r \geq 2$, $q = 2^r$, and let $K_r = \sum_{y \in \F_q^*} (-1)^{\Tr_{\F_q/\F_2}(y + y^{-1})}$ be the binary Kloosterman sum.
+		Then
+		\begin{equation*}
+			G(2^r - 1) = \frac{q - 3 + K_r}{2},
+			\qquad
+			G(2^r + 1) = \frac{q + 1 + K_r}{2}.
+		\end{equation*}
+		In particular $G(2^r+1) - G(2^r-1) = 2$ for every $r \geq 2$.
+	\end{theorem}
+
+	\begin{corollary}\label{cor:kloos}
+		The bound $5G(b) \leq 4b$ holds for every $b$ of the form $2^r \pm 1$ with $r \geq 2$, and equality holds only for $b = 5$.
+		Equivalently, $5 d(n) \leq 4(n+1)$ holds whenever the odd part of $n+1$ is $2^r \pm 1$, with equality exactly for $n = 5 \cdot 2^k - 1$.
+	\end{corollary}
+
+	\begin{theorem}[General criterion]\label{thm:weil}
+		Let $b \geq 3$ be odd, $m = \operatorname{ord}_b(2)$, $q = 2^m$, and $h = (q-1)/b$.
+		Then
+		\begin{equation*}
+			N(b) \leq \frac{q - 3 + 2\sqrt{q}}{h^2} + 4 \sqrt{q}\left(1 - \frac{1}{h^2}\right)
+			= 4\sqrt q + \frac{q - 3 - 2\sqrt q}{h^2} .
+		\end{equation*}
+		Consequently $5 G(b) \leq 4b$ holds whenever
+		\begin{equation}\label{eq:star}
+			5\left(q - 3 - 2\sqrt q + 4 \sqrt q\, h^2\right) \;\leq\; 8 (q-1) h. \tag{$\star$}
+		\end{equation}
+		Criterion \eqref{eq:star} holds for $h = 1$ as soon as $q \geq 8$, and in general it holds precisely when $h$ is small compared with $\sqrt q$, asymptotically when $h \leq \left(\frac{2}{5} + o(1)\right)\sqrt q$, i.e.\ when $b \geq \left(\frac{5}{2}+o(1)\right)\sqrt q$.
+	\end{theorem}
+
+	Theorem~\ref{thm:kloos} explains the extremal family completely.
+	For $b = 2^r + 1$ the Weil bound $\abs{K_r} \leq 2\sqrt{q}$ gives $G(b) \le \frac{1}{2}(\sqrt q + 1)^2$, and $\frac{5}{2}(\sqrt{q}+1)^2 \leq 4(q+1)$ is equivalent to $(3\sqrt{q} - 1)(\sqrt{q} - 3) \geq 0$, i.e.\ to $r \geq 4$.
+	At $r = 2$, that is $b = 5$, the Weil bound fails by exactly $\tfrac12$: it gives $G(5) \leq 4.5$ while the truth is $G(5) = 4 = \frac{4}{5} \cdot 5$.
+	The gap is closed by the congruence $K_r \equiv -1 \pmod 4$ \cite{LachaudWolfmann1990}, which forces $K_2 \in \{-1, 3\}$ and hence $G(5) \leq 4$.
+	\emph{The unique equality case of \eqref{eq:main} is therefore the unique place where the Weil bound for a Kloosterman sum is not quite sharp enough on its own.}
+
+	Section~\ref{sec:barrier} explains why the remaining cases are hard: the symplectic, Bézout and coding-theoretic arguments all give exactly $d(n) \leq n$ and no better (a bound attained at $n = 4$), while character sums are nontrivial only when $b$ is large compared with $2^{\operatorname{ord}_b(2)/2}$, which fails for almost every $b$.
+	The saving grace, and the reason the present results are not vacuous, is that the $b$ for which $G(b)/b$ is large are exactly the $b$ for which $2$ has small multiplicative order, i.e.\ exactly the ones the character-sum methods do reach.
+
+	All numerical claims below are verified by \texttt{code/upper\_bound\_check.py}, which shares no code with the rest of this repository.
+
+	\section{Row chasing, the transfer matrix, and Sutner's gcd}\label{sec:rowchase}
+	\begin{definition}
+		Let $u_0 = 0$, $u_1 = 1$ and $u_{k+1} = x u_k + u_{k-1}$ in $\F_2[x]$, and put $f_k = u_{k+1}$, so that
+		\begin{equation*}
+			f_0 = 1, \qquad f_1 = x, \qquad f_{k+1} = x f_k + f_{k-1}.
+		\end{equation*}
+	\end{definition}
+	These are the Fibonacci (or Chebyshev-like) polynomials of \cite{Sutner96sigma-automataand, HUNZIKER2004465, GoldwasserKlostermeyerWare2002}; $\deg f_n = n$ and $f_n = \sum_{j} \binom{n-j}{j} x^{n-2j}$ over $\F_2$.
+
+	Let $P$ denote the adjacency matrix of the path $P_n$ and let $M = I + P$.
+	A configuration $y \in \F_2^{n \times n}$ lies in $\ker(A+I)$ if and only if, writing $r_i \in \F_2^n$ for its $i$-th row and setting $r_0 = r_{n+1} = 0$,
+	\begin{equation}\label{eq:rowchase}
+		r_{i-1} + M r_i + r_{i+1} = 0 \qquad (1 \leq i \leq n).
+	\end{equation}
+
+	\begin{lemma}\label{lem:rowchase}
+		$d(n) = \dim \ker f_n(M)$.
+	\end{lemma}
+	\begin{proof}
+		Rewriting \eqref{eq:rowchase} as $r_{i+1} = M r_i + r_{i-1}$ and inducting gives $r_i = f_{i-1}(M) r_1$ for $1 \le i \le n+1$.
+		Hence $y \mapsto r_1$ is an injection of $\ker(A+I)$ into $\ker f_n(M)$, and conversely every $r_1 \in \ker f_n(M)$ generates a configuration satisfying \eqref{eq:rowchase} together with both boundary conditions.
+	\end{proof}
+
+	\begin{proposition}[Symplectic form of the recursion]\label{prop:symplectic}
+		Let $T = \begin{pmatrix} 0 & I \\ I & M\end{pmatrix}$ act on $\F_2^{2n}$ by $(r_{i-1}, r_i) \mapsto (r_i, r_{i+1})$, and let $J = \begin{pmatrix}0 & I \\ I & 0\end{pmatrix}$.
+		Then $T^\intercal J T = J$, so $T \in \mathrm{Sp}(2n, \F_2)$.
+		The subspaces $L = 0 \oplus \F_2^n$ and $L' = \F_2^n \oplus 0$ are Lagrangian and
+		\begin{equation*}
+			d(n) = \dim \left( L \cap T^{-n} L' \right) \leq n .
+		\end{equation*}
+	\end{proposition}
+	\begin{proof}
+		$JT = \begin{pmatrix} I & M \\ 0 & I \end{pmatrix}$ and $T^\intercal(JT) = \begin{pmatrix} 0 & I \\ I & M + M\end{pmatrix} = J$ using $M^\intercal = M$ and $\operatorname{char} \F_2 = 2$.
+		The form is alternating because $\langle (a,b), (a,b)\rangle = 2 a^\intercal b = 0$.
+		Both $L$ and $L'$ are isotropic of dimension $n$.
+		By Lemma~\ref{lem:rowchase} a kernel element is exactly a starting vector $(0, r_1) \in L$ whose $n$-th iterate $(r_n, r_{n+1})$ lies in $L'$.
+	\end{proof}
+
+	\begin{lemma}[Sutner \cite{Sutner96sigma-automataand}]\label{lem:sutner}
+		$d(n) = \deg \gcd\left(f_n(x),\, f_n(x+1)\right)$.
+	\end{lemma}
+	\begin{proof}
+		$P$ is a Jacobi matrix (tridiagonal with nonzero off-diagonal entries), hence nonderogatory, and its characteristic polynomial satisfies the same recursion as $f$, so it equals $f_n$.
+		Therefore $\F_2^n \cong \F_2[x]/(f_n)$ as a module over $\F_2[P]$, with $P$ acting as multiplication by $x$.
+		Under this identification $M = I + P$ acts as multiplication by $x + 1$, so $f_n(M)$ acts as multiplication by $f_n(x+1)$.
+		In $R = \F_2[x]/(f)$, the kernel of multiplication by $g$ is the ideal generated by $f/\gcd(f,g)$, of dimension $\deg\gcd(f,g)$.
+		Apply Lemma~\ref{lem:rowchase}.
+	\end{proof}
+
+	\section{Dickson polynomials and the $2$-adic reduction}\label{sec:dickson}
+	\begin{definition}
+		Let $D_m(x) = x\, u_m(x) = x f_{m-1}(x) \in \F_2[x]$ for $m \geq 1$, and $D_0 = 0$.
+	\end{definition}
+
+	\begin{lemma}\label{lem:dickson}
+		$D_m$ is the Dickson polynomial of degree $m$ with parameter $1$ \cite{LidlMullenTurnwald1993}: it satisfies $D_0 = 0$, $D_1 = x$, $D_{m+1} = x D_m + D_{m-1}$, and
+		\begin{equation*}
+			D_m\!\left(t + t^{-1}\right) = t^m + t^{-m}.
+		\end{equation*}
+		Consequently $D_{2m} = D_m^2$.
+	\end{lemma}
+	\begin{proof}
+		The recursion is immediate from that of $u$.
+		The sequence $g_m(t) = t^m + t^{-m}$ satisfies $g_0 = 0$, $g_1 = t + t^{-1}$ and $(t + t^{-1}) g_m = g_{m+1} + g_{m-1}$, i.e.\ the same recursion in $x = t + t^{-1}$; the identity follows by induction.
+		Since $t^{2m} + t^{-2m} = (t^m + t^{-m})^2$ and $t + t^{-1}$ takes infinitely many values in $\overline{\F}_2$, we get $D_{2m} = D_m^2$.
+	\end{proof}
+
+	\begin{definition}
+		For odd $b$ set
+		\begin{equation*}
+			R_b = \left\{ t + t^{-1} : t \in \mu_b \setminus \{1\} \right\},
+			\qquad
+			W(b) = R_b \cap (R_b + 1) .
+		\end{equation*}
+	\end{definition}
+	Since $t$ and $t^{-1}$ give the same value and $t = t^{-1}$ only for $t = 1$, we have $\abs{R_b} = \frac{b-1}{2}$, and $0 \notin R_b$.
+
+	\begin{lemma}\label{lem:tau}
+		For odd $b$ we have $u_b = \tau_b^2$ where $\tau_b = \prod_{\alpha \in R_b}(x + \alpha)$ is squarefree of degree $\frac{b-1}{2}$, and $D_b = x \tau_b^2$.
+		Moreover $\tau_b(0) = 1$, and $\tau_b(1) = 0$ if and only if $3 \mid b$.
+	\end{lemma}
+	\begin{proof}
+		By Lemma~\ref{lem:dickson}, $D_b(\alpha) = 0$ with $\alpha = t + t^{-1}$ if and only if $t^{2b} = 1$, i.e.\ $t^b = 1$; so the roots of $D_b$ are $\{0\} \cup R_b$.
+		As $\deg D_b = b = 1 + 2\abs{R_b}$ and $x \mid D_b$ exactly once (because $0 \notin R_b$), each $\alpha \in R_b$ is a double root.
+		$0 \notin R_b$ gives $\tau_b(0) \ne 0$, and $1 \in R_b$ means $t + t^{-1} = 1$ for some $t \in \mu_b \setminus \{1\}$, i.e.\ $t^2 + t + 1 = 0$, i.e.\ $t$ is a primitive cube root of unity, which lies in $\mu_b$ exactly when $3 \mid b$.
+	\end{proof}
+
+	\begin{proposition}\label{prop:Godd}
+		For odd $b$,
+		\begin{equation*}
+			G(b) = 2\abs{W(b)} + 2 \cdot [\,3 \mid b\,] .
+		\end{equation*}
+		Moreover $\abs{W(b)}$ is even, so $4 \mid G(b)$ whenever $3 \nmid b$.
+	\end{proposition}
+	\begin{proof}
+		Write $\widetilde{\tau}(x) = \tau_b(x+1)$, so $D_b(x) = x \tau_b^2$ and $D_b(x+1) = (x+1)\widetilde{\tau}^2$.
+		The roots of $\tau_b$ are $R_b$ and those of $\widetilde\tau$ are $R_b + 1$, both simple, so $\deg \gcd(\tau_b, \widetilde\tau) = \abs{W(b)}$.
+		For an irreducible $p \notin \{x, x+1\}$, $v_p(\gcd(D_b(x), D_b(x+1))) = 2 v_p(\gcd(\tau_b, \widetilde\tau))$.
+		For $p = x$: $v_x(D_b) = 1$ by Lemma~\ref{lem:tau} and $v_x(D_b(x+1)) = 2 v_x(\widetilde\tau) = 2 [\,3\mid b\,]$, so the minimum is $[\,3 \mid b\,]$; the case $p = x+1$ is symmetric.
+		Adding the contributions gives the formula.
+		Finally, if $\alpha \in W(b)$ then $\alpha, \alpha + 1 \in R_b$, hence $\alpha + 1 \in W(b)$ as well; the involution $\alpha \mapsto \alpha+1$ is fixed-point free in characteristic $2$, so $\abs{W(b)}$ is even.
+	\end{proof}
+
+	\begin{proof}[Proof of Theorem~\ref{thm:reduction}]
+		The doubling law is immediate from $D_{2m} = D_m^2$:
+		\begin{equation*}
+			G(2m) = \deg\gcd\left(D_m(x)^2, D_m(x+1)^2\right) = 2 G(m).
+		\end{equation*}
+		For the first identity write $n + 1 = 2^k b$ with $b$ odd.
+		By Lemmas~\ref{lem:dickson} and~\ref{lem:tau},
+		\begin{equation*}
+			x f_n(x) = D_{n+1}(x) = D_b(x)^{2^k} = \left(x \tau_b^2\right)^{2^k},
+			\qquad\text{so}\qquad
+			f_n(x) = x^{2^k - 1} \tau_b^{2^{k+1}}.
+		\end{equation*}
+		Now compute $d(n) = \deg\gcd(f_n(x), f_n(x+1))$ valuation by valuation, writing $\widetilde\tau(x) = \tau_b(x+1)$, so that $f_n(x+1) = (x+1)^{2^k-1}\widetilde\tau^{\,2^{k+1}}$.
+		Both $\tau_b$ and $\widetilde\tau$ are squarefree, and by Lemma~\ref{lem:tau} we have $\tau_b(0) \ne 0$, $\widetilde\tau(1) = \tau_b(0) \neq 0$, and $\widetilde\tau(0) = \tau_b(1) = 0$ exactly when $3 \mid b$.
+		Hence
+		\begin{align*}
+			v_x\!\left(\gcd\right) &= \min\!\left(2^k - 1,\ 2^{k+1}[\,3\mid b\,]\right) = \left(2^k-1\right)[\,3\mid b\,],\\
+			v_{x+1}\!\left(\gcd\right) &= \min\!\left(2^{k+1}[\,3\mid b\,],\ 2^k-1\right) = \left(2^k-1\right)[\,3\mid b\,],\\
+			\sum_{p \notin \{x, x+1\}} v_p\!\left(\gcd\right)\deg p &= 2^{k+1} \deg \gcd\!\left(\tau_b, \widetilde\tau\right) = 2^{k+1}\abs{W(b)} .
+		\end{align*}
+		Therefore, using Proposition~\ref{prop:Godd} and the doubling law,
+		\begin{equation*}
+			d(n) = 2^{k+1}\abs{W(b)} + 2\left(2^{k}-1\right)[\,3 \mid b\,],
+			\qquad
+			G(n+1) = 2^k G(b) = 2^{k+1}\abs{W(b)} + 2^{k+1} [\,3 \mid b\,],
+		\end{equation*}
+		whence $G(n+1) - d(n) = 2 \cdot [\,3\mid b\,] = 2 \cdot [\,3 \mid n+1\,]$.
+		For the final statement: if $5G(b) \leq 4b$ for all odd $b$, then $5 d(n) \leq 5 G(n+1) = 5 \cdot 2^k G(b) \leq 4 \cdot 2^k b = 4(n+1)$.
+		Conversely, suppose $5d(n) \le 4(n+1)$ for all $n$ and let $b$ be odd.
+		If $3 \nmid b$, take $n = b-1$, so $d(n) = G(b)$ and $5G(b) \le 4b$.
+		If $3 \mid b$, take $n = 2^kb - 1$, so $5\left(2^kG(b) - 2\right) \le 4 \cdot 2^k b$; dividing by $2^k$ and letting $k \to \infty$ gives $5G(b) \le 4b$.
+	\end{proof}
+
+	\begin{remark}
+		The formula $d(n) = 2^{k+1}\abs{W(b)} + 2(2^k-1)[\,3\mid b\,]$ recovers, in one line, the doubling behaviour of \cite{HUNZIKER2004465, Boyles2022}: all the dependence on $k$ is explicit, and all the arithmetic content is in the single quantity $\abs{W(b)}$.
+	\end{remark}
+
+	\section{The elliptic curve}\label{sec:curve}
+	\begin{definition}
+		Let $E \subset \mathbb{P}^2_{\F_2}$ be the projective closure of
+		\begin{equation*}
+			t^2 s + t s^2 + ts + t + s = 0,
+		\end{equation*}
+		that is, $T^2 S + T S^2 + TSU + TU^2 + SU^2 = 0$.
+	\end{definition}
+	Multiplying $t + t^{-1} + s + s^{-1} = 1$ by $ts$ gives exactly this equation, so on the open set $ts \neq 0$ the curve is the locus $t + t^{-1} + s + s^{-1} = 1$.
+
+	\begin{lemma}\label{lem:E}
+		$E$ is a smooth plane cubic, hence an elliptic curve of genus $1$.
+		Its three points at infinity are $(1:0:0)$, $(0:1:0)$, $(1:1:0)$, its only affine $\F_2$-point is $(0,0)$, so $\#E(\F_2) = 4$ and the Frobenius $\pi$ satisfies $\pi^2 + \pi + 2 = 0$.
+		In particular $E$ is ordinary with complex multiplication by $\Z\!\left[\frac{1+\sqrt{-7}}{2}\right]$, and for $q = 2^m$,
+		\begin{equation*}
+			\#\left\{(t,s) \in (\F_q^*)^2 : t + t^{-1} + s + s^{-1} = 1 \right\} = q - 3 - a_m,
+		\end{equation*}
+		where $a_0 = 2$, $a_1 = -1$ and $a_m = -a_{m-1} - 2 a_{m-2}$.
+	\end{lemma}
+	\begin{proof}
+		The partial derivatives of $F = T^2S + TS^2 + TSU + TU^2 + SU^2$ in characteristic $2$ are
+		$F_T = S^2 + SU + U^2$, $F_S = T^2 + TU + U^2$, $F_U = TS$.
+		A singular point needs $TS = 0$; if $T = 0$ then $F_S = U^2 = 0$ forces $U = 0$ and then $F_T = S^2 = 0$, so $S = 0$, impossible in $\mathbb{P}^2$; the case $S = 0$ is symmetric.
+		Setting $U = 0$ gives $TS(T+S) = 0$, the three listed points.
+		Among the four affine $\F_2$-points only $(0,0)$ satisfies the equation, so $\#E(\F_2) = 4 = 2 + 1 - a$ with $a = -1$, and $\pi^2 - a\pi + 2 = 0$ \cite{Silverman2009}.
+		Since $a$ is odd, $E$ is ordinary, and $\Z[\pi] = \Z\!\left[\frac{1+\sqrt{-7}}{2}\right]$.
+		The affine count over $\F_q$ removes the three points at infinity and the point $(0,0)$ (note $t = 0$ forces $s = 0$ on $E$), and $\#E(\F_q) = q + 1 - a_m$ with $a_m = \pi^m + \bar\pi^{\,m}$, whence the recursion.
+	\end{proof}
+
+	\begin{proof}[Proof of Theorem~\ref{thm:curve}]
+		Only $N(b) = 2G(b)$ remains.
+		Let $\alpha \in W(b)$.
+		Then $\alpha = t + t^{-1}$ and $\alpha + 1 = s + s^{-1}$ for some $t, s \in \mu_b \setminus \{1\}$, and $(t,s)$ satisfies the equation of $E$; each such $\alpha$ arises from exactly $2 \cdot 2 = 4$ pairs, namely $t^{\pm 1}$ and $s^{\pm 1}$.
+		The remaining points of $E \cap (\mu_b\times\mu_b)$ are those with $t = 1$ or $s = 1$: $t = 1$ forces $s + s^{-1} = 1$, which has two solutions $s \in \mu_3$ when $3 \mid b$ and none otherwise, and symmetrically for $s = 1$.
+		Hence $N(b) = 4\abs{W(b)} + 4[\,3\mid b\,] = 2 G(b)$ by Proposition~\ref{prop:Godd}.
+	\end{proof}
+
+	\begin{remark}
+		Theorem~\ref{thm:curve} converts \eqref{eq:main} into an \emph{unlikely intersection} statement: the curve $E$ meets the ``torsion grid'' $\mu_b \times \mu_b$, a set of $b^2$ points, in at most $\frac{8}{5}b$ points.
+		Bézout gives only $N(b) \le 2b$ (the equation is quadratic in $s$ for fixed $t$), which is exactly the trivial bound $d(n) \leq n$ again.
+	\end{remark}
+
+	\section{Exact evaluation for $b = 2^r \pm 1$}\label{sec:kloos}
+	Throughout this section $q = 2^r$ and $\Tr = \Tr_{\F_q/\F_2}$.
+
+	\begin{lemma}\label{lem:traceR}
+		\begin{enumerate}[label=(\alph*)]
+			\item If $b = q - 1$, so that $\mu_b = \F_q^*$, then $R_b = \{\alpha \in \F_q^* : \Tr(\alpha^{-1}) = 0\}$.
+			\item If $b = q + 1$, so that $\mu_b \subset \F_{q^2}^*$ is the norm-one subgroup, then $R_b = \{\alpha \in \F_q^* : \Tr(\alpha^{-1}) = 1\}$.
+		\end{enumerate}
+	\end{lemma}
+	\begin{proof}
+		In both cases $\alpha = t + t^{-1}$ means $t^2 + \alpha t + 1 = 0$ with $\alpha \neq 0$; substituting $t = \alpha z$ turns this into $z^2 + z = \alpha^{-2}$, which is solvable in $\F_q$ if and only if $\Tr(\alpha^{-2}) = 0$, i.e.\ $\Tr(\alpha^{-1}) = 0$ (the trace is invariant under squaring).
+		In case (a), $t$ ranges over $\F_q^*$ and $\alpha \ne 0$ excludes $t = 1$.
+		In case (b), $t \in \mu_{q+1}$ means $t^{q+1} = 1$, i.e.\ $t \bar t = 1$ for the nontrivial automorphism of $\F_{q^2}/\F_q$; then $t^{-1} = \bar t$, so $\alpha = t + \bar t \in \F_q$, and $t \notin \F_q$ (equivalently $t \ne 1$, since $\mu_{q+1} \cap \F_q^* = \{1\}$) precisely when $z^2 + z = \alpha^{-2}$ has \emph{no} root in $\F_q$, i.e.\ $\Tr(\alpha^{-1}) = 1$.
+	\end{proof}
+
+	\begin{lemma}\label{lem:sums}
+		Let $S_1 = \sum_{\alpha \ne 0,1} (-1)^{\Tr(\alpha^{-1})}$, $S_2 = \sum_{\alpha \ne 0,1} (-1)^{\Tr((\alpha+1)^{-1})}$ and $S_3 = \sum_{\alpha \ne 0,1} (-1)^{\Tr(\alpha^{-1} + (\alpha+1)^{-1})}$, the sums being over $\F_q \setminus \{0,1\}$.
+		Then
+		\begin{equation*}
+			S_1 = S_2 = -1 - (-1)^r, \qquad S_3 = -1 + K_r .
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		$\sum_{\alpha \in \F_q^*}(-1)^{\Tr(\alpha^{-1})} = \sum_{\beta \in \F_q^*}(-1)^{\Tr \beta} = -1$, and removing $\alpha = 1$ subtracts $(-1)^{\Tr(1)} = (-1)^r$; this gives $S_1$, and $\alpha \mapsto \alpha + 1$ permutes $\F_q\setminus\{0,1\}$, giving $S_2 = S_1$.
+		For $S_3$, note $\alpha^{-1} + (\alpha+1)^{-1} = (\alpha^2 + \alpha)^{-1}$.
+		As $\alpha$ runs over $\F_q \setminus \{0,1\}$, $y = \alpha^2 + \alpha$ runs twice over $\{y \ne 0 : \Tr(y) = 0\}$, so with $[\Tr(y) = 0] = \frac{1}{2}\left(1 + (-1)^{\Tr y}\right)$,
+		\begin{equation*}
+			S_3 = 2 \sum_{\substack{y \ne 0 \\ \Tr(y) = 0}} (-1)^{\Tr(y^{-1})}
+			= \sum_{y \ne 0}(-1)^{\Tr(y^{-1})} + \sum_{y \ne 0}(-1)^{\Tr(y + y^{-1})}
+			= -1 + K_r. \qedhere
+		\end{equation*}
+	\end{proof}
+
+	\begin{proof}[Proof of Theorem~\ref{thm:kloos}]
+		Let $b = q-1$.
+		By Lemma~\ref{lem:traceR}(a),
+		\begin{equation*}
+			\abs{W(b)} = \sum_{\alpha \ne 0,1} \frac{1 + (-1)^{\Tr(\alpha^{-1})}}{2}\cdot\frac{1 + (-1)^{\Tr((\alpha+1)^{-1})}}{2}
+			= \frac{(q-2) + S_1 + S_2 + S_3}{4}
+			= \frac{q - 5 - 2(-1)^r + K_r}{4}.
+		\end{equation*}
+		Since $3 \mid 2^r - 1$ exactly when $r$ is even, i.e.\ exactly when $(-1)^r = 1$, Proposition~\ref{prop:Godd} gives in both parities
+		\begin{equation*}
+			G(2^r - 1) = 2\abs{W} + 2[\,3\mid b\,] = \frac{q - 3 + K_r}{2}.
+		\end{equation*}
+		For $b = q + 1$, Lemma~\ref{lem:traceR}(b) replaces each factor $\frac{1 + (-1)^{\Tr}}{2}$ by $\frac{1 - (-1)^{\Tr}}{2}$, so
+		\begin{equation*}
+			\abs{W(b)} = \frac{(q-2) - S_1 - S_2 + S_3}{4} = \frac{q - 1 + 2(-1)^r + K_r}{4},
+		\end{equation*}
+		and $3 \mid 2^r+1$ exactly when $r$ is odd, so again both parities give
+		\begin{equation*}
+			G(2^r+1) = \frac{q + 1 + K_r}{2}. \qedhere
+		\end{equation*}
+	\end{proof}
+
+	\begin{proof}[Proof of Corollary~\ref{cor:kloos}]
+		Weil's bound gives $\abs{K_r} \leq 2\sqrt q$, and by \cite{LachaudWolfmann1990} $K_r \equiv -1 \pmod 4$.
+
+		\emph{Case $b = 2^r + 1$.}
+		We must show $5(q + 1 + K_r) \leq 8(q+1)$, i.e.\ $5K_r \leq 3(q+1)$.
+		If $2\sqrt{q} \cdot 5 \leq 3(q+1)$ we are done; this is $3q - 10\sqrt q + 3 = (3\sqrt q - 1)(\sqrt q - 3) \geq 0$, which holds for $q \geq 9$, i.e.\ $r \geq 4$.
+		For $r = 3$, $K_3 = -5 < 0 \le \frac{3 \cdot 9}{5}$.
+		For $r = 2$ we have $q = 4$ and $\abs{K_2} \leq 4$ with $K_2 \equiv -1 \pmod 4$, so $K_2 \in \{-1, 3\}$ and $5K_2 \leq 15 = 3(q+1)$, with equality if and only if $K_2 = 3$.
+		Indeed $K_2 = 3$, giving $G(5) = 4$ and $5G(5) = 20 = 4 \cdot 5$.
+
+		\emph{Case $b = 2^r - 1$.}
+		We must show $5(q - 3 + K_r) \leq 8(q-1)$, i.e.\ $5 K_r \leq 3q + 7$.
+		From $\abs{K_r} \leq 2\sqrt q$ it suffices that $3q - 10\sqrt q + 7 = (3\sqrt q - 7)(\sqrt q - 1) \geq 0$, which holds for $\sqrt q \geq 7/3$, i.e.\ $r \geq 3$.
+		For $r = 2$, $b = 3$ and $K_2 = 3$ give $G(3) = 2$ and $10 \le 12$.
+
+		\emph{Uniqueness of equality.}
+		Equality for $b = 2^r+1$ forces $K_r = \frac{3(q+1)}{5}$, and $\frac{3(q+1)}{5} > 2\sqrt q$ for $q \geq 16$; the only remaining possibilities are $r = 2$ (which does give equality) and $r = 3$ (where $\frac{3 \cdot 9}{5} \notin \Z$).
+		Equality for $b = 2^r - 1$ forces $K_r = \frac{3q+7}{5}$, which exceeds $2\sqrt q$ for $q \ge 16$ and is not an integer for $q \in \{4, 8\}$.
+		Finally, by Theorem~\ref{thm:reduction}, $5d(n) = 4(n+1)$ with $n + 1 = 2^k b$ requires $5 G(b) = 4b$ and $3 \nmid b$, i.e.\ $b = 5$.
+	\end{proof}
+
+	\begin{remark}
+		Theorem~\ref{thm:kloos} yields $G(2^r+1) - G(2^r-1) = 2$ for all $r \ge 2$, hence, after applying the correction terms of Theorem~\ref{thm:reduction},
+		\begin{equation*}
+			d\!\left(2^r\right) - d\!\left(2^r - 2\right) =
+			\begin{cases}
+				4 & r \text{ even},\\
+				0 & r \text{ odd}.
+			\end{cases}
+		\end{equation*}
+		This is the bounded-grid analogue of the theorem of Goshima and Yamagishi \cite{GOSHIMAYAMAGISHI2010} that the corresponding \emph{torus} nullity satisfies $d(2^r+1) = d(2^r-1) + 4$, which they also prove using an elliptic curve.
+	\end{remark}
+
+	\begin{corollary}\label{cor:families}
+		For all $k \geq 0$,
+		\begin{equation*}
+			d\!\left(5 \cdot 2^k - 1\right) = 2^{k+2},
+			\qquad
+			d\!\left(31 \cdot 2^k - 1\right) = 5 \cdot 2^{k+2},
+			\qquad
+			d\!\left(33 \cdot 2^k - 1\right) = 11 \cdot 2^{k+1} - 2 .
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		By Theorem~\ref{thm:reduction}, $d(2^kb-1) = 2^{k+1}\abs{W(b)} + 2(2^k-1)[\,3\mid b\,]$, and $\abs{W(b)} = \frac12\left(G(b) - 2[\,3\mid b\,]\right)$ by Proposition~\ref{prop:Godd}.
+		Theorem~\ref{thm:kloos} with $r = 2$ gives $G(5) = \frac{4+1+K_2}{2} = 4$ since $K_2 = 3$, and with $r = 5$ and $K_5 = 11$ gives $G(31) = \frac{32-3+11}{2} = 20$ and $G(33) = \frac{32+1+11}{2} = 22$.
+		Hence $\abs{W(5)} = 2$, $\abs{W(31)} = 10$ and $\abs{W(33)} = 10$, and the three formulas follow.
+	\end{proof}
+
+	\begin{remark}
+		The last two formulas were conjectured in \texttt{tex/conjectures/max\_nullity/max\_nullity.tex} of this repository, in the notation $g(b,k) = b\cdot 2^{k-1}-1$: $d(g(31,k)) = 5\cdot 2^{k+1}$ and $d(g(33,k)) = 11 \cdot 2^k - 2$.
+		They are now theorems.
+		The same argument evaluates $d$ on the family $b \cdot 2^k - 1$ for \emph{any} fixed odd $b$, the only input being the single integer $G(b)$; the content of Theorem~\ref{thm:kloos} is that $G(b)$ is a Kloosterman sum when $b = 2^r \pm 1$.
+	\end{remark}
+
+	\section{A general character-sum criterion}\label{sec:weil}
+	\begin{lemma}\label{lem:divisors}
+		On $E$, $\operatorname{div}(t) = 2(0,0) - (1:0:0) - (1:1:0)$ and $\operatorname{div}(s) = 2(0,0) - (0:1:0) - (1:1:0)$.
+		Consequently, for integers $a, c$ the function $t^a s^c$ is a $D$-th power in $\overline{\F}_q(E)^*$ only if $D \mid a$ and $D \mid c$.
+	\end{lemma}
+	\begin{proof}
+		The only zero of $t$ is $(0,0)$ and its only poles are the points at infinity with $T \ne 0$, namely $(1:0:0)$ and $(1:1:0)$; the multiplicities are forced by $\deg \operatorname{div}(t) = 0$ together with simplicity of the poles at the two smooth infinite points.
+		The claim for $s$ is symmetric.
+		Then $\operatorname{div}(t^as^c)$ has coefficient $-a$ at $(1:0:0)$ and $-c$ at $(0:1:0)$, and a $D$-th power has divisor divisible by $D$.
+	\end{proof}
+
+	\begin{proof}[Proof of Theorem~\ref{thm:weil}]
+		Let $m = \operatorname{ord}_b(2)$, $q = 2^m$, so $\mu_b \subset \F_q^*$ is the subgroup of index $h = (q-1)/b$.
+		Let $H$ be the group of multiplicative characters of $\F_q^*$ trivial on $\mu_b$, so $\abs{H} = h$ and $\mathbf{1}_{\mu_b} = \frac{1}{h}\sum_{\chi \in H}\chi$.
+		Let $U = E \setminus \{(0,0), (1:0:0), (0:1:0), (1:1:0)\}$, so that $U(\F_q) = \{(t,s) \in (\F_q^*)^2 : t + t^{-1} + s + s^{-1} = 1\}$.
+		Then
+		\begin{equation*}
+			N(b) = \sum_{P \in U(\F_q)} \mathbf{1}_{\mu_b}(t(P))\,\mathbf{1}_{\mu_b}(s(P))
+			= \frac{1}{h^2} \sum_{\chi, \psi \in H} S(\chi, \psi),
+			\qquad
+			S(\chi,\psi) = \sum_{P \in U(\F_q)} \chi(t(P))\psi(s(P)).
+		\end{equation*}
+		The principal term is $S(\mathbf 1, \mathbf 1) = \#U(\F_q) = q - 3 - a_m \le q - 3 + 2\sqrt q$ by Lemma~\ref{lem:E} and the Hasse bound.
+		For $(\chi, \psi) \ne (\mathbf 1, \mathbf 1)$, fix a character $\lambda$ of $\F_q^*$ of order $q-1$ and write $\chi = \lambda^a$, $\psi = \lambda^c$ with $(a,c) \not\equiv (0,0) \bmod q-1$; then $\chi(t)\psi(s) = \lambda(t^as^c)$ and, by Lemma~\ref{lem:divisors}, $t^as^c$ is not a $(q-1)$-st power in $\overline{\F}_q(E)^*$.
+		Weil's bound for multiplicative character sums along a curve \cite{Schmidt1976, Bombieri1966} therefore gives
+		\begin{equation*}
+			\abs{S(\chi,\psi)} \leq \left(2g - 2 + \# \operatorname{supp} \operatorname{div}(t^a s^c)\right)\sqrt q \leq (0 + 4)\sqrt q,
+		\end{equation*}
+		since $g = 1$ and the support is contained in the four removed points.
+		Summing the $h^2 - 1$ nonprincipal terms gives the stated inequality.
+		Multiplying $N(b) \le 4\sqrt q + (q-3-2\sqrt q)h^{-2}$ by $5h^2$ and using $\frac85 b h^2 = \frac85 (q-1)h$ turns the requirement $N(b) \le \frac85 b$ into \eqref{eq:star}.
+		For $h = 1$, \eqref{eq:star} reads $5(q + 2\sqrt q - 3) \le 8(q-1)$, i.e.\ $10\sqrt q \le 3q + 7$, which holds for $q \geq 8$.
+		In general the left side of \eqref{eq:star} grows like $20\sqrt q\, h^2$ and the right side like $8qh$, so \eqref{eq:star} holds exactly in the range $h \lesssim \frac{2}{5}\sqrt q$.
+	\end{proof}
+
+	\begin{remark}
+		A two-dimensional discrete Fourier calibration over $\F_{2^m}$ for $m \le 11$ shows $\max_{(\chi,\psi) \neq (\mathbf 1, \mathbf 1)} \abs{S(\chi,\psi)} \leq 3.73\sqrt q$, consistent with the constant $4$ above.
+	\end{remark}
+
+	\section{What is proved unconditionally}\label{sec:unconditional}
+	\begin{theorem}\label{thm:final}
+		Write $n + 1 = 2^k b$ with $b$ odd.
+		Then $5 d(n) \leq 4(n+1)$ holds whenever
+		\begin{enumerate}[label=(\roman*)]
+			\item $b = 2^r \pm 1$ for some $r \geq 2$ (Corollary~\ref{cor:kloos}), or
+			\item $b$ satisfies criterion \eqref{eq:star} of Theorem~\ref{thm:weil}, or
+			\item $b \le 10^5$ (verified by computation, Section~\ref{sec:computation}).
+		\end{enumerate}
+		In these cases equality holds if and only if $b = 5$, i.e.\ $n = 5 \cdot 2^k - 1$.
+	\end{theorem}
+
+	The two unconditional regimes (i) and (ii) are thin: among the $5999$ odd $b$ with $3 \le b \le 12000$, exactly $24$ are covered by (i) and a further $37$ by (ii), so $61$ in all, or $1.02\%$.
+	However, they contain \emph{every} $b$ for which $G(b)/b$ is anywhere near $4/5$: the largest value of $G(b)/b$ over all $b \le 12000$ \emph{not} covered by (i) or (ii) is $0.2222$, attained at $b = 99$, versus the target $0.8$.
+	This is not a coincidence, and it is the main structural finding of this note:
+	\begin{quote}
+		$G(b)/b$ is large exactly when $2$ has small multiplicative order modulo $b$, and that is exactly the regime in which character sums over $\mu_b$ are nontrivial.
+	\end{quote}
+
+	\section{Why standard bounds do not suffice}\label{sec:barrier}
+	\subsection{Every soft argument stops at $d(n) \leq n$}
+	Proposition~\ref{prop:symplectic} exhibits $d(n)$ as the dimension of an intersection of two Lagrangian subspaces of a symplectic $\F_2$-space of dimension $2n$; such an intersection can have any dimension between $0$ and $n$, and no property of the specific $T$ beyond symplecticity is used.
+	Bézout applied to $E \cap (\mu_b\times\mu_b)$ gives $N(b) \le 2b$, i.e.\ the same bound.
+	Restriction to the first row (Lemma~\ref{lem:rowchase}) gives an injection of the kernel into $\F_2^n$, again the same bound.
+	And the bound $d(n) \leq n$ \emph{is attained}, at $n = 4$, where $d(4) = 4$: an $\F_2$-computation shows $n = 4$ is the only $n < 4000$ with $d(n) = n$.
+	Hence no argument that is insensitive to the arithmetic of $b$ can produce any constant $c < 1$ in $d(n) \le c\, n$.
+
+	\subsection{Coding bounds are vacuous}
+	The kernel is a binary linear code $\mathcal{K} \subseteq \F_2^{n^2}$ of dimension $d(n)$, and by Lemma~\ref{lem:rowchase} it is equivalent to a code of length $n$ and the same dimension.
+	The Singleton, Griesmer, and Plotkin bounds all require a lower bound on the minimum distance of that length-$n$ code, and no nontrivial such bound is known here; applied to the ambient length $n^2$ they are vacuous by an enormous margin.
+	The one genuinely code-theoretic input we do use --- the congruence $K_r \equiv -1 \pmod 4$ --- comes from coding theory \cite{LachaudWolfmann1990}, and it is exactly what settles the extremal case $b = 5$.
+
+	\subsection{The character-sum barrier}
+	Theorem~\ref{thm:weil} is nontrivial only when $b \gtrsim \sqrt q = 2^{\operatorname{ord}_b(2)/2}$.
+	For a typical odd $b$, $\operatorname{ord}_b(2)$ is of size $b^{1 - o(1)}$, so $q = 2^{\operatorname{ord}_b(2)}$ is exponentially larger than $b$ and the bound $4\sqrt q$ dwarfs the target $\frac{8}{5}b$; the estimate says nothing at all.
+	This is the same obstruction that makes multiplicative-subgroup sums hard in general: the strongest available results, of Bourgain--Glibichuk--Konyagin type \cite{BGK2006}, give a power saving for subgroups of size $b > q^{\varepsilon}$ with $\varepsilon > 0$ fixed, whereas here $b$ can be as small as $q^{o(1)}$ (indeed $b \approx \log_2 q$ in the worst case).
+	No known method gives a nontrivial estimate for $\sum_{t \in \mu_b} \chi(\cdot)$ in that range, and any proof of \eqref{eq:main} in full must, by Theorem~\ref{thm:curve}, do exactly that or avoid character sums entirely.
+
+	\subsection{Unlikely intersections do not help in characteristic $p$}
+	Over $\mathbb{C}$, the Manin--Mumford / Ihara--Serre--Tate theorem bounds $\abs{C \cap \mu_\infty^2}$ for a curve $C$ that is not a torsion coset, uniformly in the torsion.
+	In characteristic $2$, \emph{every} point of $\mathbb{G}_m^2(\overline{\F}_2)$ is torsion, so $E \cap \mu_\infty^2 = E(\overline{\F}_2)$ is infinite.
+	The correct characteristic-$p$ statement, due to Moosa and Scanlon \cite{MoosaScanlon2004}, describes such intersections as finite unions of translates of ``$F$-sets''.
+	This is a qualitative structure theorem; it yields no uniform inequality of the form $\abs{E \cap (\mu_b\times\mu_b)} \le c\,b$ with $c < 2$, which is precisely what \eqref{eq:main} asks for.
+
+	\subsection{The bound is a genuinely arithmetic statement}
+	Any proof of \eqref{eq:main} must separate the values
+	\begin{equation*}
+		\frac{G(5)}{5} = 0.8, \qquad \frac{G(3)}{3} = \frac{G(33)}{33} = \frac23, \qquad \frac{G(31)}{31} = 0.6452, \qquad \frac{G(2^r\pm1)}{2^r \pm 1} \to \frac12 .
+	\end{equation*}
+	By Theorem~\ref{thm:kloos} the last is a Kloosterman-sum fluctuation of size $O(q^{-1/2})$ around $\frac12$.
+	A uniform argument giving $G(b) \le \frac45 b$ would in particular have to be tight at $b = 5$ and lossy by only $17\%$ at $b = 33$, while all these numbers are values of character sums.
+	We regard this as strong evidence that \eqref{eq:main} is not accessible by any ``soft'' method, and that a complete proof needs an estimate for $N(b)$ that is valid uniformly for subgroups $\mu_b \subset \F_q^*$ of arbitrarily small relative size --- a statement of independent interest well beyond the present state of the art.
+
+	\section{Computational evidence}\label{sec:computation}
+	The script \texttt{code/upper\_bound\_check.py} verifies, independently of the rest of this repository:
+	\begin{enumerate}[label=(\arabic*)]
+		\item $f_n$ from the recursion agrees with $\sum_j \binom{n-j}{j}x^{n-2j}$ for $n \le 200$;
+		\item $\deg\gcd(f_n(x), f_n(x+1))$ agrees with the nullity of the $n^2 \times n^2$ Lights Out matrix computed by Gaussian elimination, for $n \le 12$;
+		\item $d(n) = G(n+1) - 2[\,3\mid n+1\,]$ and $G(2m) = 2G(m)$ for $n, m \le 3000$;
+		\item $\#U(\F_{2^m}) = 2^m - 3 - a_m$ for $m \le 13$, and $N(b) = 2G(b)$ for all odd $b \le 200$ with $\operatorname{ord}_b(2) \le 13$;
+		\item the formulas of Theorem~\ref{thm:kloos} and the congruence $K_r \equiv -1 \pmod 4$, for $2 \le r \le 13$;
+		\item $5G(b) \leq 4b$ for all odd $b \le 10^5$, the only equality being $b = 5$, and the largest ratio $G(b)/b$ apart from $b = 5$ being $\frac{22}{33} = \frac23$;
+		\item the coverage statistics quoted in Section~\ref{sec:unconditional}.
+	\end{enumerate}
+
+	\begin{table}[H]
+		\centering
+		\begin{tabular}{|r|r|r||r|r|r|}
+			\hline
+			$b$ & $G(b)$ & $G(b)/b$ & $b$ & $G(b)$ & $G(b)/b$\\
+			\hline\hline
+			5 & 4 & 0.8000 & 2049 & 1058 & 0.5163\\ \hline
+			33 & 22 & 0.6667 & 2047 & 1056 & 0.5159\\ \hline
+			3 & 2 & 0.6667 & 4097 & 2072 & 0.5057\\ \hline
+			31 & 20 & 0.6452 & 4095 & 2070 & 0.5055\\ \hline
+			257 & 144 & 0.5603 & 513 & 254 & 0.4951\\ \hline
+			255 & 142 & 0.5569 & 511 & 252 & 0.4932\\ \hline
+		\end{tabular}
+		\caption{The twelve largest values of $G(b)/b$ for odd $b \le 12000$. Every entry lies in a family $2^r \pm 1$ or is $3$ or $33 = 2^5+1$; all are covered by Corollary~\ref{cor:kloos} or Theorem~\ref{thm:weil}.}
+	\end{table}
+
+	Correspondingly, the only $n < 4000$ with $5d(n) = 4(n+1)$ are
+	\begin{equation*}
+		n \in \{4, 9, 19, 39, 79, 159, 319, 639, 1279, 2559\} = \{5\cdot 2^k - 1\},
+	\end{equation*}
+	and the largest value of $\frac{5 d(n)}{4(n+1)}$ over $n < 3000$ outside that family is $0.8321$, attained at $n = 2111 = 33\cdot 2^6 - 1$.
+	For $b = 5$ everything is explicit: $f_{5\cdot2^k-1} = x^{2^k-1}(x^2+x+1)^{2^{k+1}}$, the gcd is $(x^2+x+1)^{2^{k+1}}$, and $d(5 \cdot 2^k - 1) = 2^{k+2}$.
+
+	\section{Relation to the literature}\label{sec:lit}
+	Sutner \cite{Sutner1989, Sutner96sigma-automataand} introduced $d(n)$ and proved Lemma~\ref{lem:sutner}; Sarkar \cite{Sarkar1996} and Sarkar--Barua \cite{SarkarBarua1998} study the same quantity through $\pi$-polynomials and rule out totally irreversible $\sigma$-grids in certain congruence classes; Hunziker, Machiavelo and Park \cite{HUNZIKER2004465} prove the identity $F_{n2^k}(x) = x^{2^k-1}F_n(x)^{2^k}$ underlying Theorem~\ref{thm:reduction}; Goldwasser, Klostermeyer and Ware \cite{GoldwasserKlostermeyerWare2002} treat the equivalent parity-domination problem; and \cite{Boyles2022} proves Sutner's doubling conjecture.
+	Goshima and Yamagishi \cite{GOSHIMAYAMAGISHI2010} prove the \emph{torus} analogues $d(2n) = 2d(n)$ and $d(2^r+1) = d(2^r-1)+4$ ``using an elliptic curve'', and Yamagishi \cite{YAMAGISHI2011, YAMAGISHI2013, YAMAGISHI20151} develops the curve-theoretic approach for the Trisentis game and for $\sigma$-automata on square grids.
+
+	\begin{remark}[Attribution]
+		We were unable to obtain the text of \cite{YAMAGISHI2013}, whose title (``Elliptic curves over finite fields and reversibility of additive cellular automata on square grids'') makes it very likely that the curve $E$ of Section~\ref{sec:curve}, or a curve isogenous to it, already appears there, and possibly also some form of Theorem~\ref{thm:kloos}.
+		Priority for the curve and for point-count formulas of that type should be assumed to rest with Yamagishi until \cite{YAMAGISHI2013} can be checked.
+		What we have not found anywhere in the literature is the inequality \eqref{eq:main} itself, in any form, nor the reduction of it to a subgroup point count, nor the identification of $b = 5$ as the unique equality case via the Weil/congruence gap for $K_2$.
+	\end{remark}
+
+	\section{Conclusion}
+	The inequality $5d(n) \le 4(n+1)$ is equivalent to the single arithmetic statement $\abs{E \cap (\mu_b \times \mu_b)} \le \frac85 b$ for all odd $b$, for one explicit ordinary elliptic curve $E/\F_2$ with CM by $\Z[\frac{1+\sqrt{-7}}{2}]$.
+	This statement is \emph{proved} for the families $b = 2^r \pm 1$, where it is nearly tight, and for all $b$ that are large relative to $2^{\operatorname{ord}_b(2)/2}$; and it is verified for all $b \leq 10^5$.
+	Its extremal case $b = 5$ is exactly the case in which the Weil bound for a binary Kloosterman sum is off by $\frac12$ and must be repaired by the congruence $K_r \equiv -1 \pmod 4$.
+	What remains open is a uniform point count for a curve intersected with a multiplicative subgroup of arbitrarily small relative size --- a problem for which, as of today, no technique is known that beats the trivial bound.
+
+	\bibliographystyle{plain}
+	\bibliography{refs}
+\end{document}

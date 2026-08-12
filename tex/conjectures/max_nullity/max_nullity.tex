@@ -101,8 +101,17 @@
 	In fact, $d(g(33,1)) = 20$, the same nullity as the smaller $g(31,1)$.
 	It seems that $d(g(33,k)) = 11\cdot2^{k} - 2$.
 	It seems that $b=5,31,33$ are the only $b$ values that occur.
+	Moreover, in every case computed we find
+	\begin{equation*}
+		5 d(n) \leq 4(n+1),
+	\end{equation*}
+	with equality exactly when $n = 5 \cdot 2^k - 1$.
+	This bound, and how much of it can be proven, is the subject of \texttt{tex/upper\_bound/upper\_bound.tex}.
 	
 	\section{Conjectures}
+	The first two conjectures below are now theorems: see \texttt{tex/upper\_bound/upper\_bound.tex}, where $d(b \cdot 2^k - 1)$ is evaluated for every fixed odd $b$ in terms of a single integer $G(b)$, and where $G(31) = 20$ and $G(33) = 22$ are computed from the Kloosterman sum $K_5 = 11$.
+	The same document proves $d(n) \leq \frac{4(n+1)}{5}$ whenever the odd part of $n+1$ is of the form $2^r \pm 1$, with equality exactly for the family $b = 5$.
+
 	\begin{conjecture}
 		For all $k \in \N$,
 		\begin{equation*}
