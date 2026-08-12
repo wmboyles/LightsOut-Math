@@ -885,7 +885,7 @@
 	\end{proof}
 	
 	We will also need the trace of elements in finite field extensions.
-	We first recall its standard expression in terms of the Frobenius automorphism.
+	We first recall its standard expression in terms of the Frobenius automorphism \cite{lidl-niederreiter}.
 	\begin{lemma}\label{fieldTrace}
 		Let $a$ be algebraic over $\F_q$.
 		Then for every $z \in \F_q(a)$,
@@ -893,9 +893,6 @@
 			\Tr[\F_q(a) / \F_q]{z} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{z^{q^r}}.
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{lidl-niederreiter}.
-	\end{proof}
 
 	\begin{corollary}\label{traceAt1}
 		\begin{equation*}
@@ -1056,27 +1053,39 @@
 
 	\begin{corollary}
 		For all $n,m \geq 1$, the following relationships hold
-		\begin{enumerate}
-			\item $d(3^n - 1) = 0$ % Fermat, Mersenne
-			\item $d(5^n - 1) = 4$ % Fermat
-			\item $d(7^n - 1) = 0$ % Mersenne
-			\item $d(17^n - 1) = 8$ % Fermat
-			\item $d(31^n - 1) = 20$ % Mersenne
-			\item $d(127^n - 1) = 56$ % Mersenne
-			\item $d(257^n - 1) = 144$ % Fermat
-			\item $d(683^n - 1) = 132$
-			\item $d(8191^n - 1) = 4004$ % Mersenne
-			\item $d(2^n 3^m - 1) = 2^{n+1} - 2$
-			\item $d(2^n 5^m - 1) = 2^{n+2}$
-			\item $d(2^n 7^m - 1) = 0$
-			\item $d(2^n 17^m - 1) = 2^{n+3}$
-			\item $d(2^n 31^m - 1) = 2^{n+2} \cdot 5$
-			\item $d(2^n 127^m - 1) = 2^{n+3} \cdot 7$
-			\item $d(2^n 257^m - 1) = 2^{n+4} \cdot 9$
-			\item $d(2^n 683^m - 1) = 2^{n+2} \cdot 33$
-			\item $d(2^n 8191^m - 1) = 2^{n+2} \cdot 7 \cdot 11 \cdot 13$
-		\end{enumerate}
+		\begin{alignat*}{3}
+			d(3^n - 1) &= 0 &\qquad d(5^n - 1) &= 4 &\qquad d(7^n - 1) &= 0 \\
+			d(11^n - 1) &= 0 &\quad d(13^n - 1) &= 0 &\qquad d(17^n - 1) &= 8 \\
+			d(19^n - 1) &= 0 &\qquad d(23^n - 1) &= 0 &\qquad d(29^n - 1) &= 0 \\
+			d(31^n - 1) &= 20 &\qquad d(37^n - 1) &= 0 &\qquad d(41^n - 1) &= 0 \\
+			d(43^n - 1) &= 0 &\qquad d(47^n - 1) &= 0 &\qquad d(53^n - 1) &= 0 \\
+			d(59^n - 1) &= 0 &\qquad d(61^n - 1) &= 0 &\qquad d(67^n - 1) &= 0 \\
+			d(71^n - 1) &= 0 &\qquad d(73^n - 1) &= 0 &\qquad d(79^n - 1) &= 0 \\
+			d(83^n - 1) &= 0 &\qquad d(89^n - 1) &= 0 &\qquad d(97^n - 1) &= 0 \\
+			d(127^n - 1) &= 56 &\qquad d(257^n - 1) &= 144 &\qquad d(683^n - 1) &= 132 \\
+			d(2731^n - 1) &= 468 &\qquad d(3641^n - 1) &= 120 &\qquad d(8191^n - 1) &= 4004,
+			% 2^7 \equiv 1 mod 127
+			% 2^8 \equiv -1 mod 257
+			% 2^11 \equiv -1 mod 638
+			% 2^13 \equiv -1 mod 2731
+			% 2^15 \equiv -1 mod 3641
+			% 2^13 \equiv 1 mod 8191
+		\end{alignat*}
+		and
+		\begin{alignat*}{3}
+			d(2^n 3^m - 1) &= 2^{n+1} - 2 &\qquad d(2^n 5^m - 1) &= 2^{n+2} &\qquad d(2^n 7^m - 1) &= 0 \\
+			d(2^n 11^m - 1) &= 0 &\qquad d(2^n 13^m - 1) &= 0 &\qquad d(2^n 17^m - 1) &= 2^{n+3} \\
+			d(2^n 19^m - 1) &= 0 &\qquad d(2^n 23^m - 1) &= 0 &\qquad d(2^n 29^m - 1) &= 0 \\
+			d(2^n 31^m - 1) &= 2^{n+2} \cdot 5 &\qquad d(2^n 37^m - 1) &= 0 &\qquad d(2^n 41^m - 1) &= 0 \\
+			d(2^n 43^m - 1) &= 0 &\qquad d(2^n 47^m - 1) &= 0 &\qquad d(2^n 53^m - 1) &= 0 \\
+			d(2^n 59^m - 1) &= 0 &\qquad d(2^n 61^m - 1) &= 0 &\qquad d(2^n 67^m - 1) &= 0 \\
+			d(2^n 71^m - 1) &= 0 &\qquad d(2^n 73^m - 1) &= 0 &\qquad d(2^n 79^m - 1) &= 0 \\
+			d(2^n 83^m - 1) &= 0 &\qquad d(2^n 89^m - 1) &= 0 &\qquad d(2^n 97^m - 1) &= 0 \\
+			d(2^n 127^m - 1) &= 2^{n+3} \cdot 7 &\qquad d(2^n 257^m - 1) &= 2^{n+4} \cdot 9 &\qquad d(2^n 683^m - 1) &= 2^{n+2} \cdot 33 \\
+			d(2^n 2731^m - 1) &= 2^{n+2} \cdot 117 &\qquad d(2^n 3641^m - 1) &= 2^{n+3} \cdot 15 &\qquad d(2^n 8191^m - 1) &= 2^{n+2} \cdot 1001.
+		\end{alignat*}
 	\end{corollary}
+	I've listed all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
 	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
 	% TODO: It seems like there's some pattern of Mersenne primes != 3 where d(p^n - 1) often != 0. Can we check d(131071 - 1)?
 
@@ -1125,6 +1134,7 @@
 	In particular, the behavior of $d(n)$ at prime powers is controller by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
 	The final theorem also gives a broad family of primes for which $d(p-1) = 0$.
 	
+	% TODO: It seems there are way more primes than just those \equiv 3 \pmod 4 where d(p-1) = 0. In fact, it seems the vast majority of primes have d(p-1) = 0. Find out a more general classification.
 	% TODO: Section on MCP
 	% TODO: Maybe most of the even dominating set section could move to a different paper?
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
