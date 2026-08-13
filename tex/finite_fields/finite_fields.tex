@@ -117,9 +117,9 @@
 	\begin{proof}
 		Notice,
 		\begin{enumerate}[label=(\roman*)]
-			\item We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply Lemma \ref{FibonacciDivisibility} to get the desired result.
 			\item Follows from (i) by substituting $x+1$ for $x$.
-			\item We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply Lemma \ref{FibonacciDivisibility} to get the desired result.
 			\item Follows from (iii) by substituting $x+1$ for $x$.
 		\end{enumerate}
 	\end{proof}
@@ -139,7 +139,7 @@
 		\begin{equation*}
 			G_n(x) = \gcd{\left(F_{n}(x),F_{n}(x+1)\right)}.
 		\end{equation*}
-		By lemma \ref{FibonacciPolynomialGCD}, we know that $d(n) = \deg{G_{n+1}(x)}$ and $G_n(x) = G_n(x+1)$.
+		By Lemma \ref{FibonacciPolynomialGCD}, we know that $d(n) = \deg{G_{n+1}(x)}$ and $G_n(x) = G_n(x+1)$.
 		
 		$y = x(x+1)$ is also unchanged by this $x \mapsto x+1$ translation.
 		It is well-known that every polynomial $P(x)$ in $\F_2[x]$ can be uniquely written as
@@ -152,7 +152,7 @@
 			A(y)+(x+1)B(y) &= A(y) + xB(y) \\
 			B(y) &= 0.
 		\end{align*}
-		In other words, $P(x)$ in unchanged by translation exactly when when $P(x) \in \F_2[x^2 + x]$.
+		In other words, $P(x)$ is unchanged by translation exactly when when $P(x) \in \F_2[x^2 + x]$.
 		
 		Since $G_n$ is also unchanged by translation, there exists $H_n \in \F_2[x]$ such that
 		\begin{equation*}
@@ -171,15 +171,15 @@
 	\end{corollary}
 	\begin{proof}
 		If $n$ is even, then $n+1$ is odd.
-		Then by \ref{SquareSquareFree}, $F_{n+1}(x)$ and $F_{n+1}(x+1)$ are squares of square-free polynomials $\tau(x)$ and $\tau(x+1)$.
+		Then by Lemma \ref{SquareSquareFree}, $F_{n+1}(x)$ and $F_{n+1}(x+1)$ are squares of square-free polynomials $\tau(x)$ and $\tau(x+1)$.
 		\begin{align*}
 			G_{n+1}(x) &= \gcd{\left(F_{n+1}(x),F_{n+1}(x+1)\right)} \\
 			&= \gcd{\left(\tau_{n+1}(x)^2, \tau_{n+1}(x+1)^2\right)} \\
 			&= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}^2 \\
 			\sqrt{G_{n+1}(x)} &= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}
 		\end{align*}
-		Since translation by 1 exchanges the the arguments of the GCD, $\sqrt{G_{n+1}(x)} = \sqrt{G_{n+1}(x+1)}$.
-		So, by lemma \ref{DEven}, there exists $H_{n+1} \in \F_2[x]$ such that
+		Since translation by 1 exchanges the arguments of the GCD, $\sqrt{G_{n+1}(x)} = \sqrt{G_{n+1}(x+1)}$.
+		So, by Lemma \ref{DEven}, there exists $H_{n+1} \in \F_2[x]$ such that
 		\begin{align*}
 			\sqrt{G_{n+1}(x)} &= H_{n+1}(x^2+x) \\
 			G_{n+1}(x) &= H_{n+1}(x^2+x)^2.
@@ -397,7 +397,7 @@
 
 	The same inequality also follows from the Fibonacci polynomial characterization.
 	\begin{proof}
-		Since $n$ divides $nk$, lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
+		Since $n$ divides $nk$, Lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
 		Substituting $x+1$, we also have $F_{n}(x+1)$ divides $F_{nk}(x+1)$.
 		Thus, the first GCD divides the second:
 		\begin{equation*}
@@ -429,7 +429,7 @@
 	We will also use the analogous identity in $\F_2[x]$.
 	Since $\F_2[x]$ is a Euclidean domain, the same proof applies with divisibility and GCDs interpreted in $\F_2[x]$ \cite{ore_number_theory}.
 	
-	We can not combine the preceding polynomial identity to obtain a recurrence for $d(n)$.
+	We can now combine the preceding polynomial identity to obtain a recurrence for $d(n)$.
 	\begin{theorem}\label{2nPlus1}
 		For all $n \in \N$,
 		\begin{equation*}
@@ -442,7 +442,7 @@
 	\end{theorem}
 	\begin{proof}
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
-		Applying lemmas \ref{Fibonacci2k} and \ref{OreGcd},
+		Applying Lemmas \ref{Fibonacci2k} and \ref{OreGcd},
 		% TODO: Some of these equations run off the page
 		\begin{align*}
 			d(2n+1) &= \deg{\left(F_{2n+2}(x),F_{2n+2}(x+1)\right)} \\
@@ -456,15 +456,15 @@
 			\delta_n = 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}.
 		\end{equation*}
 		So, $\delta_n$ is 2 exactly when $x+1$ occurs with greater multiplicity in $F_{n+1}(x)$ than in $F_{n+1}(x+1)$.
-		When $n+1$ is not divisible by 3, corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
+		When $n+1$ is not divisible by 3, Corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
 		When $n+1$ is divisible by 3, let $n+1 = b 2^{k}$ for $b,k \geq 0$ and $b$ odd.
 		Then $b$ must be divisible by 3.
 		Applying Lemma \ref{Fibonacci2k},
 		\begin{equation*}
 			F_{n+1}(x) = x^{2^{k}-1}{F_{b}(x)}^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}{F_{b}(x+1)}^{2^k}.
 		\end{equation*}
-		Since $b$ is odd, lemma \ref{SquareSquareFree} tells us $F_b(x)$ is the square of a square-free polynomial.
-		Since $b$ is a multiple of 3, corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
+		Since $b$ is odd, Lemma \ref{SquareSquareFree} tells us $F_b(x)$ is the square of a square-free polynomial.
+		Since $b$ is a multiple of 3, Corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
 		So,
 		\begin{equation*}
 			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^{k+1}}g(x)^{2^{k+1}} \qquad F_{n+1}(x+1) = x^{2^{k+1}}(x+1)^{2^{k}-1}g(x+1)^{2^{k+1}},
@@ -515,14 +515,14 @@
 	\end{proof}
 	Thus, the values of $d(n)$ are determined by the values $d(b-1)$ for odd $b$, together with whether $b$ is divisible by 3.
 	
-	We can also use theorem \ref{2nPlus1} to further restrict when $d(n) = 2$.
+	We can also use Theorem \ref{2nPlus1} to further restrict when $d(n) = 2$.
 	\begin{corollary}\label{D2Minus1Mod6}
 		If $d(n) = 2$, then $n \equiv -1 \pmod 6$.
 	\end{corollary}
 	\begin{proof}
-		Since 2 is not divisible by 4, corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
+		Since 2 is not divisible by 4, Corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
 		So, we can write $n = 2^k b - 1$ for $b$ odd and $k \geq 1$.
-		Using corollary \ref{2nPlus1Explicit}, we can know for $i \in \N$,
+		Using Corollary \ref{2nPlus1Explicit}, we find for $i \in \N$,
 		\begin{equation*}
 			d(2^k b - 1) = \begin{cases}
 				2^k d(b-1) + 2(2^k - 1) & 3 \mid b \\
@@ -530,9 +530,9 @@
 			\end{cases}.
 		\end{equation*}
 		If $3 \nmid b$, then we must have $d(n) = 2 = 2^k d(b-1)$.
-		This is impossible because corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4.
+		This is impossible because Corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4.
 		
-		If $3 \mid b$, then we may write we may write $b = 3j$.
+		If $3 \mid b$, then we may write $b = 3j$.
 		We also must have $d(n) = 2 = 2^k d(b-1) + 2(2^k - 1)$.
 		If $k \geq 2$, then this expression is greater than 2.
 		Thus, we must have $k=1$ and $2 = 2 d(b-1) + 2$, which simplifies to $d(b-1) = 0$.
@@ -569,7 +569,7 @@
 		
 		Assume that $P(x)$ divides $F_m(x)$.
 		$P(x)$ must also divide $F_r(x)$.
-		So by lemma \ref{FibonacciDivisibility},
+		So by Lemma \ref{FibonacciDivisibility},
 		\begin{align*}
 			P(x) &\mid \gcd{(F_r(x), F_m(x))} \\
 			P(x) &\mid F_{\gcd(r, m)}(x).
@@ -578,7 +578,7 @@
 		
 		Now assume that $r \mid m$.
 		Then $\gcd{(r,m)} = r$.
-		By lemma \ref{FibonacciDivisibility}, $F_r(x) \mid F_m(x)$, and so $P(x) \mid F_m(x)$.
+		By Lemma \ref{FibonacciDivisibility}, $F_r(x) \mid F_m(x)$, and so $P(x) \mid F_m(x)$.
 	\end{proof}
 	
 	Thus, the rank of a polynomial completely determines the indices at which it can divide a Fibonacci polynomial.
@@ -587,7 +587,7 @@
 		The smallest even $k$ such that for all $n \in \N$, $d(n) \neq k$ is $k=26$.
 	\end{theorem}
 	\begin{proof}
-		Recall from lemma \ref{DEven} that $d(n)$ is always even.
+		Recall from Lemma \ref{DEven} that $d(n)$ is always even.
 		The following computations show that every positive even value less than 26 occurs:
 		\begin{alignat*}{12}
 			d(5) &= 2 \qquad & d(4) &= 4 \qquad & d(11) &= 6 \qquad & d(16) &= 8 \qquad & d(29) &= 10 \qquad & d(84) &= 12 \\
@@ -596,19 +596,19 @@
 		We will show that $d(n)=26$ is impossible.
 		
 		Assume for the sake of contradiction that there exists $n \in \N$ such that $d(n) = 26$.
-		Since 26 is not divisible by 4, corollary \ref{NEvenDDivisible4} says $n$ must be odd.
+		Since 26 is not divisible by 4, Corollary \ref{NEvenDDivisible4} says $n$ must be odd.
 		So, we may write $n = 2m+1$.
-		By theorem \ref{2nPlus1},
+		By Theorem \ref{2nPlus1},
 		\begin{equation*}
 			26 = d(n) = d(2m+1) = 2d(m) + \begin{cases}
 				2 & 3 \mid m+1 \\
 				0 & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		Since lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
+		Since Lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
 		
 		Let $m+1 = 2^s b$ for odd $b$ divisible by 3 and $s \geq 0$.
-		By corollary \ref{2nPlus1Explicit},
+		By Corollary \ref{2nPlus1Explicit},
 		\begin{align*}
 			d(m) = 12 &= 2^s d(b-1) + 2(2^s - 1) \\
 			14 &= 2^s(d(b-1) + 2) \\
@@ -618,7 +618,7 @@
 		Lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, so the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
 		Thus, $m$ must be even.
 		
-		Since $m+1$ is odd, lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
+		Since $m+1$ is odd, Lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
 		\begin{equation*}
 			F_{m+1}(x) = R_{m+1}(x)^2.
 		\end{equation*}
@@ -654,22 +654,22 @@
 			\operatorname{rank}(C_3(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
 		\end{alignat*}
 		We'll check if $C_2$ or $C_3$ are viable candidates.
-		Since both $C_2$ and $C_3$ have rank 63, $63 \mid m+1$ implies that both divide $F_{m+1}$ because $h_{m+1} \mid R_{m+1} \mid F_{m+1}$.
-		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1} \ge \deg{C_2} + \deg{C_3} = 12$, contradicting our assumption that the degree was 6.
+		Since both $C_2$ and $C_3$ are both square-free, translation invariant, and have rank 63, $63 \mid m+1$ implies that both divide $F_{m+1}$.
+		$C_2$ and $C_3$ are also coprime and each of degree 6 in $x$, so $\deg H_{m+1} \ge \deg{C_2} + \deg{C_3} = 12$, contradicting our assumption that the degree was 6.
 		Thus both $C_2$ and $C_3$ are excluded as candidates.
 		
 		We'll check if $C_1$ is a viable candidate.
-		Since $C_1$ has rank 85, 85 must divide $m+1$.
-		We also showed earlier that 3 divides $m+1$.
-		So, $\operatorname{lcm}{(85,3)} = 255$ must divide $m+1$.
+		Since $C_1$ is square-free, translation invariant, and has rank 85, $85 \mid m+1$.
+		We also showed earlier that $3 \mid m+1$.
+		So, $\operatorname{lcm}{(85,3)} = 255 \mid m+1$.
 		Other polynomials with ranks dividing 255 must also divide $F_{m+1}$.
 		Let
 		\begin{equation*}
 			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
 		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are both factors of 255.
-		$P$ and $Q$ are closed under translation ($P(x+1) = Q(x)$), are coprime to each other, and are coprime with $C_1$.
-		Therefore, by lemma \ref{rankApparition},
+		Together, $P$ and $Q$ are square-tree, translation-invariant ($P(x+1) = Q(x)$), and coprime to each other and $C_1$.
+		Therefore, by Lemma \ref{rankApparition},
 		\begin{equation*}
 			\deg{H_{m+1}} \geq \deg{C_1} + \deg{P} + \deg{Q} = 14,
 		\end{equation*}
@@ -680,16 +680,16 @@
 		Therefore, there is no $3 \mid m+1$ and $d(m) = 12$, and hence no $n$ with $d(n) = 26$.
 	\end{proof}
 
-	Theorem \ref{nodn26} gives one impossible vlaue of $d(n)$.
-	The recurrence in Theorem \ref{2nPlus1Explicit} allows us to propogate this obstruction to infinitely many more values.
+	Theorem \ref{nodn26} gives one impossible value of $d(n)$.
+	The recurrence in Theorem \ref{2nPlus1Explicit} allows us to propagate this obstruction to infinitely many more values.
 	\begin{corollary}
 		Suppose $a \in \N$ is even and an impossible value of $d(n)$.
 		Then $2a+2$ is also an impossible value of $d(n)$.
 	\end{corollary}
 	\begin{proof}
 		Suppose for the sake of contradiction that there exists $n$ such that $d(n) = 2a+2$.
-		Since $2a+2$ is not divisible by 4, then corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd, so we may write $n = 2m+1$.
-		So, by theorem \ref{2nPlus1},
+		Since $2a+2$ is not divisible by 4, then Corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd, so we may write $n = 2m+1$.
+		So, by Theorem \ref{2nPlus1},
 		\begin{equation*}
 			2a+2 = d(n) = d(2m+1) = 2d(m) + \delta_m \qquad \delta_m = \begin{cases}
 				2 & 3 \mid m+1 \\
@@ -697,15 +697,15 @@
 			\end{cases}.
 		\end{equation*}
 		If $\delta_m = 0$, then $2a+2 = 2d(m)$.
-		By lemma \ref{DEven}, $d(m)$ is even, so $2d(m)$ is divisibleby 4.
-		This contradicts the fact that $2a+2$ is not divisible by 4 since $a$ is even.
+		By Lemma \ref{DEven}, $d(m)$ is even, so $2d(m)$ is divisible by 4.
+		This contradicts the fact that $2a+2$ is not divisible by 4 because $a$ is even.
 		If $\delta_m = 2$, then $d(m)=a$, contradicting the impossibility of $a$ as an output of $d$.
 	\end{proof}
 	Expanding the recurrence, if $a$ is an impossible even value, then $2^t(a+2)-2$ is also impossible for all $t \geq 0$.
-	In other words, 26, 54, 110, 222, 446, ... are also all impossible values of $d(n)$.
+	In other words, $26, 54, 110, 222, 446, \ldots$ are all impossible values of $d(n)$.
 	
 	\section{Finite Fields}
-	We now turn to finite field methods to syudy the Fibonacci polynomial GCDs that determine $d(n)$.
+	We now turn to finite field methods to study the Fibonacci polynomial GCDs that determine $d(n)$.
 	In particular, we use properties of roots of unity and traces to analyze $d(p^k - 1)$ for prime $p$ and to characterize when $d(p-1) = 0$.
 	
 	\subsection{Orders of Prime Powers}
@@ -744,13 +744,13 @@
 			p^2 \mid 2^{p-1} - 1.
 		\end{equation*}
 	\end{definition}
-	For an odd prime $p$, the Wieferich primes are precisely the primes for much $v_p(2^{\ord[p]{2}-1}) > 1$.
+	For an odd prime $p$, the Wieferich primes are precisely the primes for which $v_p(2^{\ord[p]{2}}-1) > 1$.
 	Thus, they are exactly the exceptional primes for which the order formulation in Lemma \ref{ordpj2} does not take its simplest form.
 	
 	It is conjectured that infinitely many Wieferich primes exist, but only two are currently known: 1093 and 3511 \cite{CrandallSearch}.
 	Computer searches have shown any more Wieferich primes must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
 
-	The following equivalent characterization of will be useful because it expresses the Wieferich condition in terms of the multiplicative order appearing in Lemma \ref{ordpj2}.
+	The following equivalent characterization of Wieferich primes will be useful because it expresses the Wieferich condition in terms of the multiplicative order appearing in Lemma \ref{ordpj2}.
 	\begin{lemma}\label{wieferichEquivalence}
 		An odd prime number $p$ is a Wieferich prime if and only if
 		\begin{equation*}
@@ -779,7 +779,7 @@
 
 	\begin{corollary}\label{nonWieferichOrd}
 		Let $p$ be an odd prime.
-		If $p$ isn't a Wieferich prime, then
+		If $p$ is not a Wieferich prime, then
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{j-1}.
 		\end{equation*}
@@ -799,7 +799,7 @@
 	\end{proof}
 	
 	\subsection{Extension Degrees \& Traces}
-	We next turn to finite-field extensions and traces.
+	We next turn to finite field extensions and traces.
 	These tools will allow is to relate the roots of Fibonacci polynomials to their behavior over finite fields.
 	
 	\begin{definition}
@@ -900,7 +900,7 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Immediate from evaluating lemma \ref{fieldTrace} at $z=1$.
+		Immediate from evaluating Lemma \ref{fieldTrace} at $z=1$.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -920,7 +920,7 @@
 		\begin{equation*}
 			\left[\F_2(\alpha) : \F_2\right] = \rho_2(M).
 		\end{equation*}
-		So, by lemma \ref{fieldTrace},
+		So, by Lemma \ref{fieldTrace},
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
@@ -942,7 +942,7 @@
 		where $\mu$ is the number-theoretic Möbius function.
 	\end{corollary}
 	\begin{proof}
-		From lemma \ref{fieldTraceSumRoots}, we know that
+		From Lemma \ref{fieldTraceSumRoots}, we know that
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_M}{\zeta^{u}}.
 		\end{equation*}
@@ -968,22 +968,22 @@
 		\begin{equation*}
 			R_j = \{\zeta + \zeta^{-1} : \ord{\zeta} = p^j\}.
 		\end{equation*}
-		By lemma \ref{RootParameterization},
+		By Lemma \ref{RootParameterization},
 		\begin{equation*}
 			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
 		\end{equation*}
-		Furthermore, since $p^k$ is odd, lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
+		Furthermore, since $p^k$ is odd, Lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
 		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
 		Let $h = \ord[p]{2}$.
-		Since $p$ is not Wieferich, corollary \ref{nonWieferichOrd} tells us that
+		Since $p$ is not Wieferich, Corollary \ref{nonWieferichOrd} tells us that
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{j-1},
 		\end{equation*}
-		and lemma \ref{signedOrder} tells us that
+		and Lemma \ref{signedOrder} tells us that
 		\begin{equation*}
 			\rho_2(p^j) = \rho_2(p) p^{j-1}.
 		\end{equation*}
-		So, by lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
+		So, by Lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
 		\begin{equation*}
 			\left[\F_2(\alpha) : \F_2\right] = \rho_2(p) p^{j-1}.
 		\end{equation*}
@@ -1016,7 +1016,8 @@
 			P_s(x) = \sum_{a=0}^{m-1}{x^a P_a(x^m)}.
 		\end{equation*}
 		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
-		However, only exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$, so $P_0(y) = 1$, a contradiction
+		However, since $m=p^{j-1}$ and $\gcd{(s,p)}=1$, only the exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$.
+		Thus, $P_0(y) = 1$, a contradiction
 		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
 		
 		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
@@ -1024,9 +1025,8 @@
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
 	\end{proof}
-	% TODO: AI review had flagged "However, only exponent 0 among 0, 1, M-1, s, M-s is divisible by m, so P_0(y) = 1." as possibly not true because s may be divisible by m. Double check this.
 
-	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit ofmrula for a broad family of indices.
+	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit formula for a broad family of indices.
 	\begin{corollary}
 		Let $p$ be an odd non-Wieferich prime.
 		Then for all $n,m \geq 0$,
@@ -1040,7 +1040,7 @@
 	\end{corollary}
 	\begin{proof}
 		The $m=0$ case reduces to what Sutner already showed \cite{Sutner1989}.
-		For the other cases, we first apply corollary \ref{2nPlus1Explicit} to obtain
+		For the other cases, we first apply Corollary \ref{2nPlus1Explicit} to obtain
 		\begin{equation*}
 			d(2^np^m - 1) = \begin{cases}
 				0 & m = 0 \\
@@ -1048,7 +1048,7 @@
 				2^{n+1} - 2 & m \geq 1, p  = 3
 			\end{cases}.
 		\end{equation*}
-		We then apply theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
+		We then apply Theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
 	\end{proof}
 
 	\begin{corollary}
@@ -1063,7 +1063,7 @@
 			d(71^n - 1) &= 0 &\qquad d(73^n - 1) &= 0 &\qquad d(79^n - 1) &= 0 \\
 			d(83^n - 1) &= 0 &\qquad d(89^n - 1) &= 0 &\qquad d(97^n - 1) &= 0 \\
 			d(127^n - 1) &= 56 &\qquad d(257^n - 1) &= 144 &\qquad d(683^n - 1) &= 132 \\
-			d(2731^n - 1) &= 468 &\qquad d(3641^n - 1) &= 120 &\qquad d(8191^n - 1) &= 4004,
+			d(2731^n - 1) &= 468 &\qquad d(8191^n - 1) &= 4004 &\qquad d(43691^n - 1) &= 6936,
 			% 2^2 \equiv -1 mod 5
 			% 2^4 \equiv -1 mod 17
 			% 2^5 \equiv -1 mod 31
@@ -1071,8 +1071,8 @@
 			% 2^8 \equiv -1 mod 257
 			% 2^11 \equiv -1 mod 638
 			% 2^13 \equiv -1 mod 2731
-			% 2^15 \equiv -1 mod 3641
 			% 2^13 \equiv 1 mod 8191
+			% 2^17 \equiv -1 mod 43691
 		\end{alignat*}
 		and
 		\begin{alignat*}{3}
@@ -1085,12 +1085,11 @@
 			d(2^n 71^m - 1) &= 0 &\qquad d(2^n 73^m - 1) &= 0 &\qquad d(2^n 79^m - 1) &= 0 \\
 			d(2^n 83^m - 1) &= 0 &\qquad d(2^n 89^m - 1) &= 0 &\qquad d(2^n 97^m - 1) &= 0 \\
 			d(2^n 127^m - 1) &= 2^{n+3} \cdot 7 &\qquad d(2^n 257^m - 1) &= 2^{n+4} \cdot 9 &\qquad d(2^n 683^m - 1) &= 2^{n+2} \cdot 33 \\
-			d(2^n 2731^m - 1) &= 2^{n+2} \cdot 117 &\qquad d(2^n 3641^m - 1) &= 2^{n+3} \cdot 15 &\qquad d(2^n 8191^m - 1) &= 2^{n+2} \cdot 1001.
+			d(2^n 2731^m - 1) &= 2^{n+2} \cdot 117 &\qquad d(2^n 8191^m - 1) &= 2^{n+2} \cdot 1001 &\qquad d(2^n 43691^m - 1) &= 2^{n+3} \cdot 867.
 		\end{alignat*}
 	\end{corollary}
-	I've listed all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
-	% TODO: It seems like there's some pattern of Fermat primes != 3 where d(p^n - 1) != 0. Can we check d(65537 - 1)?
-	% TODO: It seems like there's some pattern of Mersenne primes != 3 where d(p^n - 1) often != 0. Can we check d(131071 - 1)?
+	Per OEIS sequence A159257, the above lists all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
+	% TODO: We can prove that if p is a Mersenne or Fermat prime > 7 that d(p-1) > 0. Include this?
 
 	We can also use the trace results to identify primes for which $d(p-1) = 0$.
 	\begin{theorem}\label{dp-1isZero}
@@ -1110,22 +1109,22 @@
 		\begin{equation*}
 			F_{p}(\alpha) = F_{p}(\alpha+1) = 0.
 		\end{equation*}
-		By lemma \ref{RootParameterization}, there must exist non-trivial $p$th roots of unity $\zeta$ and $\eta$ such that
+		By Lemma \ref{RootParameterization}, there must exist non-trivial $p$th roots of unity $\zeta$ and $\eta$ such that
 		\begin{equation*}
 			\alpha = \zeta + \zeta^{-1} \qquad \alpha+1 = \eta + \eta^{-1}.
 		\end{equation*}
 	
-		We can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by corollary \ref{traceMobius}, 
+		We can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by Corollary \ref{traceMobius}, 
 		\begin{equation*}
 			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1.
 		\end{equation*}
 	
-		However, by lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
+		However, by Lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
 		\begin{equation*}
 			[\F_2(\alpha) : \F_2] = [\F_2(\alpha+1) : \F_2] = \rho_2(p) = \frac{p-1}{2}.
 		\end{equation*}
 		Since $p \equiv 3 \pmod 4$, this value is odd.
-		Applying the linearity of the trace and corollary \ref{traceAt1},
+		Applying the linearity of the trace and Corollary \ref{traceAt1},
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1 = 0.
 		\end{equation*}
@@ -1134,7 +1133,7 @@
 	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
 	
 	Taken together, these results give several ways to determine and constrain the values of $d(n)$.
-	In particular, the behavior of $d(n)$ at prime powers is controller by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
+	In particular, the behavior of $d(n)$ at prime powers is controlled by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
 	The final theorem also gives a broad family of primes for which $d(p-1) = 0$.
 	
 	% TODO: It seems there are way more primes than just those \equiv 3 \pmod 4 where d(p-1) = 0. In fact, it seems the vast majority of primes have d(p-1) = 0. Find out a more general classification.
