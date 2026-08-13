@@ -45,7 +45,7 @@ def brute_f1(y: int) -> GF2Polynomial:
         Way 1 seems more useful when discussing divisilibity properties of polynomials.
         Way 2 seems more useful when thinking about the size of polynomials, since under this way f_n will be degree n
             and grid_nullity(n) is the GCD of two degree n polynomials.
-        This function mostly uses way 2, but in functions like divisibility_period where way 1 is more useful, we correct our indexing.
+        This function mostly uses way 2, but in functions like fibonacci_rank where way 1 is more useful, we correct our indexing.
     """
 
     return GF2Polynomial({i for i in range(y + 1) if ((y - i) & (2 * i + 1)) == 0})
@@ -181,17 +181,23 @@ def torus_nullity(n: int) -> int:
 
 
 @cache
-def divisibility_period(n: int):
+def divisibility_period_number(n: int) -> int:
     """Calculates the smallest f_m such that the nth polynomial in Z_2[x] divides f_m.
 
     OEIS sequence A353201.
     """
 
-    pn = GF2Polynomial.from_number(n)
+    return fibonacci_rank(GF2Polynomial.from_number(n))
+
+
+def fibonacci_rank(p: GF2Polynomial) -> int:
+    """Calculates the smallest m such that f_m divides p.
+    """
 
     i = 0
-    while brute_f1(i) % pn != 0:
+    while brute_f1(i) % p != 0:
         i += 1
 
     # This corrects for indexing of the polynomials. See note in brute_f1.
+    # brute_f1(fibonacci_rank(p)-1) % p == 0
     return i + 1
