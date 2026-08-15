@@ -54,7 +54,7 @@
 			F_n(x) = \begin{cases}
 				0 & n = 0 \\
 				1 & n = 1 \\
-				x f_{n-1}(x) + f_{n-2}(x) & n > 1
+				x F_{n-1}(x) + F_{n-2}(x) & n > 1
 			\end{cases}.
 		\end{equation*}
 	\end{definition}
@@ -68,30 +68,70 @@
 		For all $n,m,o \in \N$, the following hold:
 		\begin{align*}
 			d(3^n * 5^m - 1) &= 4 \\
-			d(3^n * 7^m - 1) &= 24 \text{ for } n > 1, m > 0 \text{, else } 0 \\
-			d(2^n * 3^m * 5^o - 1) &= 3*2^{n+1} - 2 \\
+			d(3^n * 7^m - 1) &= \begin{cases}
+				0 & n = 1 \text{ or } m=0 \\
+				24 & n \geq 1 \text{ and } m > 0
+			\end{cases} \\
 			d(3^n * 11^m - 1) &= 20 \\
-			d(5^n * 7^m - 1) &= 4 \\
 			d(3^n * 13^m - 1) &= 0 \\
-			d(2^n * 3^m * 7^o - 1) &= 13*2^{n+1} - 2 \text{ for } m > 1, o > 0\text{, else } 2^{n+1} - 2 .
+			d(3^n * 17^m - 1) &= 8 \\
+			d(3^n * 19^m - 1) &= \begin{cases}
+				0 & n \leq 1 \text{ or } m=0 \\
+				36 & n = 2 \text{ and } m > 0 \\
+				252 & n \geq 3 \text{ and } m > 0
+			\end{cases} \\
+			d(5^n * 7^m - 1) &= 4 \\
+			d(5^n * 11^m - 1) &= 4 \\
+			d(5^n * 13^m - 1) &= 28 \\
+			d(5^n * 17^m - 1) &= 12 \\
+			d(5^n * 19^m - 1) &= 4 \\
+			d(7^n * 11^m - 1) &= 0 \\
+			d(7^n * 13^m - 1) &= 0 \\
+			d(7^n * 17^m - 1) &= 8 \\
+			d(7^n * 19^m - 1) &= 0 \\
+			d(11^n * 13^m - 1) &= 0 \\
+			d(11^n * 17^m - 1) &= 8 \\
+			d(11^n * 19^m - 1) &= 0 \\
+			d(13^n * 17^m - 1) &= 8 \\
+			d(13^n * 19^m - 1) &= 0 \\
+			d(17^n * 19^m - 1) &= 8.
 		\end{align*}
 	\end{conjecture}
-	Notice that these formulas mostly don't depend on the exponents of the primes themselves, except for $n$ on 2.
-
-	We can take certain parts of Conjecture \ref{conj-many-formulas} and state them more generally.
-	\begin{conjecture}\label{conj-odds}
-		Let $a$ be an odd number that is not divisible by 21.
-		Then for all $n \in \N$,
+	Products containing 3 seem to have a much more erratic behavior than products without.
+	Notice that these formulas mostly don't depend on the exponents of the primes.
+	Recall that we have already proven a recurrence that allows us to add a power of 2 to any of the products.
+	
+	We also have conjectures about $d(p^k - 1)$ for $p$ a prime.
+	\begin{conjecture}\label{d(p^k-1)=d(p-1)}
+		Let $p$ be a Wieferich prime.
+		Then
 		\begin{equation*}
-			d(a^k - 1) = d(a-1).
+			d(p^k - 1) = d(p-1).
 		\end{equation*}
 	\end{conjecture}
-	% TODO: We showed this conjecture false from our examples < 25000, but I don't remember the particular a value we used
-	We suspect that this conjecture is likely false, or at least, not completely descriptive of what's going on.
-	A similar version of this conjecture with $k \geq k_0$ and $d(a^k - 1) = d(a^{k_0} - 1)$ seems to hold for all odd numbers, and it seems we only need $k_0 = 2$.
-	We're not at all sure what's so special about the number 21.
-	We're also not entirely sure that $a$ being odd is what truly matters, especially considering 21 is such an unexplained exception.
-	Instead, we might be able to extend what $a$'s are applicable and deal with the exception of 21 by seeing when $d$ outputs 0 for exponents of 1 and when $\delta_{n}$ is 0 or 2.
+	We already already proven this same formula, for non-Wieferich primes.
+	
+	% Disproof of earlier conjecture: d(a^k - 1) = d(a-1) if a is not divisible by 21
+	% For a=57, d(57 - 1)=0, but d(57^2 - 1) = 36 and d(57^3 - 1 = 252).
+	In general, we've noticed that for odd $a$, $d(a^k - 1) = d(a - 1)$.
+	We already proved this formula true when $a$ is a non-Wieferich prime.
+	Conjecture \ref{d(p^k-1)=d(p-1)} extends this to all primes.
+	Conjecture \ref{conj-many-formulas} extends this to many products of primes.
+	We have however found some exceptional cases.
+	For example: $d(21-1) = 0, d(21^2 - 1) = 24$ and $d(57-1)=0, d(57^2 - 1) = 36, d(57^3 - 1) = 252$.
+	\begin{conjecture}
+		For all $n \in \N$, there exists some $k_0 \in \N$ such that for all integers $k \geq k_0$,
+		\begin{equation*}
+			d(n^k - 1) = d(n^{k_0} - 1).
+		\end{equation*}
+		Moreover, when $3 \nmid n$, $k_0 = 1$.
+	\end{conjecture}
+	What remains then is to classify all exceptional values and understand what mechanism describes them.
+	
+	\begin{conjecture}
+		$d(p-1) \neq 0$ for prime $p > 7$ if and only if there exists $1 \leq n < p-1$ such that $2^n \equiv \pm 1 \pmod p$.
+	\end{conjecture}
+	This fact is already known to be true for all Fermat primes and Mersenne primes.
 	
 	We know that $d(n) = 26$ is the smallest even impossible value for $d$.
 	We also know that if $a$ is an impossible even value of $d$ that $2a+2$ is also impossible.
@@ -103,17 +143,12 @@
 		\begin{enumerate}
 			\item $26 \in I$ (already known)
 			\item $M$ is infinite (already known)
-			\item $34 \in I$ (implies $70, 142, 186, \ldots \in I$)
-			\item $52 \in I$ (implies $106, 214, 430, \ldots \in I$)
-			\item $68 \in I$ (implies $138, 278, 558, \ldots \in I$)
-			\item If $a \in I$, then $2a \in I$ (implies some of the above results)
+			\item $34 \in I$ (implies $70, 142, 286, \ldots \in I$)
+			% 52 \in I because d(8434) = 52
+			% 68 \in I because d(10794) = 68
 			\item $I$ has infinitely many ``seed'' values. That is, those that are not implied to be in $I$ because a smaller value is also in $I$.
 		\end{enumerate}
 	\end{conjecture}
-	Note that the $2a \in I$ part implies that approximately 1 in every 16 even values is impossible.
-	We can see this by taking any even number and dividing it by 2 (e.g. 26 to 13).
-	We start with 13 because we know 26 is impossible.
-	Then with the $2a+2$ and $2a$ rules we can generate any number that has 13 (i.e. 1101) as a prefix in its binary representation.
 	
 	Our method for solving the MCP for nullity 2 grids of size $6k-1$ involved getting an exact solution to a integer linear program by noticing all constraints could be tightly satisfied at once.
 	This allowed us to give a parabola in terms of $k$ that solved the MCP.
@@ -122,7 +157,7 @@
 	Thus, we can calculate the answer the the MCP for 3 boards of the same nullity in the same family (i.e. size is same mod some number) and derive the parabola.
 	\begin{conjecture}
 		Regarding the answer to the MCP for for an $n \times n$ grid,
-		\begin{itemize}
+		\begin{enumerate}
 			\item
 				If $n = 6k-1$ and $d(n) = 2$, then the answer to the MCP is $26k^2 - 12k + 1$ (already known).
 			\item
@@ -140,7 +175,7 @@
 			 \item
 			 	If $n = 34k - 18$ and $d(n) = 8$, then the answer to the MCP is $161k^2 - 34k - 3$.
 			 \item
-			 	All nullity 8 grids are either of side $40k-31$ or $34k-18$.
+			 	All nullity 8 grids are either of size $40k-31$ or $34k-18$.  (False for $d(69)=8$)
 			 \item
 			 	If $n = 60k - 31$ and $d(n) = 10$ then the answer to the MCP is $506k^2 - 60k - 3$.
 			 \item
@@ -151,7 +186,7 @@
 			 	All nullity 12 grids are of size $340k - 256$.
 			 \item 
 			 	$\ldots$
-		\end{itemize}
+		\end{enumerate}
 	\end{conjecture}
 	Notice that there are different ``families'' associated with each nullity.
 	These families correspond to a certain size of board.
@@ -168,18 +203,4 @@
 	\end{conjecture}
 	Our results have already known the equality case, but not that some larger proportion can exist.
 	As far as we know, the only other proof on bounds of $d(n)$ known to date is that $d(4) = 4$ is the only case where $d(n) = n$.
-	
-	We also have conjectures about $d(p^k - 1)$ for $p$ a prime.
-	\begin{conjecture}
-		For all primes $p$,
-		\begin{equation*}
-			d(p^k - 1) = d(p-1).
-		\end{equation*}
-	\end{conjecture}
-	We already almost proven this, just not for when $p$ is a Wieferich prime.
-	
-	\begin{conjecture}
-		$d(p-1) \neq 0$ for prime $p$ if and only if there exists $n < p-1$ such that $2^n \equiv \pm 1 \pmod p$.
-	\end{conjecture}
-	This also means that all Fermat or Mersenne primes $p$ have non-zero $d(p-1)$.
 \end{document}
