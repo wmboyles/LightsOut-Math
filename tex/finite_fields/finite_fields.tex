@@ -128,6 +128,25 @@
 		If $n$ is odd, then $F_n(x)$ is the square of a square-free polynomial.
 	\end{lemma}
 
+	\begin{lemma}\label{translationInvarianceField}
+		Let $P \in \F_2[x]$ such that $P(x) = P(x+1)$.
+		Then $P \in \F_2[x^2 + x]$.
+	\end{lemma}
+	\begin{proof}
+		Let $y = x(x+1)$.
+		Every polynomial in $\F_2[x]$ can be written uniquely in the following form
+		\begin{equation*}
+			P(x) = A(y) + xB(y) \qquad A,B \in \F_2[y].
+		\end{equation*}
+		Since $P$ is unchanged by translation,
+		\begin{align*}
+			P(x+1) &= P(x) \\
+			A(y) + (x+1)B(y) &= A(y) + xB(y) \\
+			B(y) &= 0.
+		\end{align*}
+		Thus, $P(x) = A(y)$ and is thus in $\F_2[y] = \F_2[x^2 + x]$, as desired.
+	\end{proof}
+
 	We can now use these properties to prove several facts about $d(n)$.
 	\begin{lemma}\label{DEven}
 		Let $d(n) = \dim{\ker{\Phi_G}}$ for $G$ an $n \times n$ grid graph.
@@ -139,21 +158,7 @@
 			G_n(x) = \gcd{\left(F_{n}(x),F_{n}(x+1)\right)}.
 		\end{equation*}
 		By Lemma \ref{FibonacciPolynomialGCD}, we know that $d(n) = \deg{G_{n+1}(x)}$ and $G_n(x) = G_n(x+1)$.
-		
-		$y = x(x+1)$ is also unchanged by this $x \mapsto x+1$ translation.
-		It is well-known that every polynomial $P(x)$ in $\F_2[x]$ can be uniquely written as
-		\begin{equation*}
-			P(x) = A(y) + xB(y) \qquad A, B \in \F_2[y].
-		\end{equation*}
-		We can then determine exactly when $P$ is also unchanged by translation.
-		\begin{align*}
-			P(x+1) &= P(x) \\
-			A(y)+(x+1)B(y) &= A(y) + xB(y) \\
-			B(y) &= 0.
-		\end{align*}
-		In other words, $P(x)$ is unchanged by translation exactly when when $P(x) \in \F_2[x^2 + x]$.
-		
-		Since $G_n$ is also unchanged by translation, there exists $H_n \in \F_2[x]$ such that
+		Since $G_n(x)$ is unchanged by translation, Lemma \ref{translationInvarianceField} tells us there exists $H_n \in \F_2[x]$ such that
 		\begin{equation*}
 			G_n(x) = H_n(x^2 + x).
 		\end{equation*}
@@ -521,7 +526,7 @@
 	\begin{proof}
 		Since 2 is not divisible by 4, Corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
 		So, we can write $n = 2^k b - 1$ for $b$ odd and $k \geq 1$.
-		Using Corollary \ref{2nPlus1Explicit}, we find for $i \in \N$,
+		Using Corollary \ref{2nPlus1Explicit}, we find
 		\begin{equation*}
 			d(2^k b - 1) = \begin{cases}
 				2^k d(b-1) + 2(2^k - 1) & 3 \mid b \\
@@ -632,7 +637,7 @@
 		Since $R_{m+1}(x)$ is square-free, $H_{m+1}(x)$ is too.
 		Notice too that $H_{m+1}(x)$ is unaffected by translation: $H_{m+1}(x) = H_{m+1}(x+1)$.
 		Since $d(m)$ is 12, $\deg H_{m+1}(x)$ must be 6.
-		Lemma \ref{DEven} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
+		Lemma \ref{translationInvarianceField} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
 		\end{equation*}
@@ -645,20 +650,19 @@
 		\end{enumerate}
 		We will handle these case-by-case.
 		
-		Calculating the $\operatorname{rank}$ of our three candidates for $h_{m+1}(x)$ with respect to $x$,
+		Calculating the $\operatorname{rank}$ of our three candidates for $H_{m+1}$ with respect to $x$,
 		% TODO: Actually show calculations for the ranks in an appendix
 		\begin{alignat*}{3}
 			\operatorname{rank}(C_1(y)) &= \operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
 			\operatorname{rank}(C_2(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
 			\operatorname{rank}(C_3(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
 		\end{alignat*}
-		We'll check if $C_2$ or $C_3$ are viable candidates.
-		Since both $C_2$ and $C_3$ are both square-free, translation invariant, and have rank 63, $63 \mid m+1$ implies that both divide $F_{m+1}$.
-		$C_2$ and $C_3$ are also coprime and each of degree 6 in $x$, so $\deg H_{m+1} \ge \deg{C_2} + \deg{C_3} = 12$, contradicting our assumption that the degree was 6.
-		Thus both $C_2$ and $C_3$ are excluded as candidates.
-		
-		We'll check if $C_1$ is a viable candidate.
-		Since $C_1$ is square-free, translation invariant, and has rank 85, $85 \mid m+1$.
+		We'll show that none of these are viable candidates for $H_{m+1}$
+	
+		Assume for the sake of contradiction that $C_1 = H_{m+1}$.
+		Then $C_1 \mid H_{m+1}$.
+		Since $H_{m+1} \mid R_{m+1} \mid F_{m+1}$, then $C_1 \mid F_{m+1}$.
+		Then by Lemma \ref{rankApparition}, $\operatorname{rank}(C_1) = 85 \mid m+1$.
 		We also showed earlier that $3 \mid m+1$.
 		So, $\operatorname{lcm}{(85,3)} = 255 \mid m+1$.
 		Other polynomials with ranks dividing 255 must also divide $F_{m+1}$.
@@ -667,16 +671,41 @@
 			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
 		\end{equation*}
 		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are both factors of 255.
-		Together, $P$ and $Q$ are square-tree, translation-invariant ($P(x+1) = Q(x)$), and coprime to each other and $C_1$.
-		Therefore, by Lemma \ref{rankApparition},
-		\begin{equation*}
-			\deg{H_{m+1}} \geq \deg{C_1} + \deg{P} + \deg{Q} = 14,
-		\end{equation*}
+		Thus, by Lemma \ref{rankApparition}, $P(x) \mid F_{m+1}(x+1)$.
+		Substituting $x+1$ in place of $x$, we also obtain that $P(x+1) \mid F_{m+1}(x+1)$.
+		Since $P(x+1) = Q(x)$, then $Q(x) \mid F_{m+1}(x)$.
+		Substituting $x+1$ in place of $x$, we also obtain that $Q(x+1) \mid F_{m+1}(x+1)$.
+		Since $P$ and $Q$ divide both $F_{m+1}(x)$ and $F_{m+1}(x+1)$, they both also divide the GCD, so $P$ and $Q$ divide $H_{m+1}^2$.
+		Since $P$ and $Q$ are both square-free, $P$ and $Q$ divide $H_{m+1}$.
+		Since $C_1$, $P$, and $Q$ are all pairwise coprime,
+		\begin{align*}
+			C_1 P Q &\mid H_{m+1} \\
+			\deg{H_{m+1}} &\geq \deg{C_1} + \deg{P} + \deg{Q} = 14,
+		\end{align*}
 		which contradicts our assumption that the degree was 6.
-		Thus $C_1$ must also be excluded as a candidate.
+		Thus $C_1$ is excluded as a candidate.
+	
+		Assume for the sake of contradiction that $C_2 = H_{m+1}$.
+		Since $C_2 = H_{m+1}$, $C_2 \mid H_{m+1}$.
+		Notice that $H_{m+1}$ must also divide $R_{m+1}(x)$ and $R_{m+1}(x+1)$.
+		Similarly, $H_{m+1}$ divides both $F_{m+1}(x)$ and $F_{m+1}(x+1)$.
+		Thus, $C_2 \mid F_{m+1}(x)$ and $F_{m+1}(x+1)$.
+		By Lemma \ref{rankApparition}, $\operatorname{rank}(C_2) = 63 \mid m+1$.
+		Since $C_3$ also has rank 63, Lemma \ref{rankApparition} tells us that $C_3 \mid F_{m+1}(x)$.
+		Since $C_3$ is translation invariant, substituting $x+1$ for $x$ shows that $C_3$ also divides $F_{m+1}(x+1)$.
+		Since $C_3$ divides both $F_{m+1}(x)$ and $F_{m+1}(x+1)$, then $C_3$ must also divide their GCD $H_{m+1}^2$.
+		Then since $C_3$ is square-free, $C_3 \mid H_{m+1}$.
+		Since $C_2$ and $C_3$ are coprime,
+		\begin{align*}
+			C_2 C_3 \mid H_{m+1} \\
+			\deg{H_{m+1}} &\geq \deg{C_2} + \deg{C_3} = 12.
+		\end{align*}
+		which contradicts our assumption that the degree was 6.
+		Thus $C_2$ is excluded as a candidate.
+		We can apply the same argument with $C_2$ and $C_3$ swapped to show that $C_3$ may also be excluded as a candidate.
 		
-		We have shown that no such polynomial $h_{m+1}$ can exist.
-		Therefore, there is no $3 \mid m+1$ and $d(m) = 12$, and hence no $n$ with $d(n) = 26$.
+		We have shown that no such polynomial $H_{m+1}$ can exist.
+		Therefore, there is no $3 \mid m+1$ with $d(m) = 12$ and hence no $n$ with $d(n) = 26$.
 	\end{proof}
 
 	Theorem \ref{nodn26} gives one impossible value of $d(n)$.
@@ -799,7 +828,7 @@
 	
 	\subsection{Extension Degrees \& Traces}
 	We next turn to finite field extensions and traces.
-	These tools will allow is to relate the roots of Fibonacci polynomials to their behavior over finite fields.
+	These tools will allow us to relate the roots of Fibonacci polynomials to their behavior over finite fields.
 	
 	\begin{definition}
 		Let $b$ be coprime to $n$.
@@ -1016,7 +1045,7 @@
 		\end{equation*}
 		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
 		However, since $m=p^{j-1}$ and $\gcd{(s,p)}=1$, only the exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$.
-		Thus, $P_0(y) = 1$, a contradiction
+		Thus, $P_0(y) = 1$, a contradiction.
 		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
 		
 		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
@@ -1068,7 +1097,7 @@
 			% 2^5 \equiv -1 mod 31
 			% 2^7 \equiv 1 mod 127
 			% 2^8 \equiv -1 mod 257
-			% 2^11 \equiv -1 mod 638
+			% 2^11 \equiv -1 mod 683
 			% 2^13 \equiv -1 mod 2731
 			% 2^13 \equiv 1 mod 8191
 			% 2^17 \equiv -1 mod 43691
@@ -1088,6 +1117,7 @@
 		\end{alignat*}
 	\end{corollary}
 	Per OEIS sequence A159257, the above lists all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
+	We calculated $d(43691-1)$ ourselves via computer program.
 	% TODO: We can prove that if p is a Mersenne or Fermat prime > 7 that d(p-1) > 0. Include this?
 
 	We can also use the trace results to identify primes for which $d(p-1) = 0$.
