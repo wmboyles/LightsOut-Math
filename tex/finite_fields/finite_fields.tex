@@ -94,7 +94,6 @@
 		d(n) = \deg{\left(\gcd{\left(F_{n+1}(x), F_{n+1}(x+1)\right)}\right)}.
 	\end{equation*}
 	
-	% TODO: Check Knuth citation. It may be a different set of exercises.
 	Sutner and others also established several divisibility properties of Fibonacci polynomials \cite[Proposition 2.2]{HUNZIKER2004465}\cite[Proposition 2.1]{Sutner00sigma-automataand}\cite[Section 7.1.3, Exercises 190--194]{Knuth_AOCP4A}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{FibonacciDivisibility}
 		A polynomial $\tau(x)$ in $\F_2[x]$ divides both $F_n(x)$ and $F_m(x)$ if and only if it divides $F_{\gcd(m,n)}(x)$.
@@ -447,11 +446,11 @@
 	\begin{proof}
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
 		Applying Lemmas \ref{Fibonacci2k} and \ref{OreGcd},
-		% TODO: Some of these equations run off the page
 		\begin{align*}
 			d(2n+1) &= \deg{\left(F_{2n+2}(x),F_{2n+2}(x+1)\right)} \\
 			&= \deg{\left(xF_{n+1}(x)^2,(x+1)F_{n+1}(x+1)^2\right)} \\
-			&= \deg{(x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)\left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)} \\
+			&= \deg (x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right) \\
+			&\qquad\times \left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right) \\
 			&= \deg{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2\left(x+1,\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)} \\
 			&= 2d(n) + 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}
 		\end{align*}
@@ -888,9 +887,9 @@
 	\begin{proof}
 		A standard finite field fact says
 		\begin{equation*}
-			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}.
+			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}
 		\end{equation*}
-		% TODO: Find a reference for this "standard fact". Maybe Lidl & Niederreiter?
+		\cite[Theorem 2.14, p.~52]{lidl-niederreiter}.
 		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^r} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
 		
 		For any non-zero $a,b \in \overline{\F_2}$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
