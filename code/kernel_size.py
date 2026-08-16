@@ -5,6 +5,7 @@ This module contains methods for finding the kernel size (i.e. nullity) of an n 
 from functools import cache
 from polynomials import GF2Polynomial
 
+_spf: list[int] | None = None
 
 def find_bk(n: int) -> tuple[int, int]:
     """Calculates n = b*2^k - 1, where b and k are naturals and b is odd.
@@ -16,9 +17,9 @@ def find_bk(n: int) -> tuple[int, int]:
     if n <= 0:
         raise ValueError("n must be positive")
 
-    binary_n = bin(n + 1)
-    k = len(binary_n) - len(binary_n.rstrip("0"))
-    b = (n + 1) >> k
+    m = n+1
+    k = (m & -m).bit_length() - 1
+    b = m >> k
 
     return b, k
 
@@ -116,6 +117,48 @@ def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1 << 1, (f2 << 1) + f2
 
 
+def is_wieferich(p: int) -> bool:
+    """Returns true when p meets the Wieferich condition:
+    2**(p-1) % p**2 == 1
+    When p is a prime number, p is called a "Wieferich Prime".
+    The only known Wieferich primes to date are 1093 and 3511.
+    """
+
+    return pow(2, p-1, p**2) == 1
+
+
+# TODO: This function is only fast enough for N < 1_000_000
+def build_spf(N) -> None:
+    global _spf
+
+    _spf = list(range(N + 1))
+    for p in range(2, int(N**0.5) + 1):
+        if _spf[p] == p:
+            for k in range(p * p, N + 1, p):
+                if _spf[k] == k:
+                    _spf[k] = p
+
+
+def prime_power(q: int) -> tuple[int, int]:
+    """
+    Determines if q is a prime power pow(p,k).
+    If so, then returns (p,k).
+    If not, then returns (p,-k) where pow(p,k) divides q.
+    """
+
+    assert q >= 2
+
+    build_spf(q)
+    assert _spf != None
+
+    p = _spf[q]
+    k = 0
+    while q % p == 0:
+        q //= p
+        k += 1
+
+    return p, (k if q == 1 else -k)
+
 @cache
 def grid_nullity(n: int) -> int:
     """Returns the nullity of an n x n grid.
@@ -124,44 +167,53 @@ def grid_nullity(n: int) -> int:
     We use a few tricks that mostly apply when n+1 is divible by 2 a lot to speed up the calculation in some cases.
     """
 
-    # n=0 and n=1 are nice base cases to just have
-    if n == 0 or n == 1:
+    """
+    d(0) = 0
+    Hunziker, Machivelo, and Park and also Sutner proved d(2^k - 1) = 0.
+    """
+    if n & (n + 1) == 0:
         return 0
 
-    """Applying a result from Mazakazu Yamagishi's paper:
+    """Yamagishi's proved in
     "Elliptic Curves Over Finite Fields and Reversibility of Additive Cellular Automata on Square Grids"
-    in the journal Finite Fields and Their Applications, we find that
-    d(2^k) = d(2^k - 2) when k is odd and d(2^k - 2) + 4 when k is even.)
+    in the journal "Finite Fields and Their Applications" that
+    d(2^k) = d(2^k - 2) + (4 if k % 2 == 0 else 0).
     """
     if n & (n - 1) == 0:
         # n = 2^k, n.bit_length() = k+1
         return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
 
-    """We proved:
-    1. d(2n+1) = 2*d(n) + delta_n
-    2. delta_{2n+1} = delta_n.
-    3. delta_n = 2 * deg gcd(x, f_n(x+1) / g), where g = gcd(f_n(x), f_n(x+1)).
-    Thus, we'll take advantage of this to speed up our answer for n = b*2^k - 1 where k is large
+    """We proved
+    If n+1 = 2**n * p**m, where p is not a Wieferich prime, then d(n) is
+    * 0 if m == 0
+    * 2**n * d(p-1) if m >= 1 and p != 3
+    * 2**(n+1) - 2 if m >= 1 and p = 3
+
+    Conjecture: d(p^k - 1) = d(p-1) is also true for Wieferich primes p.
     """
+    (b,k) = find_bk(n)
+    (p,l) = prime_power(b)
+    if l > 1 and not is_wieferich(p): # b is a prime power
+        if p == 3:
+            return (1 << (n+1)) - 2
+        else:
+            return (1 << k) * grid_nullity(p - 1)
 
-    b, k = find_bk(n)
-
-    """Hunziker, Machivelo, and Park and also Sutner prove d(2^k - 1) = 0.
-    
-    Conjecture: d(p^k - 1) = d(p-1) for all primes p.
-    Conjecture: d(a^k - 1) = d(a-1) for all a not divisible by 21.
-        For a divisible by 21, d(a^k - 1) = d(a^2-1) for k >= 2.
+    """We proved
+    For n+1 = b * 2**k,
+    d(n) = 2**k * d(b-1) + (2*(2**k - 1) if (b % 3 == 0) else 0)
     """
-    if b == 1:
-        return 0
+    if k > 0:
+        base = 2**k * grid_nullity(b-1)
+        delta = 2*(2**k - 1) if b % 3 == 0 else 0
+        return base + delta
 
-    # k = 0 means we have to brute force: calculating the gcd of f_n(x) and f_n(x+1)
-    f1 = brute_f1(b - 1)
-    g = GF2Polynomial.gcd(f1, f1 @ GF2Polynomial({0, 1}))
+    # Brute force
+    f1 = brute_f1(b-1)
+    f2 = f1 @ GF2Polynomial({1,0})
+    g = GF2Polynomial.gcd(f1, f2)
 
-    # We proved: delta = 2 iff n = -1 (mod 3)
-    delta = 2 if n % 3 == 2 else 0
-    return (g.degree + delta) * (2**k) - delta
+    return g.degree
 
 
 @cache
