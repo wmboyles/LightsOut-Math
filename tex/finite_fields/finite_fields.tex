@@ -95,7 +95,7 @@
 	\end{equation*}
 	
 	% TODO: Check Knuth citation. It may be a different set of exercises.
-	Sutner and others also established several divisibility properties of Fibonacci polynomials \cite[Proposition 2.2]{HUNZIKER2004465}\cite[Proposition 2.1]{Sutner00sigma-automataand}\cite{Knuth_AOCP4A}.
+	Sutner and others also established several divisibility properties of Fibonacci polynomials \cite[Proposition 2.2]{HUNZIKER2004465}\cite[Proposition 2.1]{Sutner00sigma-automataand}\cite[Section 7.1.3, Exercises 190--194]{Knuth_AOCP4A}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{FibonacciDivisibility}
 		A polynomial $\tau(x)$ in $\F_2[x]$ divides both $F_n(x)$ and $F_m(x)$ if and only if it divides $F_{\gcd(m,n)}(x)$.
 		In particular,
@@ -431,7 +431,7 @@
 		\end{equation*}
 	\end{lemma}
 	We will also use the analogous identity in $\F_2[x]$.
-	Since $\F_2[x]$ is a Euclidean domain, the same proof applies with divisibility and GCDs interpreted in $\F_2[x]$ \cite{ore_number_theory}.
+	Since $\F_2[x]$ is a Euclidean domain, the same proof applies with divisibility and GCDs interpreted in $\F_2[x]$ \cite[Section 5-4, Problem 2, p.~109]{ore_number_theory}.
 	
 	We can now combine the preceding polynomial identity to obtain a recurrence for $d(n)$.
 	\begin{theorem}\label{2nPlus1}
@@ -556,7 +556,7 @@
 		Let $P$ be a non-zero polynomial in $\F_2[x]$.
 		Then 
 		\begin{equation*}
-			\operatorname{rank}(P) = \min{\{r > 0 : P(x) \mid F_r(x)\}}.
+			\operatorname{rank}(P) = \min{\left\{r > 0 : P(x) \mid F_r(x)\right\}}.
 		\end{equation*}
 	\end{definition}
 	Hunziker, Machiavelo, and Park proved that every polynomial divides some $F_r(x)$ and therefore has a finite $\operatorname{rank}$ \cite[Corollary 2.8]{HUNZIKER2004465}.
@@ -643,11 +643,9 @@
 		\end{equation*}
 		Since $m+1$ is odd, we must also require that $h_{m+1}(0) = 1$.
 		There are only three such polynomials in $\F_2[y]$ that satisfy all these requirements:
-		\begin{enumerate}
-			\item $C_1(y) = y^3 + 1$
-			\item $C_2(y) = y^3 + y + 1$
-			\item $C_3(y) = y^3 + y^2 + 1$.
-		\end{enumerate}
+		\begin{equation*}
+			C_1(y) = y^3 + 1 \qquad C_2(y) = y^3 + y + 1 \qquad C_3(y) = y^3 + y^2 + 1.
+		\end{equation*}
 		We will handle these case-by-case.
 		
 		Calculating the $\operatorname{rank}$ of our three candidates for $H_{m+1}$ with respect to $x$,
@@ -749,7 +747,7 @@
 	\begin{proof}
 		Suppose $2^r \equiv 1 \pmod{p^j}$.
 		Since $2^r \equiv 1 \pmod p$, the definition of $h$ gives $h \mid r$, so we may write $r = ht$.
-		By the Lifting the Exponent Lemma \cite{ireland_rosen_1990},
+		By the Lifting the Exponent Lemma \cite[Chapter 2 Section 2.7]{ireland_rosen_1990},
 		\begin{align*}
 			v_p(2^r - 1) &= v_p(2^{ht} - 1) \\
 			&= v_p(2^h - 1) + v_p(t) \\
@@ -791,7 +789,7 @@
 		\begin{equation*}
 			2^{p-1} - 1 = 2^{kn} - 1.
 		\end{equation*}
-		So, by the Lifting the Exponent lemma \cite{ireland_rosen_1990},
+		So, by the Lifting the Exponent lemma \cite[Chapter 2 Section 2.7]{ireland_rosen_1990},
 		\begin{equation*}
 			v_p(2^{kn} - 1) = v_p(2^n - 1) + v_p(k).
 		\end{equation*}
@@ -913,14 +911,14 @@
 	\end{proof}
 	
 	We will also need the trace of elements in finite field extensions.
-	We first recall its standard expression in terms of the Frobenius automorphism \cite{lidl-niederreiter}.
-	\begin{lemma}\label{fieldTrace}
+	We first recall its standard expression in terms of the Frobenius automorphism \cite[Definition 2.22, p.~54]{lidl-niederreiter}.
+	\begin{definition}[Lidl \& Niederreiter]\label{fieldTrace}
 		Let $a$ be algebraic over $\F_q$.
 		Then for every $z \in \F_q(a)$,
 		\begin{equation*}
 			\Tr[\F_q(a) / \F_q]{z} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{z^{q^r}}.
 		\end{equation*}
-	\end{lemma}
+	\end{definition}
 
 	\begin{corollary}\label{traceAt1}
 		\begin{equation*}
@@ -928,7 +926,7 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Immediate from evaluating Lemma \ref{fieldTrace} at $z=1$.
+		Immediate from evaluating Definition \ref{fieldTrace} at $z=1$.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -948,7 +946,7 @@
 		\begin{equation*}
 			\left[\F_2(\alpha) : \F_2\right] = \rho_2(M).
 		\end{equation*}
-		So, by Lemma \ref{fieldTrace},
+		So, by Definition \ref{fieldTrace},
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
@@ -1124,11 +1122,11 @@
 	\begin{theorem}\label{dp-1isZero}
 		Let $p \equiv 3 \pmod 4$ be a prime where
 		\begin{equation*}
-			\{\pm 2^r \pmod p : r \geq 0\} = (\Z / p \Z)^{\times},
+			\left\{\pm 2^r \pmod p : r \geq 0\right\} = (\Z / p \Z)^{\times},
 		\end{equation*}
 		or equivalently,
 		\begin{equation*}
-			\ord[p]{2} \in \{p-1, \frac{p-1}{2}\}
+			\ord[p]{2} \in \left\{p-1, \frac{p-1}{2}\right\}
 		\end{equation*}
 		Then $d(p - 1) = 0$.
 	\end{theorem}
