@@ -57,11 +57,10 @@ def lights_out_curve_point_count(r: int) -> int:
 def brute_f1(y: int) -> GF2Polynomial:
     """Calculate f_n(x) via brute force.
 
-    This method is most useful when n is even.
-    Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
-    This means that all exponents will be even.
-    However, they don't give any neat identities to actually reduce the problem size.
-    So, we have to use the relationship between f and binomial coefficients.
+    When n is even, Hunziker, Machivelo, and Park tell us that the result is
+    the square of a square-free polynomial, so all its nonzero exponents are even.
+
+    We calculate f_n using its relationship with binomial coefficients.
     Sutner tells us that f_n(x) = sum_{i=0}^{n}{C(n+1+i, 2i+1) x^i mod 2}, where C(n,m) = n choose m.
     Thus, we need to find when C(n+1+i, 2i+1) is odd.
     Kummer's Theorem tells us that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
@@ -277,12 +276,16 @@ def grid_nullity(n: int) -> int:
     if l == 1 and signed_order_2(p)**2 > p:
         return 0
 
-    # Brute force
-    f1 = brute_f1(b-1)
-    f2 = f1 @ GF2Polynomial({1,0})
-    g = GF2Polynomial.gcd(f1, f2)
+    """For odd b, Hunziker, Machivelo, and Park prove f_(b-1) is the square
+    of a square-free polynomial R. Therefore,
+    d(b-1) = 2 * deg(gcd(R(x), R(x+1))).
+    """
+    f1 = brute_f1(b - 1)
+    root = GF2Polynomial({degree // 2 for degree in f1.degrees})
+    translated_root = root @ GF2Polynomial({0, 1})
+    g = GF2Polynomial.gcd(root, translated_root) # brute force
 
-    return g.degree
+    return 2 * g.degree
 
 
 @cache
