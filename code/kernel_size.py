@@ -24,15 +24,43 @@ def find_bk(n: int) -> tuple[int, int]:
     return b, k
 
 
+def power_of_two_exponent(n: int) -> int | None:
+    """Returns k when n = 2**k, or None when n is not a power of two."""
+
+    return n.bit_length() - 1 if n > 0 and n & (n - 1) == 0 else None
+
+
+@cache
+def lights_out_curve_point_count(r: int) -> int:
+    """Counts points over the field with 2**r elements on the Lights Out elliptic curve.
+
+    Goshima and Yamagishi's "On the Dimension of the Space of Harmonic Functions
+    on a Discrete Torus" uses t**2*s + t*s**2 + t*s + t + s = 0.
+    Its point count is 2**r + 1 - a_r, where a_0 = 2, a_1 = -1,
+    and a_r = -a_(r-1) - 2*a_(r-2).
+    This count equals torus_nullity(2**r + 1), while subtracting 4 gives
+    torus_nullity(2**r - 1).
+    """
+
+    if r < 1:
+        raise ValueError("r must be positive")
+
+    a_prev_prev = 2
+    a_prev = -1
+    for _ in range(2, r + 1):
+        a_prev_prev, a_prev = a_prev, -a_prev - 2 * a_prev_prev
+
+    return (1 << r) + 1 - a_prev
+
+
 @cache
 def brute_f1(y: int) -> GF2Polynomial:
     """Calculate f_n(x) via brute force.
 
-    This method is most useful when n is even.
-    Hunziker, Machivelo, and Park tell us that the results will be the square of a square-free polynomial.
-    This means that all exponents will be even.
-    However, they don't give any neat identities to actually reduce the problem size.
-    So, we have to use the relationship between f and binomial coefficients.
+    When n is even, Hunziker, Machivelo, and Park tell us that the result is
+    the square of a square-free polynomial, so all its nonzero exponents are even.
+
+    We calculate f_n using its relationship with binomial coefficients.
     Sutner tells us that f_n(x) = sum_{i=0}^{n}{C(n+1+i, 2i+1) x^i mod 2}, where C(n,m) = n choose m.
     Thus, we need to find when C(n+1+i, 2i+1) is odd.
     Kummer's Theorem tells us that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
@@ -127,6 +155,34 @@ def is_wieferich(p: int) -> bool:
     return pow(2, p-1, p**2) == 1
 
 
+def signed_order_2(p: int) -> int:
+    """Returns the least r > 0 such that 2**r is congruent to 1 or -1 modulo p.
+
+    This function first calculates the multiplicative order H = ord_p(2).
+    Lemma 4.3 of our finite-fields paper proves that for an odd prime p,
+    the signed order is H/2 when H is even and H when H is odd.
+    """
+
+    if _spf is None or len(_spf) <= p:
+        build_spf(p)
+    assert _spf is not None
+
+    prime_factors = set()
+    n = p - 1
+    while n > 1:
+        factor = _spf[n]
+        prime_factors.add(factor)
+        while n % factor == 0:
+            n //= factor
+
+    multiplicative_order = p - 1
+    for factor in prime_factors:
+        while multiplicative_order % factor == 0 and pow(2, multiplicative_order // factor, p) == 1:
+            multiplicative_order //= factor
+
+    return multiplicative_order // 2 if multiplicative_order % 2 == 0 else multiplicative_order
+
+
 # TODO: This function is only fast enough for N < 1_000_000
 def build_spf(N) -> None:
     global _spf
@@ -171,62 +227,78 @@ def grid_nullity(n: int) -> int:
     d(0) = 0
     Hunziker, Machivelo, and Park and also Sutner proved d(2^k - 1) = 0.
     """
-    if n & (n + 1) == 0:
+    if n == 0:
         return 0
 
-    """Yamagishi's proved in
-    "Elliptic Curves Over Finite Fields and Reversibility of Additive Cellular Automata on Square Grids"
-    in the journal "Finite Fields and Their Applications" that
-    d(2^k) = d(2^k - 2) + (4 if k % 2 == 0 else 0).
-    """
-    if n & (n - 1) == 0:
-        # n = 2^k, n.bit_length() = k+1
-        return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
-
-    """We proved
-    If n+1 = 2**n * p**m, where p is not a Wieferich prime, then d(n) is
-    * 0 if m == 0
-    * 2**n * d(p-1) if m >= 1 and p != 3
-    * 2**(n+1) - 2 if m >= 1 and p = 3
-
-    Conjecture: d(p^k - 1) = d(p-1) is also true for Wieferich primes p.
-    """
     (b,k) = find_bk(n)
-    (p,l) = prime_power(b)
-    if l > 1 and not is_wieferich(p): # b is a prime power
-        if p == 3:
-            return (1 << (n+1)) - 2
-        else:
-            return (1 << k) * grid_nullity(p - 1)
+    if b == 1:
+        return 0
+
+    """Goshima and Yamagishi relate sigma+ nullity on square tori to this curve.
+    For q = 2**r, the (q-1)-torus nullity is the curve's point count minus 4,
+    while the (q+1)-torus nullity is the point count. Yamagishi's "Periodic
+    Harmonic Functions on Lattices and Chebyshev Polynomials" gives the grid-torus
+    conversion, and our 2-adic recurrence handles the outer factor 2**k.
+    """
+    r = power_of_two_exponent(b + 1)
+    if r is not None:
+        torus_nullity = lights_out_curve_point_count(r) - 4
+        base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
+        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
+        return (1 << k) * base_nullity + correction
+
+    r = power_of_two_exponent(b - 1)
+    if r is not None:
+        torus_nullity = lights_out_curve_point_count(r)
+        base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
+        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
+        return (1 << k) * base_nullity + correction
 
     """We proved
     For n+1 = b * 2**k,
     d(n) = 2**k * d(b-1) + (2*(2**k - 1) if (b % 3 == 0) else 0)
     """
     if k > 0:
-        base = 2**k * grid_nullity(b-1)
-        delta = 2*(2**k - 1) if b % 3 == 0 else 0
-        return base + delta
+        base = (1 << k) * grid_nullity(b - 1)
+        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
+        return base + correction
 
-    # Brute force
-    f1 = brute_f1(b-1)
-    f2 = f1 @ GF2Polynomial({1,0})
-    g = GF2Polynomial.gcd(f1, f2)
+    """We proved that if n+1 = p**l for a non-Wieferich prime p, then
+    d(n) = d(p-1).
 
-    return g.degree
+    Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
+    """
+    (p,l) = prime_power(b)
+    if l > 1 and not is_wieferich(p): # b is a prime power
+        return grid_nullity(p - 1)
+
+    """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
+    odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
+    """
+    if l == 1 and signed_order_2(p)**2 > p:
+        return 0
+
+    """For odd b, Hunziker, Machivelo, and Park prove f_(b-1) is the square
+    of a square-free polynomial R. Therefore,
+    d(b-1) = 2 * deg(gcd(R(x), R(x+1))).
+    """
+    f1 = brute_f1(b - 1)
+    root = GF2Polynomial({degree // 2 for degree in f1.degrees})
+    translated_root = root @ GF2Polynomial({0, 1})
+    g = GF2Polynomial.gcd(root, translated_root) # brute force
+
+    return 2 * g.degree
 
 
 @cache
 def torus_nullity(n: int) -> int:
-    """Returns the nullity of an n x n torus."""
+    """Returns the nullity of an n x n Lights Out torus.
 
-    """We can calculate this one of two ways:
-        1. Calculate 2*deg gcd(g(n,x), g(n,x+1))
-        2. Calculate 2*grid_nullity(n-1) + 4 if n is a multiple of 3, 2*grid_nullity(n-1) otherwise
-    We'll use the second one.
-
-    Both results come as from Yamagishi's paper "On the Dimension of the Space of Harmonic Functions on a Discrete Torus"
-    and are proven in his paper "Periodic Harmomic Functions on Lattices and Chebyshev Polynomials"
+    Goshima and Yamagishi's "On the Dimension of the Space of Harmonic Functions
+    on a Discrete Torus" and Yamagishi's "Periodic Harmonic Functions on Lattices
+    and Chebyshev Polynomials" give
+    torus_nullity(n) = 2*grid_nullity(n-1) + 4 when 3 divides n, and
+    torus_nullity(n) = 2*grid_nullity(n-1) otherwise.
     """
 
     return 2 * grid_nullity(n - 1) + (0 if n % 3 else 4)
