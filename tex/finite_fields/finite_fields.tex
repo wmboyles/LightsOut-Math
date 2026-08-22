@@ -5,14 +5,16 @@
 \usepackage{fullpage}
 \usepackage{float}
 \usepackage{enumitem}
+\usepackage{hyperref}
 
-\newtheorem{lemma}{Lemma}[section]
 \newtheorem{theorem}{Theorem}[section]
-\newtheorem{corollary}{Corollary}[lemma]
-\newtheorem{conjecture}{Conjecture}[section]
-\newtheorem{example}{Example}
-\newtheorem{remark}{Remark}
-\newtheorem{definition}{Definition}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
 
 \newcommand{\F}{\mathbb{F}}
 \newcommand{\N}{\mathbb{N}}
@@ -28,26 +30,22 @@
 
 \begin{document}
     \title{Fibonacci Polynomials \& \textit{Lights Out}}
-    \author{William Boyles \thanks{Independent (williamboyles22900@gmail.com)}}
+    \author{William Boyles}
     \date{\today}
     \maketitle
 	
-	% TODO: Better abstract
-	% TODO: More copy editing
-	% TODO: Some of my proofs are restatements of my unpublished ArXiv-only work. Do I cite myself (where I have some small mistakes in my proof) or combine into a larger work
     \begin{abstract}
-	    Consider a game played on a simple graph $G = (V,E)$ where each vertex consists of clickable light.
-	    A move is clicking any $v \in V$, which toggles the on/off state of $v$ and its neighbors.
-	    Given an initial configuration, one wins the game by finding a sequence of moves that turns off all of the lights.
-	    This game was commercially available from Tiger Electronics as \textit{Lights Out} for $G$ a $5 \times 5$ grid.
-	    
-	    Let $\Phi_G: P(V) \rightarrow P(V)$ be the function which maps the vertices clicked to the vertices that change state.
-	    For $G$ and $n \times n$ grid, let $d(n) = \dim{\ker{\Phi_G}}$.
-	    We show several that many values of $d(n)$ never occur.
-	    We show more general formulas for the value of $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ a Wieferich prime. 
+    	\textit{Lights Out} is a game on a simple graph $G = (V,E)$ where clicking a vertex toggles the on/off state of it and its neighbors.
+	    Identifying subsets of $V$ with their indicator vectors over $\F_2$, let $\Phi_G: \F_2^V \rightarrow \F_2^V$ be the function which maps the set of vertices clicked to the set of vertices that change state.
+	    For the $n \times n$ grid, define $d(n) = \dim{\ker{\Phi_G}}$.
+	    We recover the known fact that $d(n)$ is always even and prove infinitely many even values are also impossible.
+	    We provide formulas and bounds for $d(n)$, including a complete characterization when $n = 2^{a}p^{b} - 1$ for $a, b \geq 0$ and $p$ not a Wieferich prime.
 	\end{abstract}
 
 	\section{Fibonacci Polynomials}
+	We begin by introducing Fibonacci polynomials.
+	We first develop some basic properties of these polynomials that will be useful in relating them to the Lights Out problem.
+	
 	\begin{definition}[Fibonacci Polynomial]
 		Let $F_n(x)$ be the polynomial in the ring $\F_2[x]$ defined recursively by
 		\begin{equation*}
@@ -58,7 +56,8 @@
 			\end{cases}.
 		\end{equation*}
 	\end{definition}
-	These polynomials are called "Fibonacci" because when defined over the real numbers, $F_n(1)$ is the $n$th Fibonacci number.
+	These polynomials are called "Fibonacci" because $F_n(1)$ is the $n$th Fibonacci number when evaluated over $\Z[x]$.
+	Evaluated over $\F_2$, $F_n(1)$ is the $n$th Fibonacci number modulo 2.
 	
 	In $\F_2[x]$, the coefficients of $F_n(x)$ are either 1 or 0, so we can visualize them by coloring squares black or white to represent the coefficients.
 	For example,
@@ -74,16 +73,14 @@
 		\caption{$F_1(x)$ through $F_{128}(x)$, right-aligned.}
 	\end{figure}
 	
-	Using a well-known connection between the Sierpinski triangle and the parity of binomial coefficients, we may see that
+	The Sierpinski arises from the parity of the binomial coefficients in Pascal's triangle, giving the formula
 	\begin{equation*}
 		F_n(x) = \sum_{i=0}^{n-1}{\binom{n+i}{2i+1}x^i \mod 2}.
 	\end{equation*}
 
-	The above construction and formula was also shown by Sutner \cite{Sutner96sigma-automataand}.
-	Sutner also showed the following relationship between square \textit{Lights Out} grids and Fibonacci Polynomials.
+	Sutner also showed the above construction and formula, along with the following relationship between rectangular grids and Fibonacci Polynomials \cite[Theorem 5.1]{Sutner00sigma-automataand}.
 	\begin{lemma}[Sutner]\label{FibonacciPolynomialGCD}
 		Let $G = (V,E)$ be an $n \times m$ grid graph.
-		Let $\Phi_G: P(V) \rightarrow P(V)$ be the function that maps which lights are clicked to which lights change state.
 		Then
 		\begin{equation*}
 			\dim{\ker{\Phi_G}}
@@ -91,9 +88,13 @@
 			= \deg{\left(\gcd{\left(F_{n+1}(x+1), F_{m+1}(x)\right)}\right)}.
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}See \cite{Sutner96sigma-automataand} theorem 5.1.\end{proof}
 	
-	Sutner and others also shows several divisibility rules for these polynomials
+	In particular, this lemma allows us to define $d(n)$ in terms of Fibonacci polynomials.
+	\begin{equation*}
+		d(n) = \deg{\left(\gcd{\left(F_{n+1}(x), F_{n+1}(x+1)\right)}\right)}.
+	\end{equation*}
+	
+	Sutner and others also established several divisibility properties of Fibonacci polynomials \cite[Proposition 2.2]{HUNZIKER2004465}\cite[Proposition 2.1]{Sutner00sigma-automataand}\cite[Section 7.1.3, Exercises 190--194]{Knuth_AOCP4A}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{FibonacciDivisibility}
 		A polynomial $\tau(x)$ in $\F_2[x]$ divides both $F_n(x)$ and $F_m(x)$ if and only if it divides $F_{\gcd(m,n)}(x)$.
 		In particular,
@@ -101,10 +102,6 @@
 			\gcd{\left(F_m(x),F_n(x)\right)} = F_{\gcd(m,n)}(x).
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{HUNZIKER2004465} proposition 2.2, \cite{Sutner96sigma-automataand} proposition 2.1, and \cite{Knuth_AOCP4A}.
-	\end{proof}
-	% TODO: Check Knuth citation. It may be a different set of exercises.
 	
 	\begin{corollary}\label{Threeven}
 		The following are true:
@@ -118,39 +115,38 @@
 	\begin{proof}
 		Notice,
 		\begin{enumerate}[label=(\roman*)]
-			\item
-			We find that $f_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
-			\item
-			Follows from (i) by substituting $x+1$ for $x$.
-			\item
-			We find that $f_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply lemma \ref{FibonacciDivisibility} to get the desired result.
-			\item
-			Follows from (iii) by substituting $x+1$ for $x$.
+			\item We find that $F_2(x) = x$ is the smallest Fibonacci polynomial divisible by $x$, so we apply Lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item Follows from (i) by substituting $x+1$ for $x$.
+			\item We find that $F_3(x) = (x+1)^2$ is the smallest Fibonacci polynomial divisible by $x+1$, so we apply Lemma \ref{FibonacciDivisibility} to get the desired result.
+			\item Follows from (iii) by substituting $x+1$ for $x$.
 		\end{enumerate}
 	\end{proof}
 	
+	Hunziker, Machiavelo, and Park give the following characterization of the square-free factors of Fibonacci polynomials \cite[Proposition 2.11]{HUNZIKER2004465}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{SquareSquareFree}
 		If $n$ is odd, then $F_n(x)$ is the square of a square-free polynomial.
 	\end{lemma}
+
+	\begin{lemma}\label{translationInvarianceField}
+		Let $P \in \F_2[x]$ such that $P(x) = P(x+1)$.
+		Then $P \in \F_2[x^2 + x]$.
+	\end{lemma}
 	\begin{proof}
-		See \cite{HUNZIKER2004465} proposition 2.11 and \cite{Sutner96sigma-automataand} Theorem 2.1 claim 2.
-	\end{proof}
-	
-	% TODO: Check is this proof is immediate
-	\begin{corollary}\label{rootMultiplicity2}
-		If $n$ is odd, then every root of $F_n(x)$ has multiplicity 2.
-	\end{corollary}
-	\begin{proof}
-		Let $n$ be odd and $\alpha$ a root of $F_n(x)$.
-		By \ref{SquareSquareFree}, there exists $\tau_n \in \F_2[x]$ such that
+		Let $y = x(x+1)$.
+		Every polynomial in $\F_2[x]$ can be written uniquely in the following form
 		\begin{equation*}
-			F_n(x) = \tau_n(x)^2,
+			P(x) = A(y) + xB(y) \qquad A,B \in \F_2[y].
 		\end{equation*}
-		and $\tau(x)$ is square-free.
-		Since $\alpha$ is a root of $F_n(x)$, it must also be a root of $\tau_n(x)$ and thus has multiplicity 2.
+		Since $P$ is unchanged by translation,
+		\begin{align*}
+			P(x+1) &= P(x) \\
+			A(y) + (x+1)B(y) &= A(y) + xB(y) \\
+			B(y) &= 0.
+		\end{align*}
+		Thus, $P(x) = A(y)$ and is thus in $\F_2[y] = \F_2[x^2 + x]$, as desired.
 	\end{proof}
-	
-	We can now prove some of our own facts about these polynomials and their GCDs, particularly on square grids.
+
+	We can now use these properties to prove several facts about $d(n)$.
 	\begin{lemma}\label{DEven}
 		Let $d(n) = \dim{\ker{\Phi_G}}$ for $G$ an $n \times n$ grid graph.
 		Then $d(n)$ is always even.
@@ -160,22 +156,8 @@
 		\begin{equation*}
 			G_n(x) = \gcd{\left(F_{n}(x),F_{n}(x+1)\right)}.
 		\end{equation*}
-		By lemma \ref{FibonacciPolynomialGCD}, we know that $d(n) = \deg{G_{n+1}(x)}$ and $G_n(x) = G_n(x+1)$.
-		
-		$y = x(x+1)$ is also unchanged by this $x \mapsto x+1$ translation.
-		It is well-known that every polynomial $P(x)$ in $\F_2[x]$ can be uniquely written as
-		\begin{equation*}
-			P(x) = A(y) + xB(y) \qquad A, B \in \F_2[y].
-		\end{equation*}
-		We can then determine exactly when $P$ is also unchanged by translation.
-		\begin{align*}
-			P(x+1) &= P(x) \\
-			A(y)+(x+1)B(y) &= A(y) + xB(y) \\
-			B(y) &= 0.
-		\end{align*}
-		In other words, $P(x)$ in unchanged by translation when $P$ is a polynomial in $x^2 + x$.
-		
-		Since $G_n$ is also unchanged by translation, there exists $H_n \in \F_2[x]$ such that
+		By Lemma \ref{FibonacciPolynomialGCD}, we know that $d(n) = \deg{G_{n+1}(x)}$ and $G_n(x) = G_n(x+1)$.
+		Since $G_n(x)$ is unchanged by translation, Lemma \ref{translationInvarianceField} tells us there exists $H_n \in \F_2[x]$ such that
 		\begin{equation*}
 			G_n(x) = H_n(x^2 + x).
 		\end{equation*}
@@ -185,21 +167,22 @@
 		\end{equation*}
 		and thus $d(n)$ is even.
 	\end{proof}
+	Sutner observed the above lemma computationally \cite{Sutner1989}.
 
 	\begin{corollary}\label{NEvenDDivisible4}
 		If $n$ is even, then $d(n)$ is divisible by 4.
 	\end{corollary}
 	\begin{proof}
 		If $n$ is even, then $n+1$ is odd.
-		Then by \ref{SquareSquareFree}, $F_{n+1}(x)$ and $F_{n+1}(x+1)$ are squares of square-free polynomials $\tau(x)$ and $\tau(x+1)$.
+		Then by Lemma \ref{SquareSquareFree}, $F_{n+1}(x)$ and $F_{n+1}(x+1)$ are squares of square-free polynomials $\tau(x)$ and $\tau(x+1)$.
 		\begin{align*}
 			G_{n+1}(x) &= \gcd{\left(F_{n+1}(x),F_{n+1}(x+1)\right)} \\
 			&= \gcd{\left(\tau_{n+1}(x)^2, \tau_{n+1}(x+1)^2\right)} \\
 			&= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}^2 \\
 			\sqrt{G_{n+1}(x)} &= \gcd{\left(\tau_{n+1}(x), \tau_{n+1}(x+1)\right)}
 		\end{align*}
-		We can see from the right-hand side of the equation that this function is also unaffected by translation.
-		So, by lemma \ref{DEven}, there exists $H_{n+1} \in \F_2[x]$ such that
+		Since translation by 1 exchanges the arguments of the GCD, $\sqrt{G_{n+1}(x)} = \sqrt{G_{n+1}(x+1)}$.
+		So, by Lemma \ref{DEven}, there exists $H_{n+1} \in \F_2[x]$ such that
 		\begin{align*}
 			\sqrt{G_{n+1}(x)} &= H_{n+1}(x^2+x) \\
 			G_{n+1}(x) &= H_{n+1}(x^2+x)^2.
@@ -210,7 +193,7 @@
 		\end{equation*}
 		as desired.
 	\end{proof}
-	Note that the implication does not hold in the other direction: $d(n)$ also be divisible by 4 when $n$ is odd.
+	Note that the implication does not hold in the other direction: $d(n)$ may also be divisible by 4 when $n$ is odd.
 	For example, $d(9) = 8$.
 
 	\begin{lemma}\label{FibonacciFormulaT}
@@ -253,21 +236,19 @@
 			xF_n(x) = G_{n-1}(t) = t^{n} + t^{-n}.
 		\end{equation*}
 	\end{proof}
-	This was also proven in \cite{HUNZIKER2004465}, who also prove the following identities.
+	This was also proven by Hunziker, Machiavelo, and Park \cite[Proposition 2.3]{HUNZIKER2004465}.
 	
+	The following identity is a specialization of a result of Hunziker, Machiavelo, and Park \cite[Lemma 2.6]{HUNZIKER2004465}.
 	\begin{lemma}[Hunziker, Machiavelo, and Park]\label{Fibonacci2k}
-		Let $n = 2^k b$ where $b,k \in \N$.
+		Let $n = 2^k b$ where $k \geq 0$ and $b$ is odd.
 		Then
 		\begin{equation*}
 			F_n(x) = x^{2^k-1}F_b(x)^{2^k}.
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{HUNZIKER2004465} lemma 2.6.
-	\end{proof}
-
+	
 	\begin{lemma}\label{RootParameterization}
-		The distinct roots of $F_n(x)$ are $\{\zeta + \zeta^{-1} : \zeta^{n} = 1, \zeta \neq 1\}$, plus 0 when $n$ is even.
+		The distinct roots of $F_n(x)$ in $\overline{\F_2}$ are $\{\zeta + \zeta^{-1} : \zeta^{n} = 1, \zeta \neq 1\}$ together with 0 when $n$ is even.
 	\end{lemma}
 	\begin{proof}
 		Notice that $F_n(0) = F_{n-2}(0)$, so
@@ -298,8 +279,11 @@
 		Since a field has no nonzero nilpotents, we may multiply by $\zeta^n$.
 		\begin{align*}
 			0 &= \zeta^{2n} + 1 \\
-			&= \left(\zeta^{n}+1\right)^2 \\
-			&= \zeta^{n} + 1 \\
+			&= \left(\zeta^{n}+1\right)^2,
+		\end{align*}
+		and
+		\begin{align*}
+			0 &= \zeta^{n} + 1 \\
 			\zeta^{n} &= 1.
 		\end{align*}
 		Thus the order of $\zeta$ divides $n$.
@@ -313,11 +297,19 @@
 		Thus, $\alpha$ is a root of $F_n$.
 	\end{proof}
 
-	\section{Even Parity Covers}
-	$\ker{\Phi_G}$ may also be understood via parity covers and dominating sets.
+	This parameterization gives a convenient description of the roots of Fibonacci polynomials in terms of roots of unity.
+
+	\section{Even Dominating Sets}
+	We identify a subset $S \subseteq V$ with its indicator vector $\mathbf{1}_{S} \in \F_2^V$.
+	Under this identification, symmetric difference of subsets corresponds to addition in $\F_2^V$.
+	The map $\Phi_G$ is linear since the state change of each vertex is determined by the parity of the clicks on its closed neighborhood.
+	Consequently, two configurations $V_1, V_2 \subseteq V$ have the same image under $\Phi_G$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
+	Thus, configurations producing the same state change form cosets of $\ker{\Phi_G}$.
+	In particular, whenever an initial configuration is solvable, the set of all solutions is a coset of $\ker{\Phi_G}$, and hence has $2^d$ elements, where $d = \dim{\ker{\Phi_G}}$.
+	$\ker{\Phi_G}$ also has a natural interpretation in terms of even dominating sets.
 	
 	\begin{definition}
-		An \textit{even dominating set} of a graph $G = (V,E)$ is a subset $V' \subseteq V$ such that every vertex contains an even number of vertices from $V'$ in its neighborhood. 
+		An \textit{even dominating set} of a graph $G = (V,E)$ is a subset $V' \subseteq V$ such that the closed neighborhood $N[v]$ of every vertex contains an even number of vertices from $V'$. 
 	\end{definition}
 	Odd dominating sets can be analogously defined.
 	Sutner specifically studied odd dominating sets as the solution to \textit{Lights Out} when all lights are initially on.
@@ -328,57 +320,16 @@
 	\end{lemma}
 	\begin{proof}
 		Let $V' \in \ker{\Phi_G}$.
-		Let $N(v)$ be the neighborhood of vertex $v$: $v$ and its immediate neighbors.
-		Then for every $v \in V$,
+		Then every vertex is toggled an even number of times when the vertices in $V'$ are clicked.
+		Since each vertex is toggled exactly when the vertices in its closed neighborhood are clicked, for every $v \in V$,
 		\begin{equation*}
-			\abs{N(v) \cap V'} \text{ is even}.
+			\abs{N[v] \cap V'} \text{ is even}.
 		\end{equation*}
 		Thus, $V'$ is an even dominating set of $G$.
-		We can apply the same steps in reverse to show the converse.
+		The converse follows by reversing the same argument.
 	\end{proof}
 
-	% TODO: Find a reference for this
-	\begin{lemma}
-		$\Phi_G$ is linear with respect to symmetric difference.
-		That is, for all $V_1, V_2 \subseteq V$,
-		\begin{equation*}
-			\Phi_G(V_1 \triangle V_2) = \Phi_G(V_1) \triangle \Phi_G(V_2).
-		\end{equation*}
-	\end{lemma}
-	\begin{proof}
-		\begin{align*}
-			\Phi_G(V_1 \triangle V_2) &= \{v \in V : \abs{N(v) \cap (V_1 \triangle V_2)} \text{ is odd}\} \\
-			&= \left(\{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \cup \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\}\right) \setminus \{v \in V : \abs{N(v) \cap (V_1 \cap V_2)} \text{ is odd}\} \\
-			&= \{v \in V : \abs{N(v) \cap V_1} \text{ is odd}\} \triangle \{v \in V : \abs{N(v) \cap V_2} \text{ is odd}\} \\
-			&= \Phi_G(V_1) \triangle \Phi_G(V_2)
-		\end{align*}
-	\end{proof}
-	% TODO: An AI review said this proof wasn't entirely correct. Double check.
-
-	\begin{corollary}
-		If $V_1$ and $V_2$ have the same image under $\Phi_{G}$ if and only if $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-	\end{corollary}
-	\begin{proof}
-		Assume that $V_1$ and $V_2$ have the same image under $\Phi_G$.
-		Then
-		\begin{align*}
-			\Phi_{G}(V_1 \triangle V_2) &= \Phi_{G}(V_1) \triangle \Phi_{}(V_2) \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_2) \\
-			&= \emptyset.
-		\end{align*}
-		Thus, $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-		Now assume $V_1 \triangle V_2 \in \ker{\Phi_G}$.
-		Then
-		\begin{align*}
-			\Phi_G(V_1) &= \Phi_G(V_1) \triangle \emptyset \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_1 \triangle V_2) \\
-			&= \Phi_{G}(V_1) \triangle \Phi_{G}(V_1) \triangle \Phi_{G}(V_2) \\
-			&= \Phi_{G}(V_2).
-		\end{align*}
-		Thus $V_1$ and $V_2$ have the same image under $\Phi_G$.
-	\end{proof}
-	
-	We may now use our geometric understanding of $\ker{\Phi_G}$ as even parity covers to construct a lower bound on $d(n)$.
+	We may now use our graph-theoretic understanding of $\ker{\Phi_G}$ as even dominating sets to construct even dominating sets on larger grids by tiling those from smaller grids.
 	\begin{theorem}
 		For all $n,k \in \N$,
 		\begin{equation*}
@@ -390,7 +341,7 @@
 		Since $nk-1 = k(n-1) + (k-1)$, an $G$ may be broken into a $k \times k$ grid of $n-1 \times n-1$ grids, each separated by a horizontal or vertical strip of size 1.
 		
 		Let $Q$ be an even dominating set of $G_\ell$.
-		Let $R$ be $Q$ tiles $k$ times horizontally and vertically, with size 1 separators between each tile, onto $G_L$ where each tile is the reflection across its neighboring separators, as shown below.
+		Let $R$ be $Q$ tiled $k$ times horizontally and vertically, with size 1 separators between each tile, onto $G_L$ where each tile is the reflection across its neighboring separators, as shown below.
 		
 		\begin{figure}[H]
 			\centering
@@ -424,17 +375,19 @@
 		\begin{enumerate}
 			\item
 				$v$ is within a tile.
-				Then $\abs{N(v) \cap R}$ is even because $Q$ being is an even parity cover.
+				Then $\abs{N[v] \cap R}$ is even because $Q$ is an even dominating set.
+				Vertices next to tile separators are unaffected by the tiling because the separator vertices are not included in $R$ and thus don't contribute to the parity of $N[v] \cap R$.
+				Thus, $\abs{N[v] \cap R}$ has the same parity as the corresponding closed neighborhood in $Q$, which is even.
 			\item
 				$v$ is on a separator between two tiles.
-				Then only two elements in $N(v)$, the vertices within a tile, are also in $R$.
+				Then only two elements in $N[v]$, the vertices within a tile, are also in $R$.
 				Because neighboring tiles are reflections of each other across separators, these two vertices are either both in $R$ or both not in $R$.
-				In either case, $\abs{N(v) \cap R}$ is even.
+				In either case, $\abs{N[v] \cap R}$ is even.
 			\item
 				$v$ is in the intersection of two separators.
-				Then all of $N(v)$ is in a separator and thus not in $R$, so $\abs{N(v) \cap R} = 0$, which is even.
+				Then all of $N[v]$ is in a separator and thus not in $R$, so $\abs{N[v] \cap R} = 0$, which is even.
 		\end{enumerate}
-		Since for every vertex $v$ of $G_L$, $\abs{N(v) \cap R}$ is even, so $R$ is an even dominating set of $G_L$.
+		Since for every vertex $v$ of $G_L$, $\abs{N[v] \cap R}$ is even, so $R$ is an even dominating set of $G_L$.
 		Thus, for every even dominating set of $G_\ell$, there exists an even dominating set of $G_L$ obtained through tiling.
 		This tiling function is also injective because we can recover $Q$ by restricting $R$ to just the top left tile.
 		Thus,
@@ -444,10 +397,12 @@
 		as desired.
 	\end{proof}
 	Sutner shows a similar result \cite{Sutner1988_2}.
-	There is also a simple proof in terms of Fibonacci polynomials that also provides a divisibility relationship.
+
+	The same inequality also follows from the Fibonacci polynomial characterization.
 	\begin{proof}
-		Since $n$ divides $nk$, lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
-		So,
+		Since $n$ divides $nk$, Lemma \ref{FibonacciDivisibility} tells us $F_{n}(x)$ divides $F_{nk}(x)$.
+		Substituting $x+1$, we also have $F_{n}(x+1)$ divides $F_{nk}(x+1)$.
+		Thus, the first GCD divides the second:
 		\begin{equation*}
 			\gcd{\left(F_n(x),F_n(x+1)\right)} \mid \gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)}.
 		\end{equation*}
@@ -456,13 +411,15 @@
 			\gcd{\left(F_{nk}(x),F_{nk}(x+1)\right)} = 	\gcd{\left(F_n(x),F_n(x+1)\right)} Q(x),
 		\end{equation*}
 		for some $Q(x) \in \F_2[x]$.
-		Taking the degrees, we obtain $d(nk-1) = d(n-1) + \deg{Q(x)}$, and so the desired inequality follows.
+		Taking the degrees, we obtain $d(nk-1) = d(n-1) + \deg{Q(x)}$, and the desired inequality follows.
 	\end{proof}
 	Note that although the smaller GCD polynomial divides the larger, it's not the case that $d(n-1)$ divides $d(nk-1)$.
 	For example, if $n=5$ and $k=6$, then $d(n-1) = d(4) = 4$, which does not divide $d(nk-1) = d(29) = 10$.
 
 	\section{Number Theory}
-	We may also understand $d(n)$ and the Fibonacci polynomials with some results from number theory.
+	We now use results from number theory to study the GCDs of Fibonacci polynomials and, consequently, the values of $d(n)$.
+	Many of the results in this section first appeared in the author's earlier works \cite{boylesMostClicks, boylesResolutionSutner}.
+	We restate several proofs here for completeness and to correct minor errors in those earlier versions.
 	
 	\begin{lemma}[Ore]\label{OreGcd}
 		Let $a$, $b$, $c$, and $d$ be integers.
@@ -472,11 +429,10 @@
 			(ab,cd) = (a,c)(b,d)\left(\frac{a}{(a,c)},\frac{d}{(b,d)}\right)\left(\frac{c}{(a,c)},\frac{b}{(b,d)}\right).
 		\end{equation*}
 	\end{lemma}
-	\begin{proof}
-		See \cite{ore_number_theory}.
-	\end{proof}
-	Although Ore's result deals specifically with integers, both the integers and $\F_2[x]$ are Euclidean domains, so the result will still hold for our purposes.
+	We will also use the analogous identity in $\F_2[x]$.
+	Since $\F_2[x]$ is a Euclidean domain, the same proof applies with divisibility and GCDs interpreted in $\F_2[x]$ \cite[Section 5-4, Problem 2, p.~109]{ore_number_theory}.
 	
+	We can now combine the preceding polynomial identity to obtain a recurrence for $d(n)$.
 	\begin{theorem}\label{2nPlus1}
 		For all $n \in \N$,
 		\begin{equation*}
@@ -489,12 +445,12 @@
 	\end{theorem}
 	\begin{proof}
 		Let $(a,b)$ denote $\gcd{(a,b)}$.
-		Applying lemmas \ref{Fibonacci2k} and \ref{OreGcd},
-		% TODO: Some of these equations run off the page
+		Applying Lemmas \ref{Fibonacci2k} and \ref{OreGcd},
 		\begin{align*}
 			d(2n+1) &= \deg{\left(F_{2n+2}(x),F_{2n+2}(x+1)\right)} \\
 			&= \deg{\left(xF_{n+1}(x)^2,(x+1)F_{n+1}(x+1)^2\right)} \\
-			&= \deg{(x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)\left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)} \\
+			&= \deg (x,x+1)\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right) \\
+			&\qquad\times \left(\frac{x+1}{(x,x+1)},\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right)\left(\frac{x}{(x,x+1)},\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x)^2,F_{n+1}(x+1)^2\right)}\right) \\
 			&= \deg{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2\left(x+1,\frac{F_{n+1}(x)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)} \\
 			&= 2d(n) + 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}
 		\end{align*}
@@ -502,29 +458,28 @@
 		\begin{equation*}
 			\delta_n = 2\deg{\left(x,\frac{F_{n+1}(x+1)^2}{\left(F_{n+1}(x),F_{n+1}(x+1)\right)^2}\right)}.
 		\end{equation*}
-		So, $\delta_n$ is 2 exactly when $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$.
-		When $n+1$ is not divisible by 3, corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
+		So, $\delta_n$ is 2 exactly when $x+1$ occurs with greater multiplicity in $F_{n+1}(x)$ than in $F_{n+1}(x+1)$.
+		When $n+1$ is not divisible by 3, Corollary \ref{Threeven} tells us that $F_{n+1}(x)$ is not divisible by $x+1$, so $\delta_n = 0$.
 		When $n+1$ is divisible by 3, let $n+1 = b 2^{k}$ for $b,k \geq 0$ and $b$ odd.
 		Then $b$ must be divisible by 3.
 		Applying Lemma \ref{Fibonacci2k},
 		\begin{equation*}
-			F_{n+1}(x) = x^{2^{k}-1}F_{b}(x)^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}F_{b}(x+1)^{2^k}.
+			F_{n+1}(x) = x^{2^{k}-1}{F_{b}(x)}^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}{F_{b}(x+1)}^{2^k}.
 		\end{equation*}
-		Since $b$ is an odd multiple of 3, corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
+		Since $b$ is odd, Lemma \ref{SquareSquareFree} tells us $F_b(x)$ is the square of a square-free polynomial.
+		Since $b$ is a multiple of 3, Corollary \ref{Threeven} tells us that $x+1$ divides $F_{b}(x)$, but $x+1$ does not divide $F_b(x+1)$.
 		So,
 		\begin{equation*}
-			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^k}g(x)^{2^k} \qquad F_{n+1}(x+1) = (x+1)^{2^{k}-1}x^{2^k}g(x+1)^{2^k},
+			F_{n+1}(x) = x^{2^{k}-1}(x+1)^{2^{k+1}}g(x)^{2^{k+1}} \qquad F_{n+1}(x+1) = x^{2^{k+1}}(x+1)^{2^{k}-1}g(x+1)^{2^{k+1}},
 		\end{equation*}
-		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both divisible by neither $x$ nor $x+1$.
-		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $f_{n+1}(x+1)$, so $\delta_n = 2$.
+		for some $g(x) \in \F_2[x]$, where $g(x)$ and $g(x+1)$ are both square-free and divisible by neither $x$ nor $x+1$.
+		So, we see that $F_{n+1}(x)$ can be divided without remainder by $x+1$ more times than $F_{n+1}(x+1)$, so $\delta_n = 2$.
 	\end{proof}
-	This result resolves a conjecture of Sutner's \cite{Sutner1989}.
+	This result was first proven by Boyles \cite{boylesResolutionSutner}, resolving a conjecture of Sutner \cite{Sutner1989}.
 	
-	% TODO: An AI review of the above proof flagged "(x+1) occurs with multiplicity (2) in odd" and "(F_b) when (3\mid b). Rewrite this part using valuations" but I'm not really sure what these mean.
-	
-	We can repeatedly apply theorem \ref{2nPlus1} to obtain explicit formulas for $d(n)$.
+	Repeated application of Theorem \ref{2nPlus1} gives the following explicit formula for $d(n)$.
 	\begin{corollary}\label{2nPlus1Explicit}
-		Write odd $n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
+		Write $n$ as $n+1 = 2^s b$ for $s \geq 0$ and $b$ odd.
 		Then
 		\begin{equation*}
 			d(n) = 2^s d(b-1) + \begin{cases}
@@ -534,38 +489,23 @@
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		By induction on $s$.
-		For $s=0$,
+		We proceed by induction on $s$.
+		For $s=0$, we have $d(n) = d(b-1)$, which is the desired formula.
+		Now suppose the result holds for some $s \geq 0$.
+		For $n+1 = 2^{s+1}b$, Theorem \ref{2nPlus1} gives
 		\begin{align*}
-			n+1 &= 2^0 b \\
-			n &= b-1 \\
-			d(n) &= d(b-1) \\
-			&= 2^0 d(b-1) + \begin{cases}
-				2(2^0 - 1) & 3 \mid b \\
-				0 & \text{otherwise}
-			\end{cases},
-		\end{align*}
-		as desired.
-		Assume that our claim holds for $s \geq 0$.
-		Then for $n+1 = 2^{s+1}b$,
-		\begin{align*}
-			d(n) &= d\left(2^{s+1}b - 1\right) \\
-			&= d\left(2\left(2^s b - 1\right) + 1\right) \\
+			d(n) &= d\left(2\left(2^s b - 1\right) + 1\right) \\
 			&= 2d\left(2^s b - 1\right) + \begin{cases}
 				2 & 3 \mid 2^s b \\
 				0 & \text{otherwise}
-			\end{cases} \\
-			&= 2\left(2^s d(b-1) + \begin{cases}
+			\end{cases}.
+		\end{align*}
+		Since $3 \mid 2^s b$ if and only if $3 \mid b$, the induction hypothesis gives
+		\begin{align*}
+			d(n) &= 2\left(2^s d(b-1) + \begin{cases}
 				2(2^s - 1) & 3 \mid b \\
 				0 & \text{otherwise}
 			\end{cases}\right) + \begin{cases}
-				2 & 3 \mid 2^s b \\
-				0 & \text{otherwise}
-			\end{cases} \\
-			&= 2^{s+1}d(b-1) + \begin{cases}
-				2(2^{s+1} - 1) - 2 & 3 \mid b \\
-				0 & \text{otherwise}
-			\end{cases} + \begin{cases}
 				2 & 3 \mid b \\
 				0 & \text{otherwise}
 			\end{cases} \\
@@ -576,29 +516,29 @@
 		\end{align*}
 		as desired.
 	\end{proof}
+	Thus, the values of $d(n)$ are determined by the values $d(b-1)$ for odd $b$, together with whether $b$ is divisible by 3.
 	
-	We can also use theorem \ref{2nPlus1} to narrow down more when $d(n) = 2$.
+	We can also use Theorem \ref{2nPlus1} to further restrict when $d(n) = 2$.
 	\begin{corollary}\label{D2Minus1Mod6}
 		If $d(n) = 2$, then $n \equiv -1 \pmod 6$.
 	\end{corollary}
 	\begin{proof}
-		Since 2 is not divisible by 4, corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
+		Since 2 is not divisible by 4, Corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd.
 		So, we can write $n = 2^k b - 1$ for $b$ odd and $k \geq 1$.
-		Using corollary \ref{2nPlus1Explicit}, we can define
+		Using Corollary \ref{2nPlus1Explicit}, we find
 		\begin{equation*}
-			D_i = d(2^i b - 1) = \begin{cases}
-				2^i d(b-1) + 2(2^i - 1) & 3 \mid b \\
-				2^i d(b-1) & \text{otherwise}
+			d(2^k b - 1) = \begin{cases}
+				2^k d(b-1) + 2(2^k - 1) & 3 \mid b \\
+				2^k d(b-1) & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		If $3 \nmid b$, then we must have $D_k = 2 = 2^k d(b-1)$.
-		However, corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4, which cannot be the case.
+		If $3 \nmid b$, then we must have $d(n) = 2 = 2^k d(b-1)$.
+		This is impossible because Corollary \ref{NEvenDDivisible4} tells us that $d(b-1)$ is divisible by 4.
 		
-		If $3 \mid b$, then we must have $D_k = 2 = 2^k d(b-1) + 2(2^k - 1)$.
-		If $k \geq 2$, then this expression is greater than 2, which cannot be the case.
-		Thus, we must have $k=1$ and $D_1 = 2 = 2 d(b-1) + 2$, which simplifies to $d(b-1) = 0$.
-		Thus we may write $b = 3j$.
-		
+		If $3 \mid b$, then we may write $b = 3j$.
+		We also must have $d(n) = 2 = 2^k d(b-1) + 2(2^k - 1)$.
+		If $k \geq 2$, then this expression is greater than 2.
+		Thus, we must have $k=1$ and $2 = 2 d(b-1) + 2$, which simplifies to $d(b-1) = 0$.
 		Solving for $n$, we find
 		\begin{align*}
 			n &= 2^k b - 1 \\
@@ -607,123 +547,193 @@
 		\end{align*}
 		so $n \equiv -1 \pmod 6$, as desired.
 	\end{proof}
+
+	The preceding results can help us find values of $d(n)$ from smaller known values, but they do not rule out any values of $d(n)$.
+	To obtain such restrictions, we need to understand when individual polynomial factors can occur in the Fibonacci polynomial sequence.
+	We introduce the notation of $\operatorname{rank}$ to record the first index at which a given polynomial appears as a factor.
+	\begin{definition}
+		Let $P$ be a non-zero polynomial in $\F_2[x]$.
+		Then 
+		\begin{equation*}
+			\operatorname{rank}(P) = \min{\left\{r > 0 : P(x) \mid F_r(x)\right\}}.
+		\end{equation*}
+	\end{definition}
+	Hunziker, Machiavelo, and Park proved that every polynomial divides some $F_r(x)$ and therefore has a finite $\operatorname{rank}$ \cite[Corollary 2.8]{HUNZIKER2004465}.
 	
-	% TODO: We may also need to show a lemma that if rank(P) is the least r such that P divides F_r, then P divides F_m if and only if rank(P) divides m.
+	We now show a relationship between the divisibility of polynomials and the divisibility of their ranks.
+	\begin{lemma}\label{rankApparition}
+		For any non-zero $P(x) \in \F_2[x]$,
+		\begin{equation*}
+			P(x) \mid F_m(x) \iff \operatorname{rank}(P) \mid m.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Let $r = \operatorname{rank}(P)$.
+		
+		Assume that $P(x)$ divides $F_m(x)$.
+		$P(x)$ must also divide $F_r(x)$.
+		So by Lemma \ref{FibonacciDivisibility},
+		\begin{align*}
+			P(x) &\mid \gcd{(F_r(x), F_m(x))} \\
+			P(x) &\mid F_{\gcd(r, m)}(x).
+		\end{align*}
+		Since $r$ is minimal, $\gcd{(r,m)} = r$, and so $r \mid m$.
+		
+		Now assume that $r \mid m$.
+		Then $\gcd{(r,m)} = r$.
+		By Lemma \ref{FibonacciDivisibility}, $F_r(x) \mid F_m(x)$, and so $P(x) \mid F_m(x)$.
+	\end{proof}
 	
-	We can now use this recurrence result to prove the impossibility of certain values of $d(n)$.
-	\begin{theorem}
+	Thus, the rank of a polynomial completely determines the indices at which it can divide a Fibonacci polynomial.
+	We can now use the ranks to restrict the possible factors of the GCD defining $d(n)$, allowing us to rule out the smallest even value not attained by $d(n)$.
+	\begin{theorem}\label{nodn26}
 		The smallest even $k$ such that for all $n \in \N$, $d(n) \neq k$ is $k=26$.
 	\end{theorem}
 	\begin{proof}
-		Recall from lemma \ref{DEven} that $d(n)$ is always even.
-		Through calculation, we can find that
+		Recall from Lemma \ref{DEven} that $d(n)$ is always even.
+		The following computations show that every positive even value less than 26 occurs:
 		\begin{alignat*}{12}
 			d(5) &= 2 \qquad & d(4) &= 4 \qquad & d(11) &= 6 \qquad & d(16) &= 8 \qquad & d(29) &= 10 \qquad & d(84) &= 12 \\
 			d(23) &= 14 \qquad & d(19) &= 16 \qquad & d(101) &= 18 \qquad & d(30) &= 20 \qquad & d(59) &= 22 \qquad & d(62) &= 24.
 		\end{alignat*}
-		We will show than $d(n)=26$ is impossible.
+		We will show that $d(n)=26$ is impossible.
 		
 		Assume for the sake of contradiction that there exists $n \in \N$ such that $d(n) = 26$.
-		Since 26 is not divisible by 4, corollary \ref{NEvenDDivisible4} that $n$ must be odd.
+		Since 26 is not divisible by 4, Corollary \ref{NEvenDDivisible4} says $n$ must be odd.
 		So, we may write $n = 2m+1$.
-		By theorem \ref{2nPlus1},
+		By Theorem \ref{2nPlus1},
 		\begin{equation*}
 			26 = d(n) = d(2m+1) = 2d(m) + \begin{cases}
 				2 & 3 \mid m+1 \\
 				0 & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		Since lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
-		Let $m+1 = 2^s b$ for odd $b$ and $s \geq 0$.
-		By corollary \ref{2nPlus1Explicit},
-		\begin{equation*}
-			d(m) = 2^s d(b-1) + 2(2^s - 1) = 12.
-		\end{equation*}
-		The only possible integer solutions here are $d(b-1)=12$ and $s=0$ or $d(b-1)=5$ and $s=1$.
-		Since lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
+		Since Lemma \ref{DEven} tells us that $d(m)=13$ is not possible, we must have $d(m) = 12$ and $m+1$ is divisible by 3.
+		
+		Let $m+1 = 2^s b$ for odd $b$ divisible by 3 and $s \geq 0$.
+		By Corollary \ref{2nPlus1Explicit},
+		\begin{align*}
+			d(m) = 12 &= 2^s d(b-1) + 2(2^s - 1) \\
+			14 &= 2^s(d(b-1) + 2) \\
+			7 &= 2^{s-1}(d(b-1) + 2).
+		\end{align*}
+		The only possible integer solutions here are $d(b-1)=12$, $s=0$ or $d(b-1)=5$, $s=1$.
+		Lemma \ref{DEven} tells us that $d(b-1) = 5$ is impossible, so the only remaining possibility is that $d(m) = d(b-1) = 12$ and $s=0$.
 		Thus, $m$ must be even.
 		
-		We know from lemma \ref{FibonacciPolynomialGCD} that
-		\begin{equation*}
-			d(m) = \deg{\left(\gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)}\right)}.
-		\end{equation*}
-		Since $m+1$ is odd lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
+		Since $m+1$ is odd, Lemma \ref{SquareSquareFree} tells us that there exists some square-free $R_{m+1}(x)$ such that
 		\begin{equation*}
 			F_{m+1}(x) = R_{m+1}(x)^2.
 		\end{equation*}
-		Define $H_{m+1}(x)$
+		Define $H_{m+1}(x)$ such that
 		\begin{equation*}
-			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)} \qquad \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)} = H(x)^2.
+			H_{m+1}(x) = \gcd{\left(R_{m+1}(x),R_{m+1}(x+1)\right)}.
 		\end{equation*}
-		Since $R_{m+1}(x)$ is square-free, then $H_{m+1}(x)$ is too.
-		Since $d(m) = 12$, $\deg H_{m+1}(x) = 6$.
-		Notice too that $H_{m+1}(x) = H_{m+1}(x+1)$, so our work in lemma \ref{FibonacciFormulaT} tells us that for $y = x^2 + x$, there exists square-free a cubic polynomial $h_{m+1}(y) \in \F_2[y]$ such that
+		Since squaring $R_{m+1}$ gives $F_{m+1}$,
+		\begin{equation*}
+			 H_{m+1}(x)^2 = \gcd{\left(F_{m+1}(x),F_{m+1}(x+1)\right)}.
+		\end{equation*}
+		Since $R_{m+1}(x)$ is square-free, $H_{m+1}(x)$ is too.
+		Notice too that $H_{m+1}(x)$ is unaffected by translation: $H_{m+1}(x) = H_{m+1}(x+1)$.
+		Since $d(m)$ is 12, $\deg H_{m+1}(x)$ must be 6.
+		Lemma \ref{translationInvarianceField} tells us that for $y = x^2 + x$, there exists a square-free degree 3 polynomial $h_{m+1}(y) \in \F_2[y]$ such that
 		\begin{equation*}
 			H_{m+1}(x) = h_{m+1}(y).
 		\end{equation*}
-		There are only three possible square-free cubic polynomials in $\F_2[y]$ that are also 1 at $y=0$:
-		\begin{enumerate}
-			\item $C_1(y) = y^3 + 1$
-			\item $C_2(y) = y^3 + y + 1$
-			\item $C_3(y) = y^3 + y^2 + 1$.
-		\end{enumerate}
+		Since $m+1$ is odd, we must also require that $h_{m+1}(0) = 1$.
+		There are only three such polynomials in $\F_2[y]$ that satisfy all these requirements:
+		\begin{equation*}
+			C_1(y) = y^3 + 1 \qquad C_2(y) = y^3 + y + 1 \qquad C_3(y) = y^3 + y^2 + 1.
+		\end{equation*}
 		We will handle these case-by-case.
 		
-		Define the ``$\operatorname{rank}$" of a polynomial $P$ to be the smallest integer $r$ such that $P$ divides $F_{r}$.
-		Calculating the rank of our three candidates for $h_{m+1}(x)$,
+		Calculating the $\operatorname{rank}$ of our three candidates for $H_{m+1}$ with respect to $x$,
+		% TODO: Actually show calculations for the ranks in an appendix
+		\begin{alignat*}{3}
+			\operatorname{rank}(C_1(y)) &= \operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
+			\operatorname{rank}(C_2(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
+			\operatorname{rank}(C_3(y)) &= \operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
+		\end{alignat*}
+		We'll show that none of these are viable candidates for $H_{m+1}$
+	
+		Assume for the sake of contradiction that $C_1 = H_{m+1}$.
+		Then $C_1 \mid H_{m+1}$.
+		Since $H_{m+1} \mid R_{m+1} \mid F_{m+1}$, then $C_1 \mid F_{m+1}$.
+		Then by Lemma \ref{rankApparition}, $\operatorname{rank}(C_1) = 85 \mid m+1$.
+		We also showed earlier that $3 \mid m+1$.
+		So, $\operatorname{lcm}{(85,3)} = 255 \mid m+1$.
+		Other polynomials with ranks dividing 255 must also divide $F_{m+1}$.
+		Let
+		\begin{equation*}
+			P(x) = x^4 + x^3 + 1 \text{ and } Q(x) = x^4 + x^3 + x^2 + x + 1.
+		\end{equation*}
+		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively, which are both factors of 255.
+		Thus, by Lemma \ref{rankApparition}, $P(x) \mid F_{m+1}(x+1)$.
+		Substituting $x+1$ in place of $x$, we also obtain that $P(x+1) \mid F_{m+1}(x+1)$.
+		Since $P(x+1) = Q(x)$, then $Q(x) \mid F_{m+1}(x)$.
+		Substituting $x+1$ in place of $x$, we also obtain that $Q(x+1) \mid F_{m+1}(x+1)$.
+		Since $P$ and $Q$ divide both $F_{m+1}(x)$ and $F_{m+1}(x+1)$, they both also divide the GCD, so $P$ and $Q$ divide $H_{m+1}^2$.
+		Since $P$ and $Q$ are both square-free, $P$ and $Q$ divide $H_{m+1}$.
+		Since $C_1$, $P$, and $Q$ are all pairwise coprime,
 		\begin{align*}
-			\operatorname{rank}{\left((x^2+x)^3 + 1\right)} &= 85 \\
-			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x) + 1\right)} &= 63 \\
-			\operatorname{rank}{\left((x^2+x)^3 + (x^2+x)^2 + 1\right)} &= 63
+			C_1 P Q &\mid H_{m+1} \\
+			\deg{H_{m+1}} &\geq \deg{C_1} + \deg{P} + \deg{Q} = 14,
 		\end{align*}
-		If either rank-63 polynomials $C_2$ or $C_3$ divides $R_{m+1}(x)$, then 63 divides $m+1$.
-		However, by definition of rank, both polynomials would divide $R_{m+1}(x)$.
-		$C_2$ and $C_3$ are coprime and each of degree 6 in $x$, so $\deg H_{m+1}(x) = \deg{C_2(x)} + \deg{C_3(x)} = 12$, contradicting our assumption that the degree was 6.
-		If $C_1$ $R_{m+1}$, then 85 divides $m+1$.
-		Combining this with the fact that 3 divides $m+1$ we showed earlier, we see that 255 must divide $m+1$.
-		
-		Define
-		\begin{equation*}
-			P(x) = x^4 + x^3 + 1 \qquad Q(x) = x^4 + x^3 + x^2 + x + 1.
-		\end{equation*}
-		$P$ and $Q$ are coprime to each other and $C_1$.
-		The ranks of $P(x)$ and $Q(x)$ are 15 and 17 respectively.
-		Since both 15 and 17 divide 255, and 255 divides $m+1$, then both $P(x)$ and $Q(x)$ must divide $H_{m+1}(x)$.
-		Therefore,
-		\begin{equation*}
-			\deg{H_{m+1}(x)} \geq \deg{C_1(x)} + \deg{P(x)} + \deg{Q(x)} = 14,
-		\end{equation*}
 		which contradicts our assumption that the degree was 6.
+		Thus $C_1$ is excluded as a candidate.
+	
+		Assume for the sake of contradiction that $C_2 = H_{m+1}$.
+		Since $C_2 = H_{m+1}$, $C_2 \mid H_{m+1}$.
+		Notice that $H_{m+1}$ must also divide $R_{m+1}(x)$ and $R_{m+1}(x+1)$.
+		Similarly, $H_{m+1}$ divides both $F_{m+1}(x)$ and $F_{m+1}(x+1)$.
+		Thus, $C_2 \mid F_{m+1}(x)$ and $F_{m+1}(x+1)$.
+		By Lemma \ref{rankApparition}, $\operatorname{rank}(C_2) = 63 \mid m+1$.
+		Since $C_3$ also has rank 63, Lemma \ref{rankApparition} tells us that $C_3 \mid F_{m+1}(x)$.
+		Since $C_3$ is translation invariant, substituting $x+1$ for $x$ shows that $C_3$ also divides $F_{m+1}(x+1)$.
+		Since $C_3$ divides both $F_{m+1}(x)$ and $F_{m+1}(x+1)$, then $C_3$ must also divide their GCD $H_{m+1}^2$.
+		Then since $C_3$ is square-free, $C_3 \mid H_{m+1}$.
+		Since $C_2$ and $C_3$ are coprime,
+		\begin{align*}
+			C_2 C_3 \mid H_{m+1} \\
+			\deg{H_{m+1}} &\geq \deg{C_2} + \deg{C_3} = 12.
+		\end{align*}
+		which contradicts our assumption that the degree was 6.
+		Thus $C_2$ is excluded as a candidate.
+		We can apply the same argument with $C_2$ and $C_3$ swapped to show that $C_3$ may also be excluded as a candidate.
 		
-		Thus, there is no $3 \mid m+1$ such that $d(m) = 12$ and therefore no $n$ such that $d(n) = 26$.
+		We have shown that no such polynomial $H_{m+1}$ can exist.
+		Therefore, there is no $3 \mid m+1$ with $d(m) = 12$ and hence no $n$ with $d(n) = 26$.
 	\end{proof}
 
-
-	Now that we know that one impossible even value of $d(n)$ exists, we can show an entire family of impossible even values also exists.
+	Theorem \ref{nodn26} gives one impossible value of $d(n)$.
+	The recurrence in Theorem \ref{2nPlus1Explicit} allows us to propagate this obstruction to infinitely many more values.
 	\begin{corollary}
 		Suppose $a \in \N$ is even and an impossible value of $d(n)$.
 		Then $2a+2$ is also an impossible value of $d(n)$.
 	\end{corollary}
 	\begin{proof}
 		Suppose for the sake of contradiction that there exists $n$ such that $d(n) = 2a+2$.
-		Since $2a+2$ is not divisible by 4, then corollary \ref{NEvenDDivisible4} tells us that n must be odd, so we may write $n = 2m+1$.
-		So, by theorem \ref{2nPlus1},
+		Since $2a+2$ is not divisible by 4, then Corollary \ref{NEvenDDivisible4} tells us that $n$ must be odd, so we may write $n = 2m+1$.
+		So, by Theorem \ref{2nPlus1},
 		\begin{equation*}
 			2a+2 = d(n) = d(2m+1) = 2d(m) + \delta_m \qquad \delta_m = \begin{cases}
 				2 & 3 \mid m+1 \\
 				0 & \text{otherwise}
 			\end{cases}.
 		\end{equation*}
-		If $\delta_m = 0$, then $2d(m)$ is divisible by 4, which cannot be the case since we know the value is $2a+2$.
+		If $\delta_m = 0$, then $2a+2 = 2d(m)$.
+		By Lemma \ref{DEven}, $d(m)$ is even, so $2d(m)$ is divisible by 4.
+		This contradicts the fact that $2a+2$ is not divisible by 4 because $a$ is even.
 		If $\delta_m = 2$, then $d(m)=a$, contradicting the impossibility of $a$ as an output of $d$.
 	\end{proof}
-	Expanding the recurrence, if $a$ is an impossible value, then $2^t(a+2)-2$ is also impossible for all $t \geq 0$.
-	In other words, 26, 54, 110, 222, 446, ... are also all impossible values of $d(n)$.
+	Expanding the recurrence, if $a$ is an impossible even value, then $2^t(a+2)-2$ is also impossible for all $t \geq 0$.
+	In other words, $26, 54, 110, 222, 446, \ldots$ are all impossible values of $d(n)$.
 	
 	\section{Finite Fields}
-	% TODO: This is a long section and has many of our most important and new theorems. Split it up?
-	Although we have already been working in $\F_2$, we will now more directly use results from the study of finite fields.
+	We now turn to finite field methods to study the Fibonacci polynomial GCDs that determine $d(n)$.
+	In particular, we use properties of roots of unity and traces to analyze $d(p^k - 1)$ for prime $p$ and to characterize when $d(p-1) = 0$.
 	
+	\subsection{Orders of Prime Powers}
 	\begin{lemma}\label{ordpj2}
 		Let $p$ be an odd prime.
 		Define $h = \ord[p]{2}$ and $c = v_p(2^h - 1)$, where
@@ -735,62 +745,100 @@
 	\end{lemma}
 	\begin{proof}
 		Suppose $2^r \equiv 1 \pmod{p^j}$.
-		Then $h$ divides $r$, so we may write $r = ht$.
-		By the Lifting the Exponent Lemma,
+		Since $2^r \equiv 1 \pmod p$, the definition of $h$ gives $h \mid r$, so we may write $r = ht$.
+		By the Lifting the Exponent Lemma \cite[Chapter 2 Section 2.7]{ireland_rosen_1990},
 		\begin{align*}
 			v_p(2^r - 1) &= v_p(2^{ht} - 1) \\
 			&= v_p(2^h - 1) + v_p(t) \\
 			&= c + v_p(t).
 		\end{align*}
-		So, $p^j \mid 2^{ht} - 1$ exactly when $c + v_p(t) \geq j$.
-		The smallest possible $t$ satisfying this inequality is $t = \max{(0, j-c)}$, so
+		Thus,
+		\begin{equation*}
+			p^j \mid 2^{ht} - 1 \iff c + v_p(t) \geq j.
+		\end{equation*}
+		The smallest possible integer $t$ satisfying this inequality is $t = p^{\max{(0, j-c)}}$, so
 		\begin{equation*}
 			\ord[p^j]{2} = h p^{\max{(0, j-c)}},
 		\end{equation*}
 		as desired.
 	\end{proof}
-	% TODO: Do we need a citation for the lifting the exponent lemma?
-	% Maybe Ireland & Rosen: A classical introduction to modern number theory chapter 2 (ss 2.7)?
+	
+	\begin{definition}
+		A prime number $p$ is a \textit{Wieferich prime} when
+		\begin{equation*}
+			p^2 \mid 2^{p-1} - 1.
+		\end{equation*}
+	\end{definition}
+	For an odd prime $p$, the Wieferich primes are precisely the primes for which $v_p(2^{\ord[p]{2}}-1) > 1$.
+	Thus, they are exactly the exceptional primes for which the order formulation in Lemma \ref{ordpj2} does not take its simplest form.
+	
+	It is conjectured that infinitely many Wieferich primes exist, but only two are currently known: 1093 and 3511 \cite{CrandallSearch}.
+	Computer searches have shown any more Wieferich primes must be greater than $2^{64}$ \cite{PrimeGridWieferich}.
+
+	The following equivalent characterization of Wieferich primes will be useful because it expresses the Wieferich condition in terms of the multiplicative order appearing in Lemma \ref{ordpj2}.
+	\begin{lemma}\label{wieferichEquivalence}
+		An odd prime number $p$ is a Wieferich prime if and only if
+		\begin{equation*}
+			p^2 \mid 2^{\ord[p]{2}} - 1.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Let $n = \ord[p]{2}$.
+		Then $p-1 = kn$ for some natural number $k$, and
+		\begin{equation*}
+			2^{p-1} - 1 = 2^{kn} - 1.
+		\end{equation*}
+		So, by the Lifting the Exponent lemma \cite[Chapter 2 Section 2.7]{ireland_rosen_1990},
+		\begin{equation*}
+			v_p(2^{kn} - 1) = v_p(2^n - 1) + v_p(k).
+		\end{equation*}
+		Since $1 \leq k \leq p-1$, we have $v_p(k) = 0$.
+		Thus,
+		\begin{equation*}
+			v_p(2^{p-1} - 1) = v_p(2^n - 1).
+		\end{equation*}
+		So, $p^2 \mid 2^{p-1} - 1$ if and only if $p^2 \mid 2^{\ord[p]{2}} - 1$, as desired.
+	\end{proof}
+	Consequently, if $p$ is not a Wieferich prime, then $v_p(2^{\ord[p]{2}} - 1) = 1$.
+	So, $c = 1$ and $\ord[p^j]{2} = \ord[p]{2} p^{j-1}$.
 
 	\begin{corollary}\label{nonWieferichOrd}
 		Let $p$ be an odd prime.
-		If $p$ isn't a Wieferich prime, then
+		If $p$ is not a Wieferich prime, then
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{j-1}.
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Lemma \ref{ordpj2} tells us that
+		By Lemma \ref{ordpj2},
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{\max{(0, j-c)}}, \qquad c = v_p(2^{\ord[p]{2}} - 1).
 		\end{equation*}
 		Thus it is sufficient to show that $c=1$.
-		By definition of $\ord[p]{2}$, $c \geq 1$.
-		Since $p$ is not a Wieferich prime, for all $t \geq 2$,
+		By definition of $\ord[p]{2}$, we have $c \geq 1$.
+		Since $p$ is not a Wieferich prime, Lemma \ref{wieferichEquivalence} implies that
 		\begin{equation*}
-			p^{t} \nmid 2^{\ord[2]{p}} - 1,
+			p^2 \nmid 2^{\ord[p]{2}} - 1.
 		\end{equation*}
-		so $c \ngeq 2$ and therefore must be exactly 1, as desired.
+		Thus $c < 2$ and therefore must be exactly 1, as desired.
 	\end{proof}
-	% TODO: The standard definition of Wieferich prime is p^2 \mid 2^{p-1} - 1. Our proof uses p^2 \mid 2^{\ord[p]{2}} - 1.
-	% This is equivalent by a lifting the exponent argument: If n = \ord[p]{a}, then p-1 = k*n, and a^(p-1) - 1 = a^(kn) - 1.
-	% So, v_p(a^(kn) - 1) = v_p(a^n - 1) + v_p(k).
-	% However, k = (p-1)/n is smaller than p and thus not divisible by p, so v_p(k) = 0.
-	% So, v_p(a^(p-1) - 1) = v_p(a^n - 1).
-	% So, p^2 \mid a^(p-1) - 1 if and only if p^2 \mid a^{\ord[p]{a}} - 1.
-	% Should we prehaps include this argument?
+	
+	\subsection{Extension Degrees \& Traces}
+	We next turn to finite field extensions and traces.
+	These tools will allow us to relate the roots of Fibonacci polynomials to their behavior over finite fields.
 	
 	\begin{definition}
 		Let $b$ be coprime to $n$.
-		Then ``signed order" of $a$ modulo $n$ is
+		Then \textit{signed order} of $b$ modulo $n$ is
 		\begin{equation*}
 			\rho_b(n) = \min{\{r > 0 : b^r \equiv \pm 1 \pmod{n}\}}.
 		\end{equation*}
 	\end{definition}
-	This is also sometimes called the ``index" of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
+	This is also sometimes called the \textit{index} of $"\pm 1$ relative to $b$, written $\operatorname{ind}_{b}(\pm 1)$.
+	Note that compared to the typical order, the signed order is either the same value or half as much.
 	
 	\begin{lemma}\label{signedOrder}
-		Let $H_j = \ord[p^j]{2}$.
+		Let $p$ be an odd prime, $j \ge 1$, and $H_j = \ord[p^j]{2}$.
 		Then
 		\begin{equation*}
 			\rho_{2}{(p^j)} = \begin{cases}
@@ -828,7 +876,7 @@
 		Thus $H_j \leq r$, so $H_j$ is minimal, as desired.
 	\end{proof}
 	
-	We can use this notion of a signed order to find the extension degree of extensions of $\F_2$.
+	We can use the signed order to find the degree of certain extensions of $\F_2$.
 	\begin{lemma}\label{fieldExtensionSize}
 		Let $M > 1$ be odd; let $\zeta$ have exact order $M$; set $\alpha = \zeta + \zeta^{-1}$.
 		Then
@@ -839,12 +887,12 @@
 	\begin{proof}
 		A standard finite field fact says
 		\begin{equation*}
-			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}.
+			\left[\F_2(\alpha) : \F_2\right] = \min{\{r > 0 : \alpha^{2^r} = \alpha\}}
 		\end{equation*}
-		% TODO: Find a reference for this "standard fact". Maybe Lidl & Niederreiter?
+		\cite[Theorem 2.14, p.~52]{lidl-niederreiter}.
 		By definition of $\alpha$, $\alpha^{2^r} = \zeta^{2^r} + \zeta^{-2^r}$, so $\alpha^{2^r} = \alpha$ is equivalent to $\zeta^{2^r} + \zeta^{-2^r} = \zeta + \zeta^{-1}$.
 		
-		For any non-zero $a,b \in \F_2(\alpha)$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
+		For any non-zero $a,b \in \overline{\F_2}$, $a + a^{-1} = b + b^{-1} \iff (a+b)(ab+1) = 0$.
 		So, either $a = b$ or $a = b^{-1}$.
 		Taking $a = \zeta^{2^r}$ and $b = \zeta$, we obtain
 		\begin{equation*}
@@ -861,24 +909,23 @@
 		as desired.
 	\end{proof}
 	
-	\begin{lemma}\label{fieldTrace}
+	We will also need the trace of elements in finite field extensions.
+	We first recall its standard expression in terms of the Frobenius automorphism \cite[Definition 2.22, p.~54]{lidl-niederreiter}.
+	\begin{definition}[Lidl \& Niederreiter]\label{fieldTrace}
 		Let $a$ be algebraic over $\F_q$.
-		Then
+		Then for every $z \in \F_q(a)$,
 		\begin{equation*}
-			\Tr[\F_q(a) / \F_q]{a} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{a^{q^r}}.
+			\Tr[\F_q(a) / \F_q]{z} = \sum_{r=0}^{\left[\F_q(a) : \F_q\right] - 1}{z^{q^r}}.
 		\end{equation*}
-	\end{lemma}
-	\begin{proof}
-		See \cite{lidl-niederreiter}.
-	\end{proof}
+	\end{definition}
 
-	\begin{corollary}
+	\begin{corollary}\label{traceAt1}
 		\begin{equation*}
 			\Tr[\F_q(a) / \F_q]{1} = \left[\F_q(a) : \F_q\right].
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
-		Immediate from evaluating at $a=1$ in lemma \ref{fieldTrace}.
+		Immediate from evaluating Definition \ref{fieldTrace} at $z=1$.
 	\end{proof}
 	
 	\begin{lemma}\label{fieldTraceSumRoots}
@@ -898,12 +945,12 @@
 		\begin{equation*}
 			\left[\F_2(\alpha) : \F_2\right] = \rho_2(M).
 		\end{equation*}
-		So, by lemma \ref{fieldTrace},
+		So, by Definition \ref{fieldTrace},
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{r=0}^{\rho_2(M)-1}{\zeta^{2^r} + \zeta^{-2^r}}.
 		\end{equation*}
-		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, 2^{-(\rho_2(M)-1)}$. are all distinct modulo $M$.
-		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < d$, which contradicts $\rho_2(M)$ being minimal.
+		By the definition of $\rho_2(M)$, the residues $2^0, -2^0, 2^1, -2^1, \ldots, 2^{\rho_2(M)-1}, -2^{\rho_2(M)-1}$. are all distinct modulo $M$.
+		Otherwise, we would obtain $2^r \equiv \pm 2^s \pmod M$, or equivalently, $2^{r-s} \equiv \pm 1 \pmod M$ for some $0 \leq s < r < \rho_2(M)$, which contradicts $\rho_2(M)$ being minimal.
 	
 		The residues are exactly the elements of $G_M$, so
 		\begin{equation*}
@@ -912,7 +959,7 @@
 		as desired.
 	\end{proof}
 
-	\begin{corollary}
+	\begin{corollary}\label{traceMobius}
 		If $G_M = (\Z / M\Z)^{\times}$, then
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(M) \pmod 2,
@@ -920,7 +967,7 @@
 		where $\mu$ is the number-theoretic Möbius function.
 	\end{corollary}
 	\begin{proof}
-		From lemma \ref{fieldTraceSumRoots}, we know that
+		From Lemma \ref{fieldTraceSumRoots}, we know that
 		\begin{equation*}
 			\Tr[\F_2(\alpha) / \F_2]{\alpha} = \sum_{u \in G_M}{\zeta^{u}}.
 		\end{equation*}
@@ -931,10 +978,10 @@
 		by Ramanujan's sum identity of roots of unity, as desired.
 	\end{proof}
 	
-	% TODO: If p is a non-Wieferich prime, then d(p^k - 1) = d(p-1)
-	Now we may combine together many of our partial results to state a more significant result. 
+	\subsection{Applications to $d(n)$}
+	We can now combine the preceding results on orders, extension degrees, and traces to obtain our main result concerning powers of non Wieferich primes.
 	\begin{theorem}\label{pk-1Equalsp-1}
-		If $p$ is not a Wieferich prime, then for all $k \in \N$,
+		If $p$ is not a Wieferich prime, then for all $k \ge 1$,
 		\begin{equation*}
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
@@ -946,24 +993,24 @@
 		\begin{equation*}
 			R_j = \{\zeta + \zeta^{-1} : \ord{\zeta} = p^j\}.
 		\end{equation*}
-		By lemma \ref{RootParameterization},
-		\begin{equation}
+		By Lemma \ref{RootParameterization},
+		\begin{equation*}
 			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
-		\end{equation}
-		Furthermore, since $p^k$ is odd, corollary \ref{rootMultiplicity2} and lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
+		\end{equation*}
+		Furthermore, since $p^k$ is odd, Lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
 		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
 		Let $h = \ord[p]{2}$.
-		Since $p$ is not Wieferich, corollary \ref{nonWieferichOrd} tells us that
+		Since $p$ is not Wieferich, Corollary \ref{nonWieferichOrd} tells us that
 		\begin{equation*}
 			\ord[p^j]{2} = \ord[p]{2} p^{j-1},
 		\end{equation*}
-		and lemma \ref{signedOrder} tells us that
+		and Lemma \ref{signedOrder} tells us that
 		\begin{equation*}
-			\rho_2(p^j) = \rho(p) p^{j-1}.
+			\rho_2(p^j) = \rho_2(p) p^{j-1}.
 		\end{equation*}
-		So, by lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
+		So, by Lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
 		\begin{equation*}
-			\left[\F_2(\alpha) : \F_2\right] = \rho(p) p^{j-1}.
+			\left[\F_2(\alpha) : \F_2\right] = \rho_2(p) p^{j-1}.
 		\end{equation*}
 	
 		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
@@ -974,7 +1021,7 @@
 		Since $\alpha+1$ is also in $R_j$, there must exist $s$ such that $\gcd{(s,p)} = 1$ and $\alpha + 1 = \zeta^{s} + \zeta^{-s}$.
 		Then
 		\begin{equation*}
-			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-1} = 0.
+			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-s} = 0.
 		\end{equation*}
 		Equivalently, $\zeta$ is a root of
 		\begin{equation*}
@@ -989,15 +1036,14 @@
 		\begin{equation*}
 			f(x^m) \mid P_s(x).
 		\end{equation*}
-		So, every polynomial can be decomposed by exponents modulo $M$:
-		\begin{equation}
-			P_s(x) = \sum_{a=0}^{M-1}{X^a P_a(X^M)}.
-		\end{equation}
-		% TODO: Check case m vs M here
-		In $P_{s-1}$ the only exponent dividing $M$ is 0, so $P_0(X^M) = 1$.
-		But if $f(x^m) \mid P_s(x)$, then $f(x)$ must divide every compoenent $P_a(x)$, including $P_0(x) = 1$.
-		This is impossible because $f$ isn't constant.
-		Thus we have arrived at a contradiction and must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
+		So, every polynomial can be decomposed by exponents modulo $m$:
+		\begin{equation*}
+			P_s(x) = \sum_{a=0}^{m-1}{x^a P_a(x^m)}.
+		\end{equation*}
+		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
+		However, since $m=p^{j-1}$ and $\gcd{(s,p)}=1$, only the exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$.
+		Thus, $P_0(y) = 1$, a contradiction.
+		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
 		
 		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
 		\begin{equation*}
@@ -1005,7 +1051,7 @@
 		\end{equation*}
 	\end{proof}
 
-	We can combine this result with our recurrence when doubling $n$ and adding 1.
+	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit formula for a broad family of indices.
 	\begin{corollary}
 		Let $p$ be an odd non-Wieferich prime.
 		Then for all $n,m \geq 0$,
@@ -1019,7 +1065,7 @@
 	\end{corollary}
 	\begin{proof}
 		The $m=0$ case reduces to what Sutner already showed \cite{Sutner1989}.
-		For the other cases, we first apply corollary \ref{2nPlus1Explicit} to obtain
+		For the other cases, we first apply Corollary \ref{2nPlus1Explicit} to obtain
 		\begin{equation*}
 			d(2^np^m - 1) = \begin{cases}
 				0 & m = 0 \\
@@ -1027,41 +1073,102 @@
 				2^{n+1} - 2 & m \geq 1, p  = 3
 			\end{cases}.
 		\end{equation*}
-		We then apply theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
+		We then apply Theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
 	\end{proof}
 
 	\begin{corollary}
 		For all $n,m \geq 1$, the following relationships hold
-		\begin{enumerate}
-			\item $d(2^n - 1) = 0$
-			\item $d(3^n - 1) = 0$
-			\item $d(5^n - 1) = 4$
-			\item $d(7^n - 1) = 0$
-			\item $d(11^n - 1) = 0$
-			\item $d(13^n - 1) = 0$
-			\item $d(17^n - 1) = 8$
-			\item $d(19^n - 1) = 0$
-			\item $d(23^n - 1) = 0$
-			\item $d(29^n - 1) = 0$
-			\item $d(31^n - 1) = 0$
-			\item $d(37^n - 1) = 0$
-			\item $d(41^n - 1) = 0$
-			\item $d(43^n - 1) = 0$
-			\item $d(2^n 3^m - 1) = 2^{n+1} - 2$
-			\item $d(2^n 5^m - 1) = 2^{n+2}$
-			\item $d(2^n 7^m - 1) = 0$
-		\end{enumerate}
+		\begin{alignat*}{3}
+			d(3^n - 1) &= 0 &\qquad d(5^n - 1) &= 4 &\qquad d(7^n - 1) &= 0 \\
+			d(11^n - 1) &= 0 &\quad d(13^n - 1) &= 0 &\qquad d(17^n - 1) &= 8 \\
+			d(19^n - 1) &= 0 &\qquad d(23^n - 1) &= 0 &\qquad d(29^n - 1) &= 0 \\
+			d(31^n - 1) &= 20 &\qquad d(37^n - 1) &= 0 &\qquad d(41^n - 1) &= 0 \\
+			d(43^n - 1) &= 0 &\qquad d(47^n - 1) &= 0 &\qquad d(53^n - 1) &= 0 \\
+			d(59^n - 1) &= 0 &\qquad d(61^n - 1) &= 0 &\qquad d(67^n - 1) &= 0 \\
+			d(71^n - 1) &= 0 &\qquad d(73^n - 1) &= 0 &\qquad d(79^n - 1) &= 0 \\
+			d(83^n - 1) &= 0 &\qquad d(89^n - 1) &= 0 &\qquad d(97^n - 1) &= 0 \\
+			d(127^n - 1) &= 56 &\qquad d(257^n - 1) &= 144 &\qquad d(683^n - 1) &= 132 \\
+			d(2731^n - 1) &= 468 &\qquad d(8191^n - 1) &= 4004 &\qquad d(43691^n - 1) &= 6936,
+			% 2^2 \equiv -1 mod 5
+			% 2^4 \equiv -1 mod 17
+			% 2^5 \equiv -1 mod 31
+			% 2^7 \equiv 1 mod 127
+			% 2^8 \equiv -1 mod 257
+			% 2^11 \equiv -1 mod 683
+			% 2^13 \equiv -1 mod 2731
+			% 2^13 \equiv 1 mod 8191
+			% 2^17 \equiv -1 mod 43691
+		\end{alignat*}
+		and
+		\begin{alignat*}{3}
+			d(2^n 3^m - 1) &= 2^{n+1} - 2 &\qquad d(2^n 5^m - 1) &= 2^{n+2} &\qquad d(2^n 7^m - 1) &= 0 \\
+			d(2^n 11^m - 1) &= 0 &\qquad d(2^n 13^m - 1) &= 0 &\qquad d(2^n 17^m - 1) &= 2^{n+3} \\
+			d(2^n 19^m - 1) &= 0 &\qquad d(2^n 23^m - 1) &= 0 &\qquad d(2^n 29^m - 1) &= 0 \\
+			d(2^n 31^m - 1) &= 2^{n+2} \cdot 5 &\qquad d(2^n 37^m - 1) &= 0 &\qquad d(2^n 41^m - 1) &= 0 \\
+			d(2^n 43^m - 1) &= 0 &\qquad d(2^n 47^m - 1) &= 0 &\qquad d(2^n 53^m - 1) &= 0 \\
+			d(2^n 59^m - 1) &= 0 &\qquad d(2^n 61^m - 1) &= 0 &\qquad d(2^n 67^m - 1) &= 0 \\
+			d(2^n 71^m - 1) &= 0 &\qquad d(2^n 73^m - 1) &= 0 &\qquad d(2^n 79^m - 1) &= 0 \\
+			d(2^n 83^m - 1) &= 0 &\qquad d(2^n 89^m - 1) &= 0 &\qquad d(2^n 97^m - 1) &= 0 \\
+			d(2^n 127^m - 1) &= 2^{n+3} \cdot 7 &\qquad d(2^n 257^m - 1) &= 2^{n+4} \cdot 9 &\qquad d(2^n 683^m - 1) &= 2^{n+2} \cdot 33 \\
+			d(2^n 2731^m - 1) &= 2^{n+2} \cdot 117 &\qquad d(2^n 8191^m - 1) &= 2^{n+2} \cdot 1001 &\qquad d(2^n 43691^m - 1) &= 2^{n+3} \cdot 867.
+		\end{alignat*}
 	\end{corollary}
+	Per OEIS sequence A159257, the above lists all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
+	We calculated $d(43691-1)$ ourselves via computer program.
+	% TODO: We can prove that if p is a Mersenne or Fermat prime > 7 that d(p-1) > 0. Include this?
 
-	You may have noticed that for many sizes, we have $d(p-1) = 0$.
-	We can actually classify some $p$ for which this is the case.
-	% TODO: If p = 3 mod 4 and G_M is the multiplicative group, then d(p-1) = 0
+	We can also use the trace results to identify primes for which $d(p-1) = 0$.
+	\begin{theorem}\label{dp-1isZero}
+		Let $p \equiv 3 \pmod 4$ be a prime where
+		\begin{equation*}
+			\left\{\pm 2^r \pmod p : r \geq 0\right\} = (\Z / p \Z)^{\times},
+		\end{equation*}
+		or equivalently,
+		\begin{equation*}
+			\ord[p]{2} \in \left\{p-1, \frac{p-1}{2}\right\}
+		\end{equation*}
+		Then $d(p - 1) = 0$.
+	\end{theorem}
+	\begin{proof}
+		Assume for the sake of contradiction that $d(p-1) \neq 0$.
+		Then $F_{p}(x)$ and $F_{p}(x+1)$ have a common factor and thus a common root $\alpha$, so
+		\begin{equation*}
+			F_{p}(\alpha) = F_{p}(\alpha+1) = 0.
+		\end{equation*}
+		By Lemma \ref{RootParameterization}, there must exist non-trivial $p$th roots of unity $\zeta$ and $\eta$ such that
+		\begin{equation*}
+			\alpha = \zeta + \zeta^{-1} \qquad \alpha+1 = \eta + \eta^{-1}.
+		\end{equation*}
 	
-	% TODO: Section on MCP
+		We can see that $\F_2(\alpha+1) = \F_2(\alpha)$ ($\alpha$ and $\alpha+1$ can be obtained from each other by adding 1), and so by Corollary \ref{traceMobius}, 
+		\begin{equation*}
+			\Tr[\F_2(\alpha+1) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} = \mu(p) \pmod 2 = 1.
+		\end{equation*}
+	
+		However, by Lemmas \ref{fieldExtensionSize} and \ref{signedOrder},
+		\begin{equation*}
+			[\F_2(\alpha) : \F_2] = [\F_2(\alpha+1) : \F_2] = \rho_2(p) = \frac{p-1}{2}.
+		\end{equation*}
+		Since $p \equiv 3 \pmod 4$, this value is odd.
+		Applying the linearity of the trace and Corollary \ref{traceAt1},
+		\begin{equation*}
+			\Tr[\F_2(\alpha) / \F_2]{\alpha+1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + \Tr[\F_2(\alpha) / \F_2]{1} = \Tr[\F_2(\alpha) / \F_2]{\alpha} + 1 = 0.
+		\end{equation*}
+		Thus we have reached a contradiction.
+	\end{proof}
+	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
+	
+	Taken together, these results give several ways to determine and constrain the values of $d(n)$.
+	In particular, the behavior of $d(n)$ at prime powers is controlled by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
+	The final theorem also gives a broad family of primes for which $d(p-1) = 0$.
+	
+	% TODO: It seems there are way more primes than just those \equiv 3 \pmod 4 where d(p-1) = 0. In fact, it seems the vast majority of primes have d(p-1) = 0. Find out a more general classification.
+	% TODO: Maybe most of the even dominating set section could move to a different paper?
+	% TODO: Section on MCP?
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
 	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
 	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
 	\newpage
+	\bibliographystyle{amsalpha}
 	\bibliography{refs.bib}
-	\bibliographystyle{amsplain}
 \end{document}
