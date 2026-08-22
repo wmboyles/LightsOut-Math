@@ -158,7 +158,9 @@ def is_wieferich(p: int) -> bool:
 def signed_order_2(p: int) -> int:
     """Returns the least r > 0 such that 2**r is congruent to 1 or -1 modulo p.
 
-    This function assumes p is an odd prime.
+    This function first calculates the multiplicative order H = ord_p(2).
+    Lemma 4.3 of our finite-fields paper proves that for an odd prime p,
+    the signed order is H/2 when H is even and H when H is odd.
     """
 
     if _spf is None or len(_spf) <= p:
@@ -173,12 +175,12 @@ def signed_order_2(p: int) -> int:
         while n % factor == 0:
             n //= factor
 
-    order = p - 1
+    multiplicative_order = p - 1
     for factor in prime_factors:
-        while order % factor == 0 and pow(2, order // factor, p) == 1:
-            order //= factor
+        while multiplicative_order % factor == 0 and pow(2, multiplicative_order // factor, p) == 1:
+            multiplicative_order //= factor
 
-    return order // 2 if order % 2 == 0 else order
+    return multiplicative_order // 2 if multiplicative_order % 2 == 0 else multiplicative_order
 
 
 # TODO: This function is only fast enough for N < 1_000_000
