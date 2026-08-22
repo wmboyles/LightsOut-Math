@@ -156,6 +156,32 @@ def is_wieferich(p: int) -> bool:
     return pow(2, p-1, p**2) == 1
 
 
+def signed_order_2(p: int) -> int:
+    """Returns the least r > 0 such that 2**r is congruent to 1 or -1 modulo p.
+
+    This function assumes p is an odd prime.
+    """
+
+    if _spf is None or len(_spf) <= p:
+        build_spf(p)
+    assert _spf is not None
+
+    prime_factors = set()
+    n = p - 1
+    while n > 1:
+        factor = _spf[n]
+        prime_factors.add(factor)
+        while n % factor == 0:
+            n //= factor
+
+    order = p - 1
+    for factor in prime_factors:
+        while order % factor == 0 and pow(2, order // factor, p) == 1:
+            order //= factor
+
+    return order // 2 if order % 2 == 0 else order
+
+
 # TODO: This function is only fast enough for N < 1_000_000
 def build_spf(N) -> None:
     global _spf
@@ -244,6 +270,12 @@ def grid_nullity(n: int) -> int:
     (p,l) = prime_power(b)
     if l > 1 and not is_wieferich(p): # b is a prime power
         return grid_nullity(p - 1)
+
+    """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
+    odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
+    """
+    if l == 1 and signed_order_2(p)**2 > p:
+        return 0
 
     # Brute force
     f1 = brute_f1(b-1)
