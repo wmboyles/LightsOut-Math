@@ -184,18 +184,18 @@ def grid_nullity(n: int) -> int:
         return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
 
     """We proved
-    If n+1 = 2**n * p**m, where p is not a Wieferich prime, then d(n) is
-    * 0 if m == 0
-    * 2**n * d(p-1) if m >= 1 and p != 3
-    * 2**(n+1) - 2 if m >= 1 and p = 3
+    If n+1 = 2**k * p**l, where p is not a Wieferich prime, then d(n) is
+    * 0 if l == 0
+    * 2**k * d(p-1) if l >= 1 and p != 3
+    * 2**(k+1) - 2 if l >= 1 and p = 3
 
-    Conjecture: d(p^k - 1) = d(p-1) is also true for Wieferich primes p.
+    Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
     """
     (b,k) = find_bk(n)
     (p,l) = prime_power(b)
     if l > 1 and not is_wieferich(p): # b is a prime power
         if p == 3:
-            return (1 << (n+1)) - 2
+            return (1 << (k + 1)) - 2
         else:
             return (1 << k) * grid_nullity(p - 1)
 
