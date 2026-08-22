@@ -24,6 +24,35 @@ def find_bk(n: int) -> tuple[int, int]:
     return b, k
 
 
+def power_of_two_exponent(n: int) -> int | None:
+    """Returns k when n = 2**k, or None when n is not a power of two."""
+
+    return n.bit_length() - 1 if n > 0 and n & (n - 1) == 0 else None
+
+
+@cache
+def lights_out_curve_point_count(r: int) -> int:
+    """Counts points over the field with 2**r elements on the Lights Out elliptic curve.
+
+    Goshima and Yamagishi's "On the Dimension of the Space of Harmonic Functions
+    on a Discrete Torus" uses t**2*s + t*s**2 + t*s + t + s = 0.
+    Its point count is 2**r + 1 - a_r, where a_0 = 2, a_1 = -1,
+    and a_r = -a_(r-1) - 2*a_(r-2).
+    This count equals torus_nullity(2**r + 1), while subtracting 4 gives
+    torus_nullity(2**r - 1).
+    """
+
+    if r < 1:
+        raise ValueError("r must be positive")
+
+    a_prev_prev = 2
+    a_prev = -1
+    for _ in range(2, r + 1):
+        a_prev_prev, a_prev = a_prev, -a_prev - 2 * a_prev_prev
+
+    return (1 << r) + 1 - a_prev
+
+
 @cache
 def brute_f1(y: int) -> GF2Polynomial:
     """Calculate f_n(x) via brute force.
@@ -171,17 +200,32 @@ def grid_nullity(n: int) -> int:
     d(0) = 0
     Hunziker, Machivelo, and Park and also Sutner proved d(2^k - 1) = 0.
     """
-    if n & (n + 1) == 0:
+    if n == 0:
         return 0
 
-    """Yamagishi's proved in
-    "Elliptic Curves Over Finite Fields and Reversibility of Additive Cellular Automata on Square Grids"
-    in the journal "Finite Fields and Their Applications" that
-    d(2^k) = d(2^k - 2) + (4 if k % 2 == 0 else 0).
+    (b,k) = find_bk(n)
+    if b == 1:
+        return 0
+
+    """Goshima and Yamagishi relate sigma+ nullity on square tori to this curve.
+    For q = 2**r, the (q-1)-torus nullity is the curve's point count minus 4,
+    while the (q+1)-torus nullity is the point count. Yamagishi's "Periodic
+    Harmonic Functions on Lattices and Chebyshev Polynomials" gives the grid-torus
+    conversion, and our 2-adic recurrence handles the outer factor 2**k.
     """
-    if n & (n - 1) == 0:
-        # n = 2^k, n.bit_length() = k+1
-        return grid_nullity(n - 2) + (4 if n.bit_length() & 1 else 0)
+    r = power_of_two_exponent(b + 1)
+    if r is not None:
+        torus_nullity = lights_out_curve_point_count(r) - 4
+        base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
+        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
+        return (1 << k) * base_nullity + correction
+
+    r = power_of_two_exponent(b - 1)
+    if r is not None:
+        torus_nullity = lights_out_curve_point_count(r)
+        base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
+        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
+        return (1 << k) * base_nullity + correction
 
     """We proved
     If n+1 = 2**k * p**l, where p is not a Wieferich prime, then d(n) is
@@ -191,7 +235,6 @@ def grid_nullity(n: int) -> int:
 
     Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
     """
-    (b,k) = find_bk(n)
     (p,l) = prime_power(b)
     if l > 1 and not is_wieferich(p): # b is a prime power
         if p == 3:
@@ -218,15 +261,13 @@ def grid_nullity(n: int) -> int:
 
 @cache
 def torus_nullity(n: int) -> int:
-    """Returns the nullity of an n x n torus."""
+    """Returns the nullity of an n x n Lights Out torus.
 
-    """We can calculate this one of two ways:
-        1. Calculate 2*deg gcd(g(n,x), g(n,x+1))
-        2. Calculate 2*grid_nullity(n-1) + 4 if n is a multiple of 3, 2*grid_nullity(n-1) otherwise
-    We'll use the second one.
-
-    Both results come as from Yamagishi's paper "On the Dimension of the Space of Harmonic Functions on a Discrete Torus"
-    and are proven in his paper "Periodic Harmomic Functions on Lattices and Chebyshev Polynomials"
+    Goshima and Yamagishi's "On the Dimension of the Space of Harmonic Functions
+    on a Discrete Torus" and Yamagishi's "Periodic Harmonic Functions on Lattices
+    and Chebyshev Polynomials" give
+    torus_nullity(n) = 2*grid_nullity(n-1) + 4 when 3 divides n, and
+    torus_nullity(n) = 2*grid_nullity(n-1) otherwise.
     """
 
     return 2 * grid_nullity(n - 1) + (0 if n % 3 else 4)
