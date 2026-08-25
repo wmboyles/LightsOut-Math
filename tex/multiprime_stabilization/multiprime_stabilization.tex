@@ -1,0 +1,589 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\ord}[2][]{\operatorname{ord}_{#1}\!\left(#2\right)}
+\newcommand{\abs}[1]{\left|#1\right|}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\title{Finite-Support Stabilization for \textit{Lights Out} Nullity}
+\author{William Boyles}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+	Let $d(n)$ be the nullity over $\F_2$ of the $n\times n$ bounded \textit{Lights Out} grid.
+	For every fixed finite set $S$ of odd primes, we give explicit thresholds $C_p(S)$ such that
+	\[
+		d\!\left(\prod_{p\in S}p^{e_p}-1\right)
+		=
+		d\!\left(\prod_{p\in S}p^{\min(e_p,C_p(S))}-1\right).
+	\]
+	Thus the nullity is eventually constant in each prime exponent.
+	In particular, for every odd integer $a$, the sequence $d(a^k-1)$ is eventually constant.
+	We also construct, for every $K\geq3$, an odd integer whose true smallest stabilization exponent is exactly $K$.
+	The thresholds explain the observed transitions for $a=21$ and $a=57$, and reduce the repository's mixed-prime conjectures to small exact polynomial computations.
+\end{abstract}
+
+\section{Polynomial and order preliminaries}
+
+Let $F_n(x)\in\F_2[x]$ be the Fibonacci polynomials
+\[
+	F_0(x)=0,\qquad F_1(x)=1,\qquad
+	F_n(x)=xF_{n-1}(x)+F_{n-2}(x).
+\]
+Sutner's formula gives
+\begin{equation}\label{eq:nullity}
+	d(n)=\deg\gcd\!\left(F_{n+1}(x),F_{n+1}(x+1)\right)
+\end{equation}
+\cite{Sutner2000}.
+
+For an odd integer $M>1$, define the exact-order stratum
+\[
+	R_M=\left\{\zeta+\zeta^{-1}:\ord{\zeta}=M\right\}.
+\]
+If $N$ is odd, the distinct roots of $F_N$ are the disjoint union
+\begin{equation}\label{eq:strata}
+	\bigcup_{\substack{M\mid N\\M>1}}R_M.
+\end{equation}
+Moreover, $F_N$ is the square of a square-free polynomial, so every root has multiplicity two \cite{HUNZIKER2004465}.
+
+For odd $M$, let
+\[
+	\rho_2(M)=\min\{r>0:2^r\equiv\pm1\pmod M\}.
+\]
+If $\alpha\in R_M$, then
+\begin{equation}\label{eq:degree}
+	[\F_2(\alpha):\F_2]=\rho_2(M).
+\end{equation}
+
+Fix a finite set $S$ of odd primes.
+For each $p\in S$, set
+\begin{equation}\label{eq:thresholds}
+	h_p=\ord[p]{2},
+	\qquad
+	c_p=v_p(2^{h_p}-1),
+	\qquad
+	a_p(S)=\max_{q\in S}v_p(h_q),
+	\qquad
+	C_p(S)=c_p+a_p(S).
+\end{equation}
+The term $c_p$ is the prime-power plateau length from the one-prime argument.
+The additional term $a_p(S)$ measures how much $p$-power divisibility can enter through the orders belonging to the other primes in $S$.
+
+For an odd integer $N$ supported on $S$, define its $S$-truncation by
+\begin{equation}\label{eq:truncation}
+	N^\flat=\prod_{p\in S}p^{\min(v_p(N),C_p(S))}.
+\end{equation}
+
+\section{Order growth after truncation}
+
+\begin{lemma}\label{lem:order-truncation}
+	Let $Q$ be an odd integer supported on $S$, let $Q^\flat$ be its truncation, and set
+	\[
+		m=\frac{Q}{Q^\flat}.
+	\]
+	Then
+	\[
+		\ord[Q]{2}=m\,\ord[Q^\flat]{2}.
+	\]
+\end{lemma}
+
+\begin{proof}
+	Write $u_p=v_p(Q)$.
+	The Chinese remainder theorem and the prime-power order formula give
+	\begin{equation}\label{eq:order-lcm}
+		\ord[Q]{2}
+		=
+		\mathop{\operatorname{lcm}}_{\substack{p\in S\\u_p>0}}
+		\left(h_p\,p^{\max(0,u_p-c_p)}\right).
+	\end{equation}
+
+	First consider a prime $\ell\notin S$.
+	Its valuation in \eqref{eq:order-lcm} comes only from the fixed integers $h_p$.
+	Truncation changes no prime support, so
+	\[
+		v_\ell\!\left(\ord[Q]{2}\right)
+		=
+		v_\ell\!\left(\ord[Q^\flat]{2}\right).
+	\]
+
+	Now fix $p\in S$.
+	The $p$-adic valuation in \eqref{eq:order-lcm} is the maximum of
+	\[
+		\max(0,u_p-c_p)
+		\qquad\text{and}\qquad
+		\{v_p(h_q):q\in S,\ q\neq p,\ u_q>0\}.
+	\]
+	Every term in the second set is at most $a_p(S)$.
+	If $u_p\leq C_p(S)$, truncation leaves $u_p$ unchanged, and truncating the other exponents does not change their fixed factors $h_q$.
+	The $p$-adic valuation of the order is therefore unchanged.
+
+	If $u_p>C_p(S)=c_p+a_p(S)$, then
+	\[
+		u_p-c_p>a_p(S),
+	\]
+	so the contribution from the $p$-power component strictly dominates all cross-prime contributions.
+	Hence
+	\[
+		v_p\!\left(\ord[Q]{2}\right)=u_p-c_p.
+	\]
+	At the truncated exponent $C_p(S)$, the corresponding valuation is $a_p(S)$, and therefore
+	\[
+		v_p\!\left(\ord[Q]{2}\right)
+		-
+		v_p\!\left(\ord[Q^\flat]{2}\right)
+		=
+		u_p-C_p(S)
+		=
+		v_p(m).
+	\]
+	Comparing valuations at every prime proves the result.
+\end{proof}
+
+\section{Finite-support stabilization}
+
+\begin{theorem}[Finite-support truncation]\label{thm:truncation}
+	Let $S$ be a finite set of odd primes and let $N$ be an odd positive integer supported on $S$.
+	Then
+	\[
+		d(N-1)=d(N^\flat-1),
+	\]
+	where $N^\flat$ is defined by \eqref{eq:truncation}.
+\end{theorem}
+
+\begin{proof}
+	Suppose $\alpha$ and $\alpha+1$ are roots of $F_N$.
+	By \eqref{eq:strata}, there are divisors $M,L>1$ of $N$ such that
+	\[
+		\alpha\in R_M,
+		\qquad
+		\alpha+1\in R_L.
+	\]
+	Because $\F_2(\alpha)=\F_2(\alpha+1)$, equation \eqref{eq:degree} gives
+	\begin{equation}\label{eq:signed-equality}
+		\rho_2(M)=\rho_2(L).
+	\end{equation}
+
+	Write $j_p=v_p(M)$ and $\ell_p=v_p(L)$.
+	Fix $p\in S$ and suppose $j_p>C_p(S)$.
+	As in the proof of Lemma \ref{lem:order-truncation}, the $p$-part belonging to $p^{j_p}$ dominates every cross-prime contribution, so
+	\[
+		v_p\!\left(\ord[M]{2}\right)=j_p-c_p>a_p(S).
+	\]
+	Signed order differs from ordinary order by at most a factor of two, so their valuations at the odd prime $p$ agree.
+	Equation \eqref{eq:signed-equality} therefore forces
+	\[
+		v_p\!\left(\ord[L]{2}\right)=j_p-c_p.
+	\]
+	This valuation is larger than $a_p(S)$, so it cannot arise from any cross-prime order $h_q$.
+	Consequently $\ell_p>C_p(S)$ and
+	\[
+		\ell_p-c_p=j_p-c_p,
+		\qquad\text{hence}\qquad
+		\ell_p=j_p.
+	\]
+	By symmetry, every exponent above its threshold occurs with the same value in $M$ and $L$.
+
+	Set
+	\[
+		Q=\operatorname{lcm}(M,L),
+		\qquad
+		Q^\flat=\prod_{p\in S}p^{\min(v_p(Q),C_p(S))},
+		\qquad
+		m=\frac{Q}{Q^\flat}.
+	\]
+	If $m=1$, then $M,L\mid N^\flat$ and there is nothing to prove.
+	Suppose $m>1$.
+
+	Choose a primitive $Q$th root $\theta$.
+	There are exponents $a,b$ such that
+	\[
+		\alpha=\theta^a+\theta^{-a},
+		\qquad
+		\alpha+1=\theta^b+\theta^{-b},
+	\]
+	where $\theta^a$ and $\theta^b$ have exact orders $M$ and $L$.
+	Thus $\theta$ is a root of
+	\begin{equation}\label{eq:sparse}
+		P(x)=1+x^a+x^{Q-a}+x^b+x^{Q-b}.
+	\end{equation}
+
+	Every prime dividing $m$ occurs above its threshold in $Q$.
+	The preceding rigidity argument says that its full exponent in $Q$ occurs in both $M$ and $L$.
+	Since $\theta^a$ has exact order $M$, we have
+	\[
+		\gcd(Q,a)=\frac{Q}{M};
+	\]
+	no prime dividing $m$ divides $Q/M$, and no such prime can divide the remaining unit factor in $a$.
+	Hence $\gcd(a,m)=1$.
+	Likewise $\gcd(b,m)=1$.
+	Because $m\mid Q$, only the constant exponent in \eqref{eq:sparse} is divisible by $m$.
+
+	The element $\theta^m$ has exact order $Q^\flat$.
+	Let $f(x)$ be its minimal polynomial over $\F_2$.
+	Lemma \ref{lem:order-truncation} gives
+	\[
+		\deg f(x^m)
+		=
+		m\,\ord[Q^\flat]{2}
+		=
+		\ord[Q]{2},
+	\]
+	the degree of the minimal polynomial of $\theta$.
+	Since $\theta$ is a root of $f(x^m)$, the polynomial $f(x^m)$ is its minimal polynomial.
+	Therefore $f(x^m)\mid P(x)$.
+
+	Decompose \eqref{eq:sparse} uniquely by exponents modulo $m$:
+	\[
+		P(x)=\sum_{r=0}^{m-1}x^rP_r(x^m).
+	\]
+	Divisibility by $f(x^m)$ implies that $f(y)$ divides every $P_r(y)$.
+	But the preceding coprimality shows that $P_0(y)=1$, a contradiction.
+	Thus $m=1$, and every common root of $F_N(x)$ and $F_N(x+1)$ already occurs for $F_{N^\flat}(x)$ and $F_{N^\flat}(x+1)$.
+
+	The converse inclusion follows from $N^\flat\mid N$ and the Fibonacci-polynomial divisibility property.
+	Because both indices are odd, every root has multiplicity two.
+	Equation \eqref{eq:nullity} now gives
+	\[
+		d(N-1)=d(N^\flat-1).
+	\]
+\end{proof}
+
+\begin{corollary}[Eventual constancy]\label{cor:eventual}
+	For every odd positive integer $A$, there exists $k_0$ such that
+	\[
+		d(A^k-1)=d(A^{k_0}-1)
+		\qquad\text{for every }k\geq k_0.
+	\]
+	More explicitly, write
+	\[
+		A=\prod_{p\in S}p^{b_p}
+	\]
+	and set
+	\[
+		k_0=
+		\max_{p\in S}
+		\left\lceil\frac{C_p(S)}{b_p}\right\rceil.
+	\]
+	Then this $k_0$ has the required property.
+\end{corollary}
+
+\begin{proof}
+	For every $k\geq k_0$, the truncation of $A^k$ is the fixed integer
+	\[
+		B_S=\prod_{p\in S}p^{C_p(S)}.
+	\]
+	Theorem \ref{thm:truncation} gives
+	\[
+		d(A^k-1)=d(B_S-1).
+	\]
+	The same theorem applied to $A^{k_0}$ gives
+	\[
+		d(A^{k_0}-1)=d(B_S-1),
+	\]
+	which proves the claim.
+\end{proof}
+
+\section{Arbitrarily late stabilization}
+
+The sufficient cutoff in Corollary \ref{cor:eventual} can be arbitrarily large.
+More strongly, the actual smallest stabilization exponent is unbounded.
+
+\begin{theorem}\label{thm:unbounded}
+	For every integer $K\geq3$, there exists an odd positive integer $A_K$ such that $K$ is the smallest integer satisfying
+	\[
+		d(A_K^k-1)=d(A_K^K-1)
+		\qquad\text{for every }k\geq K.
+	\]
+\end{theorem}
+
+\begin{proof}
+	Set
+	\[
+		r=3^{K-1},
+		\qquad
+		B=2^r+1.
+	\]
+	The lifting-the-exponent lemma gives
+	\[
+		v_3(B)=v_3(2+1)+v_3(r)=K.
+	\]
+	Write
+	\[
+		B=3^KQ,
+		\qquad \gcd(Q,3)=1,
+	\]
+	and define
+	\begin{equation}\label{eq:construction}
+		A_K=3Q=\frac{2^{3^{K-1}}+1}{3^{K-1}}.
+	\end{equation}
+
+	Let $S$ be the prime support of $A_K$.
+	If $q\mid Q$, then $2^r\equiv-1\pmod q$, so
+	\[
+		h_q=\ord[q]{2}\mid2r
+		\qquad\text{but}\qquad
+		h_q\nmid r.
+	\]
+	Since $r$ is a power of 3, this means
+	\[
+		h_q=2\cdot3^j
+		\qquad\text{for some }0\leq j\leq K-1.
+	\]
+	Zsigmondy's theorem provides a primitive prime divisor of $2^{2r}-1$ because $2r\geq18$ \cite{Zsigmondy1892}.
+	Such a prime has order exactly $2r$, so it divides $2^r+1$.
+	It is not 3, whose order is 2, and therefore divides $Q$ and belongs to $S$.
+	Hence the maximum value of $v_3(h_q)$ over $q\in S$ is $K-1$.
+	Therefore
+	\[
+		C_3(S)=c_3+a_3(S)=1+(K-1)=K.
+	\]
+
+	Now let $q>3$ divide $Q$.
+	Every $h_t$ for $t\in S$ divides $2r=2\cdot3^{K-1}$, so
+	\[
+		a_q(S)=0.
+	\]
+	Furthermore, $h_q\mid2r$ and $q\nmid 2r/h_q$.
+	The lifting-the-exponent lemma gives
+	\[
+		c_q
+		=
+		v_q(2^{h_q}-1)
+		=
+		v_q(2^{2r}-1).
+	\]
+	Since $q\mid2^r+1$ and $q\nmid2^r-1$,
+	\[
+		c_q=v_q(2^r+1)=v_q(B).
+	\]
+	Consequently
+	\[
+		C_q(S)=v_q(B)
+		\qquad(q\mid Q).
+	\]
+
+	The exponent of 3 in $A_K$ is one, while the exponent of every $q\mid Q$ is already $C_q(S)$.
+	Hence Theorem \ref{thm:truncation} gives
+	\begin{equation}\label{eq:constructed-sequence}
+		d(A_K^k-1)
+		=
+		d(3^{\min(k,K)}Q-1).
+	\end{equation}
+	In particular the sequence is constant for $k\geq K$.
+
+	It remains to show that it has not stabilized earlier.
+	For $k<K$, set $N_k=3^kQ$.
+	Then
+	\[
+		N_k=\frac{B}{3^{K-k}}\leq\frac{B}{3},
+	\]
+	and the elementary bound $d(n)\leq n$ gives
+	\begin{equation}\label{eq:early-upper}
+		d(A_K^k-1)=d(N_k-1)\leq N_k-1<\frac{B}{3}.
+	\end{equation}
+
+	On the other hand, the reduction and Kloosterman evaluations proved in
+	\path{tex/upper_bound/upper_bound.tex} give
+	\[
+		d(2^r)=G(2^r+1)-2
+	\]
+	because $3\mid2^r+1$, and
+	\[
+		G(2^r+1)=\frac{2^r+1+\mathcal{K}_r}{2}.
+	\]
+	Consequently
+	\[
+		d(B-1)
+		=
+		d(2^r)
+		=
+		\frac{2^r-3+\mathcal{K}_r}{2},
+	\]
+	where $\mathcal{K}_r$ is the binary Kloosterman sum.
+	Weil's bound $\abs{\mathcal{K}_r}\leq2\sqrt{2^r}$ \cite{Weil1948} yields
+	\[
+		d(B-1)
+		\geq
+		\frac{2^r-3-2\sqrt{2^r}}{2}.
+	\]
+	Because $r\geq9$,
+	\[
+		2^r-6\sqrt{2^r}-11>0,
+	\]
+	which is equivalent to
+	\[
+		\frac{2^r-3-2\sqrt{2^r}}{2}
+		>
+		\frac{2^r+1}{3}
+		=
+		\frac{B}{3}.
+	\]
+	Combining this with \eqref{eq:early-upper} shows
+	\[
+		d(A_K^k-1)<d(A_K^K-1)
+		\qquad(k<K).
+	\]
+	Thus the true smallest stabilization exponent is exactly $K$.
+\end{proof}
+
+\begin{example}
+	For $K=3$, construction \eqref{eq:construction} gives
+	\[
+		A_3=\frac{2^9+1}{3^2}=57,
+	\]
+	recovering the sequence
+	\[
+		0,\ 36,\ 252,\ 252,\ldots.
+	\]
+	For $K=4$ it gives
+	\[
+		A_4=\frac{2^{27}+1}{3^3}
+		=4\,971\,027
+		=3\cdot19\cdot87\,211,
+	\]
+	whose true stabilization exponent is 4.
+\end{example}
+
+\section{Examples}
+
+\subsection{The family $3^n7^m$}
+
+We have
+\[
+	h_3=2,\quad c_3=1,
+	\qquad
+	h_7=3,\quad c_7=1.
+\]
+Since $v_3(h_7)=1$, the thresholds for $S=\{3,7\}$ are
+\[
+	C_3(S)=2,
+	\qquad
+	C_7(S)=1.
+\]
+Therefore
+\begin{equation}\label{eq:3-7-truncation}
+	d(3^n7^m-1)
+	=
+	d\!\left(3^{\min(n,2)}7^{\min(m,1)}-1\right).
+\end{equation}
+The finite calculations
+\[
+	d(3\cdot7-1)=d(20)=0,
+	\qquad
+	d(3^2\cdot7-1)=d(62)=24
+\]
+now prove, for positive $m$,
+\[
+	d(3^n7^m-1)
+	=
+	\begin{cases}
+		0 & n=1,\\
+		24 & n\geq2.
+	\end{cases}
+\]
+When $m=0$, prime-power stabilization gives $d(3^n-1)=0$.
+Thus the second range in the repository conjecture should read $n\geq2$, not $n\geq1$.
+
+For $A=21$, Corollary \ref{cor:eventual} gives $k_0=2$, and hence
+\[
+	d(21^k-1)=24
+	\qquad(k\geq2).
+\]
+
+\subsection{The family $3^n19^m$}
+
+Here
+\[
+	h_{19}=18,
+	\qquad
+	v_3(h_{19})=2,
+\]
+so
+\[
+	C_3(\{3,19\})=3,
+	\qquad
+	C_{19}(\{3,19\})=1.
+\]
+Consequently
+\[
+	d(3^n19^m-1)
+	=
+	d\!\left(3^{\min(n,3)}19^{\min(m,1)}-1\right).
+\]
+The exact finite values
+\[
+	d(57-1)=0,\qquad
+	d(171-1)=36,\qquad
+	d(513-1)=252
+\]
+prove, for positive $m$,
+\[
+	d(3^n19^m-1)
+	=
+	\begin{cases}
+		0 & n=1,\\
+		36 & n=2,\\
+		252 & n\geq3.
+	\end{cases}
+\]
+For $A=57$, the sufficient stabilization exponent is $k_0=3$:
+\[
+	d(57^k-1)=252
+	\qquad(k\geq3).
+\]
+
+\subsection{The remaining two-prime conjectures}
+
+The same thresholds reduce every positive-exponent two-prime formula listed in
+\path{tex/conjectures/summary/conjectures.tex} to the following finite GCD calculations:
+\begin{align*}
+	d(15-1)&=4, &
+	d(33-1)&=20, &
+	d(39-1)&=d(117-1)=0,\\
+	d(51-1)&=8, &
+	d(35-1)&=4, &
+	d(55-1)&=d(275-1)=4,\\
+	d(65-1)&=28, &
+	d(85-1)&=12, &
+	d(95-1)&=4,\\
+	d(77-1)&=0, &
+	d(91-1)&=0, &
+	d(119-1)&=8,\\
+	d(133-1)&=0, &
+	d(143-1)&=0, &
+	d(187-1)&=8,\\
+	d(209-1)&=0, &
+	d(221-1)&=8, &
+	d(247-1)&=0,\\
+	d(323-1)&=8.
+\end{align*}
+These exact checks are performed by \texttt{code/multiprime\_stabilization\_check.py}.
+Together with Theorem \ref{thm:truncation}, they prove all of those formulas for positive prime exponents.
+
+\begin{remark}
+	The thresholds $C_p(S)$ are sufficient but need not be minimal.
+	For example, $C_5(\{5,11\})=2$ because $5\mid\ord[11]{2}$, but the two finite values at exponents one and two are both 4.
+	Thus the nullity in that family is already constant from the first exponent.
+\end{remark}
+
+\bibliographystyle{amsalpha}
+\bibliography{refs.bib}
+
+\end{document}
