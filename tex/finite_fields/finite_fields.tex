@@ -1,11 +1,12 @@
 \documentclass[a4paper]{article}
 
 \usepackage{amsfonts, amsmath, amssymb, amsthm}
-\usepackage{graphicx}
+\usepackage{enumitem}
 \usepackage{fullpage}
 \usepackage{float}
-\usepackage{enumitem}
+\usepackage{graphicx}
 \usepackage{hyperref}
+
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -980,7 +981,7 @@
 	
 	\subsection{Applications to $d(n)$}
 	We can now combine our previous results to greatly reduce the calculation of $d(p^k - 1)$ when $p$ is a prime number.
-	\begin{theorem}\label{primePowerStabilization}
+	\begin{theorem}[Prime Stabilization]\label{primePowerStabilization}
 		Let $p$ be an odd prime and set $c = v_p(2^{\ord[p]{2}} - 1)$.
 		Then for every $k \geq c$,
 		\begin{equation*}
@@ -1093,11 +1094,11 @@
 		so the desired result follows directly from Theorem \ref{primePowerStabilization}.
 	\end{proof}
 
-	We can also use Theorem \ref{primePowerStabilization} to show the result holds for the two known non-Wieferich primes.
-	\begin{corollary}
+	Although Theorem \ref{primePowerStabilization} does not provide the tools to handle all Wieferich primes, it does provide the computational tools to show the result in Corollary \ref{pk-1Equalsp-1} also holds for the two known non-Wieferich primes.
+	\begin{corollary}\label{pk-1Equalsp-1Wieferich}
 		For all $k \geq 1$,
 		\begin{equation*}
-			d(1093^k - 1) = d(3511^k - 1) = 0.
+			d(1093^k - 1) = 0, \qquad d(3511^k - 1) = 0.
 		\end{equation*}
 	\end{corollary}
 	\begin{proof}
@@ -1106,7 +1107,7 @@
 			c_{1093} &= v_{1093}\left(2^{\ord[1093]{2}} - 1\right) &= v_{1093}\left(2^{364} - 1\right) &= 2 \\
 			c_{3511} &= v_{3511}\left(2^{\ord[3511]{2}} - 1\right) &= v_{3511}\left(2^{1755} - 1\right) &= 2.
 		\end{alignat*}
-		Applying Theorem \ref{primePowerStabilization} and computing powers 1 and 2,
+		Applying Theorem \ref{primePowerStabilization} and computing $d(p-1)$ and $d(p^2 - 1)$,
 		\begin{alignat*}{3}
 			d(1093^1 - 1) &= d(1093^2 - 1) &= 0 \\
 			d(3511^1 - 1) &= d(3511^2 - 1) &= 0,
@@ -1114,18 +1115,18 @@
 		and the desired result follows.
 	\end{proof}
 
-	Thus the result holds the same for every known prime, leading us the the following conjecture.
+	Thus the result holds the same for every known prime, leading us to the following conjecture.
 	\begin{conjecture}
 		For all primes $p$ and all $k \geq 0$,
 		\begin{equation*}
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
 	\end{conjecture}
-	From Corollary \ref{pk-1Equalsp-1} and the currently known Wieferich primes, any counter-example would require a newly discovered Wieferich prime greater than $2^{64}$ \cite{PrimeGridWieferich}.
+	Given Corollaries \ref{pk-1Equalsp-1} and \ref{pk-1Equalsp-1Wieferich} and the currently known Wieferich primes, any counter-example would require a newly discovered Wieferich prime greater than $2^{64}$ \cite{PrimeGridWieferich}.
 	
 	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit formula for a broad family of indices.
-	\begin{corollary}
-		Let $p$ be an odd non-Wieferich prime.
+	\begin{corollary}\label{d2p-1}
+		Let $p$ be an odd non-Wieferich prime or Wieferich prime 1093 or 3511.
 		Then for all $n,m \geq 0$,
 		\begin{equation*}
 			d(2^np^m - 1) = \begin{cases}
@@ -1145,49 +1146,8 @@
 				2^{n+1} - 2 & m \geq 1, p  = 3
 			\end{cases}.
 		\end{equation*}
-		We then apply Corollary \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
+		We then apply Corollaries \ref{pk-1Equalsp-1} and \ref{pk-1Equalsp-1Wieferich} to change $d(p^m - 1)$ to $d(p-1)$.
 	\end{proof}
-
-	\begin{corollary}
-		For all $n,m \geq 1$, the following relationships hold
-		\begin{alignat*}{3}
-			d(3^n - 1) &= 0 &\qquad d(5^n - 1) &= 4 &\qquad d(7^n - 1) &= 0 \\
-			d(11^n - 1) &= 0 &\quad d(13^n - 1) &= 0 &\qquad d(17^n - 1) &= 8 \\
-			d(19^n - 1) &= 0 &\qquad d(23^n - 1) &= 0 &\qquad d(29^n - 1) &= 0 \\
-			d(31^n - 1) &= 20 &\qquad d(37^n - 1) &= 0 &\qquad d(41^n - 1) &= 0 \\
-			d(43^n - 1) &= 0 &\qquad d(47^n - 1) &= 0 &\qquad d(53^n - 1) &= 0 \\
-			d(59^n - 1) &= 0 &\qquad d(61^n - 1) &= 0 &\qquad d(67^n - 1) &= 0 \\
-			d(71^n - 1) &= 0 &\qquad d(73^n - 1) &= 0 &\qquad d(79^n - 1) &= 0 \\
-			d(83^n - 1) &= 0 &\qquad d(89^n - 1) &= 0 &\qquad d(97^n - 1) &= 0 \\
-			d(127^n - 1) &= 56 &\qquad d(257^n - 1) &= 144 &\qquad d(683^n - 1) &= 132 \\
-			d(2731^n - 1) &= 468 &\qquad d(8191^n - 1) &= 4004 &\qquad d(43691^n - 1) &= 6936,
-			% 2^2 \equiv -1 mod 5
-			% 2^4 \equiv -1 mod 17
-			% 2^5 \equiv -1 mod 31
-			% 2^7 \equiv 1 mod 127
-			% 2^8 \equiv -1 mod 257
-			% 2^11 \equiv -1 mod 683
-			% 2^13 \equiv -1 mod 2731
-			% 2^13 \equiv 1 mod 8191
-			% 2^17 \equiv -1 mod 43691
-		\end{alignat*}
-		and
-		\begin{alignat*}{3}
-			d(2^n 3^m - 1) &= 2^{n+1} - 2 &\qquad d(2^n 5^m - 1) &= 2^{n+2} &\qquad d(2^n 7^m - 1) &= 0 \\
-			d(2^n 11^m - 1) &= 0 &\qquad d(2^n 13^m - 1) &= 0 &\qquad d(2^n 17^m - 1) &= 2^{n+3} \\
-			d(2^n 19^m - 1) &= 0 &\qquad d(2^n 23^m - 1) &= 0 &\qquad d(2^n 29^m - 1) &= 0 \\
-			d(2^n 31^m - 1) &= 2^{n+2} \cdot 5 &\qquad d(2^n 37^m - 1) &= 0 &\qquad d(2^n 41^m - 1) &= 0 \\
-			d(2^n 43^m - 1) &= 0 &\qquad d(2^n 47^m - 1) &= 0 &\qquad d(2^n 53^m - 1) &= 0 \\
-			d(2^n 59^m - 1) &= 0 &\qquad d(2^n 61^m - 1) &= 0 &\qquad d(2^n 67^m - 1) &= 0 \\
-			d(2^n 71^m - 1) &= 0 &\qquad d(2^n 73^m - 1) &= 0 &\qquad d(2^n 79^m - 1) &= 0 \\
-			d(2^n 83^m - 1) &= 0 &\qquad d(2^n 89^m - 1) &= 0 &\qquad d(2^n 97^m - 1) &= 0 \\
-			d(2^n 127^m - 1) &= 2^{n+3} \cdot 7 &\qquad d(2^n 257^m - 1) &= 2^{n+4} \cdot 9 &\qquad d(2^n 683^m - 1) &= 2^{n+2} \cdot 33 \\
-			d(2^n 2731^m - 1) &= 2^{n+2} \cdot 117 &\qquad d(2^n 8191^m - 1) &= 2^{n+2} \cdot 1001 &\qquad d(2^n 43691^m - 1) &= 2^{n+3} \cdot 867.
-		\end{alignat*}
-	\end{corollary}
-	Per OEIS sequence A159257, the above lists all odd primes less than 100 explicitly and all primes less than 25000 for which $d(p-1) \neq 0$.
-	We calculated $d(43691-1)$ ourselves via computer program.
-	% TODO: We can prove that if p is a Mersenne or Fermat prime > 7 that d(p-1) > 0. Include this?
 
 	We can also use the trace results to identify primes for which $d(p-1) = 0$.
 	\begin{theorem}\label{dp-1isZero}
@@ -1228,11 +1188,200 @@
 		\end{equation*}
 		Thus we have reached a contradiction.
 	\end{proof}
-	% TODO: What is the computationally easy way to see if {\pm 2^4 \pmod p : r\geq 0} is the multiplicative group? It seems like it's all primes except those in A082595.
 	
-	Taken together, these results give several ways to determine and constrain the values of $d(n)$.
-	In particular, the behavior of $d(n)$ at prime powers is controlled by the arithmetic of 2 modulo those primes, with Wieferich primes providing the principal exceptional case.
-	The final theorem also gives a broad family of primes for which $d(p-1) = 0$.
+	\subsubsection{Finite Support Stabilization}
+	% TODO: The notation in the proofs in this section aren't consistent with the rest of the paper
+	We can extend the results of Theorem \ref{primePowerStabilization} to find a stabilization result for any odd base, based on the unique prime factors of the base.
+	
+	\begin{definition}
+		Let $S$ be a finite set of odd primes.
+		For each $p \in S$, set
+		\begin{equation}\label{finiteSupportVariables}
+			h_p = \ord[p]{2}, \qquad c_p = v_p(2^{h_p}-1), \qquad a_p(S) = \max_{q\in S}{v_p(h_q)}, \qquad C_p(S) = c_p + a_p(S).
+		\end{equation}
+		Let $N$ be an odd integer supported on $S$.
+		Then the ``$S$-truncation'' of $N$ is
+		\begin{equation}\label{S-truncation}
+			N^\flat = \prod_{p \in S}{p^{\min{\left(v_p(N), C_p(S)\right)}}}.
+		\end{equation}
+	\end{definition}
+	
+	\begin{lemma}\label{orderGrowthTruncation}
+		Let $Q$ be an odd integer supported on $S$, and let $Q^\flat$ be its $S$-truncation.
+		Set
+		\begin{equation*}
+			m = \frac{Q}{Q^\flat}.
+		\end{equation*}
+		Then
+		\begin{equation*}
+			\ord[Q]{2} = m \ord[Q^\flat]{2}.
+		\end{equation*}
+	\end{lemma}
+	\begin{proof}
+		Write $u_p = v_p(Q)$.
+		The Chinese Remainder Theorem and Theorem \ref{primePowerStabilization} give
+		\begin{equation}\label{eq:order-lcm}
+			\ord[Q]{2} = \mathop{\operatorname{lcm}}_{\substack{p\in S\\ u_p>0}}
+			\left(h_p\,p^{\max(0,u_p-c_p)}\right)
+		\end{equation}
+		
+		First consider a prime $\ell \notin S$.
+		Its valuation in \eqref{eq:order-lcm} comes only from the fixed integers $h_p$.
+		Truncation changes no prime support, so
+		\begin{equation*}
+			v_\ell(\ord[Q]{2}) = v_\ell(\ord[Q^\flat]{2}).
+		\end{equation*}
+	
+		Now fix $p \in S$.
+		The $p$-adic validation in \eqref{eq:order-lcm} is the maximum of
+		\begin{equation*}
+			\max{(0, u_p - c_p)} \qquad \text{and} \qquad \{v_p(h_q) : q \in S, q\neq p, u_q > 0\}.
+		\end{equation*}
+		Every term in the second set is at most $a_p(S)$.
+		If $u_p \leq C_p(S)$, truncation leaves $u_p$ unchanged, and truncating the other exponents does not change their fixed factors $h_q$.
+		The $p$-adic valuation of the order is therefore unchanged.
+		
+		If $u_p > C_p(S) = c_p + a_p(S)$, then
+		\begin{equation*}
+			u_p - c_p > a_p(S),
+		\end{equation*}
+		so the contribution from the $p$-power component strictly dominates all cross-prime contributions.
+		Hence
+		\begin{equation*}
+			v_p(\ord[Q]{2}) = u_p - c_p.
+		\end{equation*}
+		At the truncated exponent $C_p(S)$, the corresponding valuation is $a_p(S)$, and therefore
+		\begin{equation*}
+			v_p(\ord[Q]{2}) - v_p(\ord[Q^\flat]{2}) = u_p - C_p(S) = v_p(m).
+		\end{equation*}
+		Comparing valuations at every prime proves the result.
+	\end{proof}
+	
+	\begin{theorem}[Finite Support Truncation]\label{finiteSupportTruncation}
+		Let $S$ be a finite set of odd primes and let $N$ be an odd positive integer supported on $S$.
+		Then
+		\begin{equation*}
+			d(N - 1) = d(N^\flat - 1),
+		\end{equation*}
+		where $N^\flat$ is defined by \eqref{S-truncation}.
+	\end{theorem}
+	\begin{proof}
+		Support $\alpha, \alpha+1 \in \overline{\F_2}$ are both roots of $F_N$.
+		By Lemma \ref{RootParameterization}, there are divisors $M,L > 1$ of $N$ such that
+		\begin{equation*}
+			\alpha \in R_M, \qquad \alpha+1 \in R_L.
+		\end{equation*}
+		Because $\F_2(\alpha) = \F_2(\alpha+1)$, Lemma \ref{fieldExtensionSize} gives
+		\begin{equation*}
+			\rho_2(M) = \rho_2(L).
+		\end{equation*}
+		Write $j_p = v_p(M)$ and $\ell_p = v_p(L)$.
+		Fix $p \in S$ and suppose $j_p > C_p(S)$.
+		As in the proof of Lemma \ref{orderGrowthTruncation}, the $p$-part belonging to $p^{j_p}$ dominates every cross-prime contribution, so
+		\begin{equation*}
+			v_p(\ord[M]{2}) = j_p - c_p > a_p(S).
+		\end{equation*}
+	
+		Signed order differs from ordinary order by at most a factor of two, so their validations at odd prime $p$ agree.
+		Therefore,
+		\begin{equation*}
+			v_p(\ord[M]{2}) = j_p - c_p.
+		\end{equation*}
+		This valuation is larger than $a_p(s)$, so it cannot arise from any cross-prime order $h_p$.
+		Consequently $\ell_p > C_p(S)$, and
+		\begin{equation*}
+			\ell_p - c_p = j_p - c_p, \qquad \text{hence} \qquad \ell_p = j_p.
+		\end{equation*}
+		By symmetry, every exponent above its threshold occurs with the same value in $M$ and $L$.
+		Set
+		\begin{equation*}
+			Q = \operatorname{lcm}(M,L), \qquad Q^\flat = \prod_{p \in S}{p^{\min{(v_p(Q),C_p(S)})}}, \qquad m = \frac{Q}{Q^\flat}.
+		\end{equation*}
+	
+		If $m=1$, then $M,L \mid N^\flat$ and there is nothing to prove.
+		Suppose $m > 1$.
+		Choose a primitive $Q$th root $\theta$.
+		There are exponents $a,b$ such that
+		\begin{equation*}
+			\alpha = \theta^{a} + \theta^{-a}, \qquad \alpha+1 = \theta^{b}+\theta^{-b}.
+		\end{equation*}
+		where $\theta^a$ and $\theta^b$ have exact orders $M$ and $L$ respectively.
+		Thus $\theta$ is a root of
+		\begin{equation}\label{thetaRoot}
+			P(x) = 1 + x^a + x^{Q-a} + x^b + x^{Q-b}.
+		\end{equation}
+	
+		Every prime dividing $m$ occurs above its threshold in $Q$.
+		The preceding rigidity argument say that its full exponent in $Q$ occurs in both $M$ and $L$.
+		Since $\theta^a$ has exact order $M$, we have
+		\begin{equation*}
+			\gcd{(Q,a)} = \frac{Q}{M}.
+		\end{equation*}
+		No prime dividing $m$ divides $Q/M$, and no such prime can divide the remaining unit factor in $a$.
+		Hence $\gcd{(b,m)} = 1$.
+		Because $m \mid Q$, only the constant exponent in \eqref{thetaRoot} is divisible by $m$.
+	
+		The element $\theta^m$ has exact order $Q^\flat$.
+		Let $f(x)$ be its minimal polynomial over $\F_2$.
+		Lemma \ref{orderGrowthTruncation} gives
+		\begin{equation*}
+			\deg{f(x^m)} = m \ord[Q^\flat]{2} = \ord[Q]{2},
+		\end{equation*}
+		the degree of the minimal polynomial of $\theta$.
+		Since $\theta$ is a root of $f(x^m)$, the polynomial $f(x^m)$ is its minimal polynomial.
+		Therefore $f(x^m) \mid P(x)$.
+		Decompose \eqref{thetaRoot} uniquely by its exponents modulo $m$:
+		\begin{equation*}
+			P(x) = \sum_{r=0}^{m-1}{x^r P_r(x^m)}.
+		\end{equation*}
+		Divisibility by $f(x^m)$ implies that $f(y)$ divides every $P_r(y)$.
+		By the preceding coprimality shows that $P_0(y)=1$, a contradiction.
+		Thus $m=1$ and every common root of $F_N(x)$ and $F_N(x+1)$ already occurs for $F_{N^\flat}(x)$ and $F_{N^\flat}(x+1)$.
+		The converse include follows from $N^\flat \mid N$ and Theorem \ref{nk-1>n-1}.
+		Because both indices are odd, every root has multiplicity two.
+		Therefore,
+		\begin{equation*}
+			d(N-1) = d(N^\flat - 1),
+		\end{equation*}
+		as desired.
+	\end{proof}
+
+	\begin{corollary}[Eventual Consistency]
+		For every odd positive integer $A$, there exists $k_0$ such that for all $k \geq k_0$,
+		\begin{equation*}
+			d(A^k - 1) = d(A^{k_0} - 1).
+		\end{equation*}
+		In particular,
+		\begin{equation*}
+			k_0 = \max_{p \in S}{\lceil\frac{C_p(S)}{b_p}\rceil}.
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		For every $k \geq k_0$, the truncation of $A^k$ is the fixed integer
+		\begin{equation*}
+			B_S = \prod_{p \in S}{p^{C_p(S)}}.
+		\end{equation*}
+		Theorem \ref{finiteSupportTruncation} gives
+		\begin{equation*}
+			d(A^k - 1) = d(B_S - 1).
+		\end{equation*}
+		The same theorem applied to $A^{k_0}$ gives
+		\begin{equation*}
+			d(A^{k_0} - 1) = d(B_S - 1),
+		\end{equation*}
+		which proves the claim.
+	\end{proof}
+
+	% TODO: We have a proof that the stabilization for (2^{3^{K-1}}+1)/3^{K-1} is K, which shows the stabilization exponent can be atibrarily large. Should we include it?
+	% TODO: Should we inlcude an example or a table of multiprime exponents in the appendix?
+
+	% TODO: Better conclusion
+	Taken together, these results provide a way to reduce the computation required $d(n-1)$.
+	We first factor $n$.
+	Next, we apply Corollary \ref{2nPlus1Explicit} to handle all the even factors of $n$.
+	Then for the remaining odd prime factors, we apply Theorem \ref{finiteSupportTruncation} to obtain an $S$-truncation.
+	After these reductions, we must still calculate the GCD of the Fibonacci polynomials.
+	The calculation is mostly via brute force, but we can apply Lemma \ref{SquareSquareFree} to only calculate the square root of the GCD.
 	
 	% TODO: It seems there are way more primes than just those \equiv 3 \pmod 4 where d(p-1) = 0. In fact, it seems the vast majority of primes have d(p-1) = 0. Find out a more general classification.
 	% TODO: Maybe most of the even dominating set section could move to a different paper?
@@ -1240,6 +1389,53 @@
 	% TODO: If d(n) = 2, then n=6k-1; MCP(n) = 26k^2 - 12k + 1 (plus generalization)
 	% TODO: If every distinct region identifies by being affected by certain quiet patterns is of even size (except the region affected by no patterns of size s_0), then MCP(G) = s_0 + 1/2 \sum_{v != 0}{s_v}.
 	% TODO: MCP(nk-1) <= (nk-1)^2 - floor(k^2((n-1)^2 - s_0) / 2). (Double check this formula)
+	
+	\newpage
+	\appendix
+	\section{Tables of Selected Values of $d(n)$}
+	\subsection{Prime Powers}
+	Applying the result in Corollaries \ref{pk-1Equalsp-1Wieferich}, \ref{pk-1Equalsp-1Wieferich}, and \ref{d2p-1}, we provide the values of $d(p^k-1)$ for primes $p < 100$ and some selected larger primes.
+	% TODO: Does this table have all primes < 50000 such that d(p-1) != 0?
+	% TODO: We can prove that if p is a Mersenne or Fermat prime > 7 that d(p-1) > 0. Include this?
+	\begin{table}[h]
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline
+			$p$ & $d(p^k - 1)$ & $d(2^jp^k - 1)$ \\ \hline\hline
+			2 & 0 & 0 \\ \hline
+			3 & 0 & $2^{j+1}-2$ \\ \hline
+			5 & 4 & $4 \cdot 2^{j}$\\ \hline
+			7 & 0 & 0 \\ \hline
+			11 & 0 & 0 \\ \hline
+			13 & 0 & 0 \\ \hline
+			17 & 8 & $8 \cdot 2^{j}$ \\ \hline
+			19 & 0 & 0 \\ \hline
+			23 & 0 & 0 \\ \hline
+			29 & 0 & 0 \\ \hline
+			31 & 20 & $20 \cdot 2^{j}$ \\ \hline
+			37 & 0 & 0 \\ \hline
+			41 & 0 & 0 \\ \hline
+			43 & 0 & 0 \\ \hline
+			47 & 0 & 0 \\ \hline
+			53 & 0 & 0 \\ \hline
+			59 & 0 & 0 \\ \hline
+			61 & 0 & 0 \\ \hline
+			67 & 0 & 0 \\ \hline
+			71 & 0 & 0 \\ \hline
+			73 & 0 & 0 \\ \hline
+			79 & 0 & 0 \\ \hline
+			83 & 0 & 0 \\ \hline
+			89 & 0 & 0 \\ \hline
+			97 & 0 & 0 \\ \hline
+			127 & 56 & $56 \cdot 2^{j}$\\ \hline
+			257 & 144 & $144 \cdot 2^{j}$ \\ \hline
+			683 & 132 & $132 \cdot 2^{j}$ \\ \hline
+			2731 & 468 & $468 \cdot 2^{j}$ \\ \hline
+			8191 & 4004 & $4004 \cdot 2^{j}$ \\ \hline
+			43691 & 6936 & $6936 \cdot 2^{j}$ \\ \hline
+		\end{tabular}
+	\end{table}
+	
 	\newpage
 	\bibliographystyle{amsalpha}
 	\bibliography{refs.bib}
