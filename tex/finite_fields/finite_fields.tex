@@ -330,7 +330,7 @@
 	\end{proof}
 
 	We may now use our graph-theoretic understanding of $\ker{\Phi_G}$ as even dominating sets to construct even dominating sets on larger grids by tiling those from smaller grids.
-	\begin{theorem}
+	\begin{theorem}\label{nk-1>n-1}
 		For all $n,k \in \N$,
 		\begin{equation*}
 			d(nk-1) \geq d(n-1).
@@ -979,16 +979,16 @@
 	\end{proof}
 	
 	\subsection{Applications to $d(n)$}
-	We can now combine the preceding results on orders, extension degrees, and traces to obtain our main result concerning powers of non Wieferich primes.
-	\begin{theorem}\label{pk-1Equalsp-1}
-		If $p$ is not a Wieferich prime, then for all $k \ge 1$,
+	We can now combine our previous results to greatly reduce the calculation of $d(p^k - 1)$ when $p$ is a prime number.
+	\begin{theorem}\label{primePowerStabilization}
+		Let $p$ be an odd prime and set $c = v_p(2^{\ord[p]{2}} - 1)$.
+		Then for every $k \geq c$,
 		\begin{equation*}
-			d(p^k - 1) = d(p-1).
+			d(p^k - 1) = d(p^c - 1).
 		\end{equation*}
 	\end{theorem}
 	\begin{proof}
-		Let $p$ be a non-Wieferich prime.
-		The case for $p=2$ was shown in \cite{Sutner1989}, so we will consider the case when $p$ is odd.
+		Fix $k \geq c$.
 		For $1 \leq j \leq k$, let
 		\begin{equation*}
 			R_j = \{\zeta + \zeta^{-1} : \ord{\zeta} = p^j\}.
@@ -997,60 +997,132 @@
 		\begin{equation*}
 			\operatorname{roots}{F_{p^k}} = \bigcup_{j=1}^{k}{R_j}.
 		\end{equation*}
-		Furthermore, since $p^k$ is odd, Lemma \ref{SquareSquareFree} tell us that $F_{p^k}$ is the square of a square-free polynomial.
-		In other words, $F_{p^k}$ has $(p^k - 1)/2$ distinct roots.
-		Let $h = \ord[p]{2}$.
-		Since $p$ is not Wieferich, Corollary \ref{nonWieferichOrd} tells us that
-		\begin{equation*}
-			\ord[p^j]{2} = \ord[p]{2} p^{j-1},
-		\end{equation*}
-		and Lemma \ref{signedOrder} tells us that
-		\begin{equation*}
-			\rho_2(p^j) = \rho_2(p) p^{j-1}.
-		\end{equation*}
-		So, by Lemma \ref{fieldExtensionSize}, if $\alpha \in R_j$,
-		\begin{equation*}
-			\left[\F_2(\alpha) : \F_2\right] = \rho_2(p) p^{j-1}.
-		\end{equation*}
 	
-		Suppose both $\alpha$ and $\alpha + 1$ are roots of $F_{p^k}$ with $\alpha \in R_j$ and $\alpha+1 \in R_\ell$.
-		Since $\F_2(\alpha) = \F_2(\alpha + 1)$, that is they are the same field with the same degree, $\alpha$ and $\alpha+1$ must both be members of the same $R_j$ and so $j = \ell$.
+		Suppose $\alpha, \alpha+1 \in \overline{\F_2}$ are both roots of $F_{p^k}$, with
+		\begin{equation*}
+			\alpha \in R_j, \qquad \alpha+1 \in R_\ell.
+		\end{equation*}
+		Because $\F_2(\alpha) = \F_2(\alpha+1)$, their extension degrees over $\F_2$ are equal.
+		By Lemma \ref{fieldExtensionSize},
+		\begin{align*}
+			\left[\F_2(\alpha) : \F_2\right] &= \left[\F_2(\alpha+1) : \F_2\right] \\
+			\rho_2(p^j) &= \rho_2(p^\ell) \\
+			\rho_2(p) p^{\max{(0,j-c)}} &= \rho_2(p) p^{\max{(0, \ell-c)}}.
+		\end{align*}
+		Hence either $j,l \leq c$ or $j = \ell > c$.
 		
-		Suppose for the sake of contradiction that $\alpha$ and $\alpha+1$ are both members of $R_j$ for some $j \geq 2$.
-		Set $M = p^j$ and $m = p^{j-1}$ and choose a primitive $M$th root $\zeta$ such that $\alpha = \zeta + \zeta^{-1}$.
-		Since $\alpha+1$ is also in $R_j$, there must exist $s$ such that $\gcd{(s,p)} = 1$ and $\alpha + 1 = \zeta^{s} + \zeta^{-s}$.
+		It remains to exclude the second possibility.
+		Assume for the sake of contradiction that $j = \ell > c$.
 		Then
 		\begin{equation*}
-			1 + \alpha + (\alpha + 1) = 1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-s} = 0.
+			\alpha, \alpha+1 \in R_\ell = R_j.
 		\end{equation*}
-		Equivalently, $\zeta$ is a root of
+		Set
 		\begin{equation*}
-			P_s(x) = 1 + x + x^{M-1} + x^{s} + x^{M-s}.
+			M = p^j, \qquad m = p^{j-c},
 		\end{equation*}
-		Notice that $\zeta^m$ is a primitive $p$th root.
+		and choose a primitive $M$th root $\zeta \in \overline{\F_2}$ such that
+		\begin{equation*}
+			\alpha = \zeta + \zeta^{-1}.
+		\end{equation*}
+		Since $\alpha+1 \in R_j$, there must exist an integer $s$ with $\gcd{(s,p)} = 1$ such that
+		\begin{equation*}
+			\alpha+1 = \zeta^{s} + \zeta^{-s}
+		\end{equation*}
+		Thus
+		\begin{align*}
+			1 + \alpha + \alpha+1 &= 0 \\
+			1 + \zeta + \zeta^{-1} + \zeta^{s} + \zeta^{-s} &= 0,
+		\end{align*}
+		so $\zeta$ is a root of
+		\begin{equation}\label{P_s(x)}
+			P_s(x) = 1 + x + x^{M-1} + x^s + x^{M-s}.
+		\end{equation}
+		The element $\zeta^m$ has exact order $p^c$.
 		Let $f(x)$ be the minimal polynomial of $\zeta^m$ over $\F_2$.
-		The degree of $f(x)$ is $\ord[p]{2}$.
-		Since $f(\zeta^m) = 0$, $\zeta$ is a root of $f(x^m)$.
-		The degree of $f(x^m)$ is $\ord[p]{2}m = \ord[p^j]{2}$.
-		This is also the degree of the minimal polynomial of $\zeta$ and so
+		Then
+		\begin{equation*}
+			\deg{f} = \ord[p^c]{2} = \ord[p]{2}.
+		\end{equation*}
+		Since $\zeta^m$ is a root of $f(x)$, $\zeta$ is a root of $f(x^m)$, and
+		\begin{equation*}
+			\deg{f(x^m)} = \ord[p]{2}m = \ord[p]{2}p^{j-c} = \ord[p^j]{2}.
+		\end{equation*}
+		This is exactly the degree of the minimal polynomial of $\zeta$, so $f(x^m)$ is that minimal polynomial, and
 		\begin{equation*}
 			f(x^m) \mid P_s(x).
 		\end{equation*}
-		So, every polynomial can be decomposed by exponents modulo $m$:
+	
+		Every polynomial has a unique decomposition by exponents modulo $m$:
 		\begin{equation*}
-			P_s(x) = \sum_{a=0}^{m-1}{x^a P_a(x^m)}.
+			P_s(x) = \sum_{a=0}^{m-1}{x^a Q_a(x^m)}.
 		\end{equation*}
-		Since $f(x^m) \mid P_s(x)$, each $P_a(y)$ must be divisible by $f(y)$.
-		However, since $m=p^{j-1}$ and $\gcd{(s,p)}=1$, only the exponent 0 among 0, 1, $M-1$, $s$, $M-s$ is divisible by $m$.
-		Thus, $P_0(y) = 1$, a contradiction.
-		Instead, we must conclude that no common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ are in $R_j$ for $j \geq 2$.
+		If $f(x^m) \mid P_s(x)$, uniqueness implies that $f(x^m)$ divides every $Q_a(x^m)$.
+		However, only the constant exponent in \eqref{P_s(x)} is divisible by $m$.
+		The other four exponents are congruent modulo $m$ to $\pm 1$ and $\pm s$ are are non-zero because $p \nmid s$.
+		Therefore $Q_0(x^m) = 1$, which is constant.
+		However, $f(x^m)$ is not constant and thus cannot divide $Q_0(x^m)$, a contradiction.
 		
-		So the only common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ must come from $R_1$ and so we must conclude
+		Such a contradiction excludes every common root in $R_j$ for $j > c$.
+		All common roots of $F_{p^k}(x)$ and $F_{p^k}(x+1)$ therefore lie in
+		\begin{equation*}
+			\bigcup_{j=1}^{c}{R_j} = \operatorname{roots}{F_{p^c}}.
+		\end{equation*}
+		Theorem \ref{nk-1>n-1} also tells us that such common roots are also common roots for larger powers of $p$.
+		Lemma \ref{DEven} tells us that every root has multiplicity 2, so their GCDs have the same degree.
+		Thus,
+		\begin{equation*}
+			d(p^k - 1) = d(p^c - 1),
+		\end{equation*}
+		as desired.
+	\end{proof}
+
+	The result simplifies even further when $p$ is not a Wieferich prime.
+	\begin{corollary}\label{pk-1Equalsp-1}
+		If $p$ is a non-Wieferich prime, then for every $k \geq 1$,
 		\begin{equation*}
 			d(p^k - 1) = d(p-1).
 		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		The case for $p=2$ is the known identity $d(2^k - 1) = 0$ \cite{Sutner1989}.
+		For an odd non-Wieferich prime,
+		\begin{equation*}
+			c = v_p\left(2^{}-1\right) = 1,
+		\end{equation*}
+		so the desired result follows directly from Theorem \ref{primePowerStabilization}.
 	\end{proof}
 
+	We can also use Theorem \ref{primePowerStabilization} to show the result holds for the two known non-Wieferich primes.
+	\begin{corollary}
+		For all $k \geq 1$,
+		\begin{equation*}
+			d(1093^k - 1) = d(3511^k - 1) = 0.
+		\end{equation*}
+	\end{corollary}
+	\begin{proof}
+		Calculating the relevant stabilization exponent for each prime,
+		\begin{alignat*}{4}
+			c_{1093} &= v_{1093}\left(2^{\ord[1093]{2}} - 1\right) &= v_{1093}\left(2^{364} - 1\right) &= 2 \\
+			c_{3511} &= v_{3511}\left(2^{\ord[3511]{2}} - 1\right) &= v_{3511}\left(2^{1755} - 1\right) &= 2.
+		\end{alignat*}
+		Applying Theorem \ref{primePowerStabilization} and computing powers 1 and 2,
+		\begin{alignat*}{3}
+			d(1093^1 - 1) &= d(1093^2 - 1) &= 0 \\
+			d(3511^1 - 1) &= d(3511^2 - 1) &= 0,
+		\end{alignat*}
+		and the desired result follows.
+	\end{proof}
+
+	Thus the result holds the same for every known prime, leading us the the following conjecture.
+	\begin{conjecture}
+		For all primes $p$ and all $k \geq 0$,
+		\begin{equation*}
+			d(p^k - 1) = d(p-1).
+		\end{equation*}
+	\end{conjecture}
+	From Corollary \ref{pk-1Equalsp-1} and the currently known Wieferich primes, any counter-example would require a newly discovered Wieferich prime greater than $2^{64}$ \cite{PrimeGridWieferich}.
+	
 	We can combine this result with our recurrence for $d(2n + 1)$ to obtain an explicit formula for a broad family of indices.
 	\begin{corollary}
 		Let $p$ be an odd non-Wieferich prime.
@@ -1073,7 +1145,7 @@
 				2^{n+1} - 2 & m \geq 1, p  = 3
 			\end{cases}.
 		\end{equation*}
-		We then apply Theorem \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
+		We then apply Corollary \ref{pk-1Equalsp-1} to change $d(p^m - 1)$ to $d(p-1)$.
 	\end{proof}
 
 	\begin{corollary}
