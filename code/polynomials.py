@@ -10,11 +10,8 @@ from typing import ClassVar, Iterator
 
 @dataclass(repr=False, frozen=True, init=False)
 class GF2Polynomial:
-    """Represents polynomials in Z_2[x].
+    """Represents polynomials in F_2[x].
     Implements operations that make sense in this ring.
-
-    Args:
-        degrees (set[int]): Set of integers representing degrees of polynomial. For example, __init__({2,0}) = x^2 + x^0.
     """
 
     _SQUARE_BYTE: ClassVar[tuple[int, ...]] = tuple(
@@ -22,6 +19,17 @@ class GF2Polynomial:
         for value in range(256)
     )
     """Lookup table that squares 8 packed coefficient bits into 16 bits."""
+
+    _HALF_GCD_THRESHOLD: ClassVar[int] = 32
+    """Polynomial degree below which we use the Euclidean algorithm
+    instead of half-GCD.
+    """
+
+    _KARATSUBA_THRESHOLD: ClassVar[int] = 2048
+    """Packed bit length below which multiplication uses the schoolbook algorithm."""
+
+    _KARATSUBA_DENSITY_FACTOR: ClassVar[int] = 4
+    """Minimum smaller-operand density denominator for using Karatsuba."""
 
     _value: int
 
@@ -217,7 +225,17 @@ class GF2Polynomial:
     def __str__(self) -> str:
         """Print polynomial in written form, like x^2 + x^1 + x^0."""
 
-        return "0" if self.is_zero else " + ".join(f"x^{n}" for n in self.degrees)
+        if self.is_zero:
+            return "0"
+
+        def _repr():
+            mask = 1
+            for i in range(self.degree + 1):
+                if self._value & mask:
+                    yield f"x^{i}"
+                mask <<= 1
+
+        return " + ".join(_repr())
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -256,10 +274,37 @@ class GF2Polynomial:
         return GF2Polynomial.from_number(self._value >> n)
 
     def __mul__(self, mult: GF2Polynomial) -> GF2Polynomial:
-        """Multiply two polynomials."""
+        """Multiplies using schoolbook or Karatsuba multiplication."""
 
-        left = self._value
-        right = mult._value
+        # Special cases
+        if self.is_zero or mult.is_zero:
+            return GF2Polynomial()
+        if self._value == 1:
+            return mult
+        if mult._value == 1:
+            return self
+        if self._value & (self._value - 1) == 0:
+            return mult << (self._value.bit_length() - 1)
+        if mult._value & (mult._value - 1) == 0:
+            return self << (mult._value.bit_length() - 1)
+
+        bit_length = max(self._value.bit_length(), mult._value.bit_length())
+        if (
+            bit_length <= self._KARATSUBA_THRESHOLD
+            or min(self._value.bit_count(), mult._value.bit_count())
+            * self._KARATSUBA_DENSITY_FACTOR
+            < bit_length
+        ):
+            product = self._schoolbook_multiply_values(self._value, mult._value)
+        else:
+            product = self._karatsuba_multiply_values(self._value, mult._value)
+
+        return GF2Polynomial.from_number(product)
+
+    @staticmethod
+    def _schoolbook_multiply_values(left: int, right: int) -> int:
+        """Multiplies packed polynomials using shifted XORs."""
+
         if left.bit_count() > right.bit_count():
             left, right = right, left
 
@@ -269,7 +314,39 @@ class GF2Polynomial:
             result ^= right << (lowest_bit.bit_length() - 1)
             left ^= lowest_bit
 
-        return GF2Polynomial.from_number(result)
+        return result
+
+    @classmethod
+    def _karatsuba_multiply_values(cls, left: int, right: int) -> int:
+        """Multiplies packed polynomials using Karatsuba recursion."""
+
+        bit_length = max(left.bit_length(), right.bit_length())
+        if bit_length <= cls._KARATSUBA_THRESHOLD:
+            return cls._schoolbook_multiply_values(left, right)
+
+        split = (bit_length + 1) // 2
+        lower_mask = (1 << split) - 1
+        left_low = left & lower_mask
+        left_high = left >> split
+        right_low = right & lower_mask
+        right_high = right >> split
+
+        low_product = cls._karatsuba_multiply_values(left_low, right_low)
+        high_product = cls._karatsuba_multiply_values(left_high, right_high)
+        middle_product = (
+            cls._karatsuba_multiply_values(
+                left_low ^ left_high,
+                right_low ^ right_high,
+            )
+            ^ low_product
+            ^ high_product
+        )
+
+        return (
+            low_product
+            ^ (middle_product << split)
+            ^ (high_product << (2 * split))
+        )
 
     def __divmod__(self, div: GF2Polynomial) -> tuple[GF2Polynomial, GF2Polynomial]:
         """Compute the floor quotient and remainder or two polynomials."""
@@ -382,6 +459,71 @@ class GF2Polynomial:
 
         return result
 
+    def _high_part(self, split_degree: int) -> GF2Polynomial:
+        """Returns the quotient on division by x**split_degree, discarding lower terms."""
+
+        return self >> split_degree
+
+    @staticmethod
+    def _classical_reduction(first: GF2Polynomial, second: GF2Polynomial, target_degree: int) -> _GF2PolynomialMatrix:
+        """Returns the Euclidean algorithm transformation to reduce the second polynomial
+        to degree less than a target degree.
+
+        For M = _classical_reduction(A,B,target_degree), M.apply((A,B))
+        return (C,D), where D is zero or has degree less than target_degree."""
+        if target_degree < 0:
+            raise ValueError("Target degree must be non-negative")
+
+        transformation = _GF2PolynomialMatrix.identity()
+        while not second.is_zero and second.degree >= target_degree:
+            quotient, remainder = divmod(first, second)
+            transformation = transformation.then_euclidean_step(quotient)
+            first, second = second, remainder
+
+        return transformation
+
+    @staticmethod
+    def _half_gcd(first: GF2Polynomial, second: GF2Polynomial) -> _GF2PolynomialMatrix:
+        """Returns a transformation that reduces the second polynomial by half.
+
+        The first polynomial must be nonzero and have degree at least that of
+        the second. Applying the result to the input pair returns (C, D), where
+        D is zero or has degree less than (first.degree + 1) // 2.
+        """
+
+        if first.is_zero:
+            raise ValueError("First polynomial must be nonzero")
+        if not second.is_zero and second.degree > first.degree:
+            raise ValueError("First polynomial must have at least the second polynomial's degree")
+
+        target_degree = (first.degree + 1) // 2
+
+        if second.is_zero or second.degree < target_degree:
+            return _GF2PolynomialMatrix.identity()
+
+        # Threshold for applying normal Euclidean algorithm
+        if first.degree <= GF2Polynomial._HALF_GCD_THRESHOLD:
+            return GF2Polynomial._classical_reduction(first, second, target_degree)
+
+        first_matrix = GF2Polynomial._half_gcd(first._high_part(target_degree), second._high_part(target_degree))
+        current_first, current_second = first_matrix.apply((first, second))
+
+        if current_second.is_zero or current_second.degree < target_degree:
+            return first_matrix
+
+        quotient, remainder = divmod(current_first, current_second)
+        transformation = first_matrix.then_euclidean_step(quotient)
+
+        if remainder.is_zero or remainder.degree < target_degree:
+            return transformation
+
+        shift = 2*target_degree - current_second.degree
+        assert shift >= 0
+
+        second_matrix = GF2Polynomial._half_gcd(current_second._high_part(shift), remainder._high_part(shift))
+
+        return second_matrix @ transformation
+
     @staticmethod
     def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
         """Compute the greatest common divisor of two polynomials.
@@ -398,6 +540,43 @@ class GF2Polynomial:
         return GF2Polynomial.from_number(left)
 
     @staticmethod
+    def _new_gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
+        """Computes the GCD using half-GCD for large, balanced inputs.
+
+        Small or highly unbalanced pairs use ordinary Euclidean reduction.
+
+        WARNING: This method is experimental and under development.
+        """
+
+        if f.is_zero:
+            return g
+        if g.is_zero:
+            return f
+
+        # Normalize degrees so deg f >= deg g
+        if f.degree < g.degree:
+            f, g = g, f
+
+        while not g.is_zero:
+            # Fall back to Euclidean algorithm for small inputs
+            if f.degree <= GF2Polynomial._HALF_GCD_THRESHOLD:
+                return GF2Polynomial.gcd(f,g)
+
+            target_degree = (f.degree + 1) // 2
+
+            # If g.degree < target_degree, we'd get an identity matrix back from half_gcd
+            # So, we do one step of the Euclidean algorithm instead
+            if g.degree < target_degree:
+                _, remainder = divmod(f, g)
+                f, g = g, remainder
+                continue
+
+            transformation = GF2Polynomial._half_gcd(f, g)
+            f, g = transformation.apply((f,g))
+
+        return f
+
+    @staticmethod
     def enumerate(start: int = 0) -> Iterator[GF2Polynomial]:
         """Enumerate all polynomials based on their coefficients as binary digits."""
 
@@ -405,3 +584,76 @@ class GF2Polynomial:
         while True:
             yield GF2Polynomial.from_number(i)
             i += 1
+
+@dataclass(frozen=True, slots=True)
+class _GF2PolynomialMatrix:
+    """A 2x2 polynomial matrix acting on column vectors.
+    ```
+    M =
+    [[m00, m01],
+    [m10, m11]]
+    ```
+
+    `M @ (A,B)^T = (m00*A + m01*B, m10*A + m11*B)^T`
+
+    If M1 acts before M2, their combined transformation is `M2 @ M1`.
+    The rightmost matrix always acts first.
+    """
+
+    m00: GF2Polynomial
+    m01: GF2Polynomial
+    m10: GF2Polynomial
+    m11: GF2Polynomial
+
+    @classmethod
+    def identity(cls) -> _GF2PolynomialMatrix:
+        zero = GF2Polynomial.from_number(0)
+        one = GF2Polynomial.from_number(1)
+        return cls(one, zero, zero, one)
+
+    @classmethod
+    def euclidean_step(cls, quotient: GF2Polynomial) -> _GF2PolynomialMatrix:
+        zero = GF2Polynomial.from_number(0)
+        one = GF2Polynomial.from_number(1)
+        return cls(zero, one, one, quotient)
+
+    def then_euclidean_step(
+        self,
+        quotient: GF2Polynomial,
+    ) -> _GF2PolynomialMatrix:
+        """Composes this transformation with one following Euclidean step."""
+
+        return _GF2PolynomialMatrix(
+            self.m10,
+            self.m11,
+            self.m00 + quotient * self.m10,
+            self.m01 + quotient * self.m11,
+        )
+
+    def apply(self, vector: tuple[GF2Polynomial, GF2Polynomial]) -> tuple[GF2Polynomial, GF2Polynomial]:
+        """Applies this matrix to a polynomial column vector."""
+
+        first, second = vector
+        return (
+            self.m00 * first + self.m01 * second,
+            self.m10 * first + self.m11 * second,
+        )
+
+    def __str__(self) -> str:
+        return (
+            f"[[{self.m00}, {self.m01}]\n"
+            f"[{self.m10}, {self.m11}]]"
+        )
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def __matmul__(self, other: _GF2PolynomialMatrix) -> _GF2PolynomialMatrix:
+        """Composes this matrix with another polynomial matrix."""
+
+        return _GF2PolynomialMatrix(
+            self.m00 * other.m00 + self.m01 * other.m10,
+            self.m00 * other.m01 + self.m01 * other.m11,
+            self.m10 * other.m00 + self.m11 * other.m10,
+            self.m10 * other.m01 + self.m11 * other.m11,
+        )
