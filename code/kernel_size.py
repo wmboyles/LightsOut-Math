@@ -98,7 +98,7 @@ def fibonacci_polynomial(n: int) -> GF2Polynomial:
 
 @cache
 def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
-    """Returns F_(n+1)(x) and F_(n+1)(x+1),
+    """Returns F_{n+1}(x) and F_{n+1}(x+1),
     where F_n is the nth Fibonacci polynomial.
     The degree of their GCD is the nullity of an n x n Lights Out grid.
 

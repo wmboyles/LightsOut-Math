@@ -31,6 +31,9 @@ class GF2Polynomial:
     _KARATSUBA_DENSITY_FACTOR: ClassVar[int] = 4
     """Minimum smaller-operand density denominator for using Karatsuba."""
 
+    _SQUARE_DENSITY_FACTOR: ClassVar[int] = 16
+    """Minimum density denominator for squaring packed coefficient bits."""
+
     _value: int
 
     def __init__(self, degrees: set[int] | None = None, *, _value: int | None = None):
@@ -406,7 +409,7 @@ class GF2Polynomial:
 
             exp >>= 1
             if exp:
-                base = GF2Polynomial.from_number(self._square_bits(base._value))
+                base = base.square()
                 base %= mod
 
         return result
@@ -414,8 +417,15 @@ class GF2Polynomial:
     def _pow_without_mod(self, exp: int) -> GF2Polynomial:
         """Raises this polynomial using Frobenius powers over GF(2)."""
 
+        if exp == 0:
+            return GF2Polynomial.from_number(1)
+        if exp == 1:
+            return self
+        if exp == 2:
+            return self.square()
+
         degrees = self.degrees
-        if exp > 0 and exp & (exp - 1) == 0:
+        if exp & (exp - 1) == 0:
             return GF2Polynomial({degree * exp for degree in degrees})
 
         result = GF2Polynomial.from_number(1)
@@ -432,6 +442,25 @@ class GF2Polynomial:
             frobenius_power <<= 1
 
         return result
+
+    def square(self) -> GF2Polynomial:
+        """Squares this polynomial: self**2.
+        """
+
+        # Choose between scaling the degree set representation
+        # or operation on the packed representation.
+        bit_length = self._value.bit_length()
+        term_count = self._value.bit_count()
+
+        if term_count * self._SQUARE_DENSITY_FACTOR < bit_length:
+            return GF2Polynomial({
+                2 * degree
+                for degree in self.degrees
+            })
+
+        return GF2Polynomial.from_number(
+            self._square_bits(self._value)
+        )
 
     def __matmul__(self, g: GF2Polynomial) -> GF2Polynomial:
         """Let f(x) = self, g(x) = g.
