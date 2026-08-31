@@ -295,7 +295,6 @@ def torus_nullity(n: int) -> int:
     return 2 * grid_nullity(n - 1) + (0 if n % 3 else 4)
 
 
-@cache
 def divisibility_period_number(n: int) -> int:
     """Calculates the smallest f_m such that the nth polynomial in Z_2[x] divides f_m.
 
@@ -306,11 +305,19 @@ def divisibility_period_number(n: int) -> int:
 
 
 def fibonacci_rank(p: GF2Polynomial) -> int:
-    """Calculates the smallest m such that f_m divides p.
+    """Calculates the least positive m such that p divides F_m.
+    F_m is the mth Fibonacci polynomial.
     """
 
-    i = 1
-    while fibonacci_polynomial(i) % p != 0:
-        i += 1
+    if p.is_zero:
+        raise ValueError("p must be non-zero")
 
-    return i
+    # Compute the Fibonacci polynomials constantly mod p
+    index = 1
+    previous = GF2Polynomial()
+    current = GF2Polynomial.from_number(1) % p
+    while not current.is_zero:
+        previous, current = current, ((current << 1) + previous) % p
+        index += 1
+
+    return index
