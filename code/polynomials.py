@@ -5,7 +5,7 @@ This module contains the GF2Polynomial class.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import ClassVar, Iterator
+from typing import ClassVar, Iterable, Iterator
 
 
 @dataclass(repr=False, frozen=True, init=False)
@@ -36,21 +36,8 @@ class GF2Polynomial:
 
     _value: int
 
-    def __init__(self, degrees: set[int] | None = None, *, _value: int | None = None):
-        if _value is not None:
-            if degrees is not None:
-                raise ValueError("Specify degrees or _value, not both")
-            if _value < 0:
-                raise ValueError("Packed polynomial value must be non-negative")
-            value = _value
-        else:
-            value = 0
-            for degree in degrees or ():
-                if degree < 0:
-                    raise ValueError("Polynomial degrees must be non-negative")
-                value |= 1 << degree
-
-        object.__setattr__(self, "_value", value)
+    def __init__(self):
+        object.__setattr__(self, "_value", 0)
 
     @classmethod
     def from_number(cls, n: int) -> GF2Polynomial:
@@ -65,6 +52,39 @@ class GF2Polynomial:
         polynomial = object.__new__(cls)
         object.__setattr__(polynomial, "_value", n)
         return polynomial
+
+    @classmethod
+    def from_degrees(cls, degrees: Iterable[int]) -> GF2Polynomial:
+        """Creates a polynomial from its nonzero term degrees."""
+
+        value = 0
+        for degree in degrees:
+            if degree < 0:
+                raise ValueError("Polynomial degrees must be non-negative")
+            value |= 1 << degree
+
+        return cls.from_number(value)
+
+    @staticmethod
+    def _scale_degrees_bits(value: int, factor: int) -> int:
+        """Multiplies every nonzero term degree by factor.
+        
+        Example:
+        ```
+        v1 = 0b110110
+        p1 = GF2Polynomial.from_number(v1) # x^1 + x^2 + x^4 + x^5 
+        v2 = GF2Polynomial.scale_degrees_bits(p1._value, 5)
+        p2 = GF2Polynomuial.from_number(v2) # x^5 + x^10 + x^20 + x^25
+        ```
+        """
+
+        result = 0
+        while value:
+            degree = value.bit_length() - 1
+            result |= 1 << (factor * degree)
+            value ^= 1 << degree
+
+        return result
 
     @classmethod
     def _square_bits(cls, value: int) -> int:
@@ -177,18 +197,14 @@ class GF2Polynomial:
 
         return quotient, dividend
 
-    @property
-    def degrees(self) -> set[int]:
-        """Returns a copy of the degrees of the polynomial's nonzero terms."""
+    def iter_degrees(self) -> Iterator[int]:
+        """Iterates over nonzero term degrees in ascending order."""
 
         value = self._value
-        result = set()
         while value:
             lowest_bit = value & -value
-            result.add(lowest_bit.bit_length() - 1)
+            yield lowest_bit.bit_length() - 1
             value ^= lowest_bit
-
-        return result
 
     @property
     def is_zero(self) -> bool:
@@ -424,18 +440,17 @@ class GF2Polynomial:
         if exp == 2:
             return self.square()
 
-        degrees = self.degrees
         if exp & (exp - 1) == 0:
-            return GF2Polynomial({degree * exp for degree in degrees})
+            return GF2Polynomial.from_number(
+                self._scale_degrees_bits(self._value, exp)
+            )
 
         result = GF2Polynomial.from_number(1)
         frobenius_power = 1
         while exp:
             if exp & 1:
-                factor = GF2Polynomial({
-                    degree * frobenius_power
-                    for degree in degrees
-                })
+                factor = GF2Polynomial.from_number(
+                    self._scale_degrees_bits(self._value, frobenius_power))
                 result *= factor
 
             exp >>= 1
@@ -452,10 +467,7 @@ class GF2Polynomial:
         term_count = self._value.bit_count()
 
         if term_count < self._SQUARE_TERM_THRESHOLD:
-            return GF2Polynomial({
-                2 * degree
-                for degree in self.degrees
-            })
+            return GF2Polynomial.from_number(self._scale_degrees_bits(self._value, 2))
 
         return GF2Polynomial.from_number(
             self._square_bits(self._value)

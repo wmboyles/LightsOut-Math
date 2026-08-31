@@ -83,11 +83,11 @@ def fibonacci_polynomial(n: int) -> GF2Polynomial:
         If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
         So, C(n+i, 2i+1) is odd when (n-i-1) & (2i+1) == 0.
         """
-        return GF2Polynomial({
+        return GF2Polynomial.from_degrees(
             i
             for i in range(n)
             if ((n - i - 1) & (2 * i + 1)) == 0
-        })
+        )
 
     # F_{2m} = x*F_{m}^2
     # Expanding, F_{2^k b} = x^{2^k - 1} * F_{b}^{2^k}
