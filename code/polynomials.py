@@ -20,6 +20,11 @@ class GF2Polynomial:
     )
     """Lookup table that squares 8 packed coefficient bits into 16 bits."""
 
+    _SQUARE_BYTES: ClassVar[tuple[bytes, ...]] = tuple(
+        value.to_bytes(2, "little")
+        for value in _SQUARE_BYTE
+    )
+
     _HALF_GCD_THRESHOLD: ClassVar[int] = 32
     """Polynomial degree below which we use the Euclidean algorithm
     instead of half-GCD.
@@ -31,8 +36,8 @@ class GF2Polynomial:
     _KARATSUBA_DENSITY_FACTOR: ClassVar[int] = 4
     """Minimum smaller-operand density denominator for using Karatsuba."""
 
-    _SQUARE_DENSITY_FACTOR: ClassVar[int] = 16
-    """Minimum density denominator for squaring packed coefficient bits."""
+    _SQUARE_TERM_THRESHOLD: ClassVar[int] = 64
+    """Minimum term count for squaring packed coefficient bits."""
 
     _value: int
 
@@ -72,14 +77,14 @@ class GF2Polynomial:
         Works on 8 bits at a time.
         """
 
-        result = 0
-        shift = 0
-        while value:
-            result |= cls._SQUARE_BYTE[value & 0xff] << shift
-            value >>= 8 # 8 bits in
-            shift += 16 # becomes 16 bits out
+        if value == 0:
+            return 0
 
-        return result
+        packed = value.to_bytes((value.bit_length() + 7) // 8, "little")
+        return int.from_bytes(
+            b"".join(cls._SQUARE_BYTES[byte] for byte in packed),
+            "little",
+        )
 
     @staticmethod
     def _translate_one_bits(value: int) -> int:
@@ -449,10 +454,9 @@ class GF2Polynomial:
 
         # Choose between scaling the degree set representation
         # or operation on the packed representation.
-        bit_length = self._value.bit_length()
         term_count = self._value.bit_count()
 
-        if term_count * self._SQUARE_DENSITY_FACTOR < bit_length:
+        if term_count < self._SQUARE_TERM_THRESHOLD:
             return GF2Polynomial({
                 2 * degree
                 for degree in self.degrees

@@ -140,6 +140,34 @@ def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1 << 1, (f2 << 1) + f2
 
 
+def _adjacent_fibonacci_pair(n: int, shifted: bool = False) -> tuple[GF2Polynomial, GF2Polynomial]:
+    """Returns F_n and F_{n+1}, optionally evaluated at x+1."""
+
+    if n < 0:
+        raise ValueError("n must be non-negative")
+
+    if n == 0:
+        return GF2Polynomial(), GF2Polynomial.from_number(1)
+
+    # F_{2r} = xF_{r}^2; F_{2r+2} = xF_{r+1}^2
+    # F_{2r+1} = F_{r}^2 + F_{r+1}^2
+    current, following = _adjacent_fibonacci_pair(n >> 1, shifted)
+    current_square, following_square = current.square(), following.square()
+    middle = current_square + following_square
+
+    if shifted:
+        current_double = (current_square << 1) + current_square
+        following_double = (following_square << 1) + following_square
+    else:
+        current_double = current_square << 1
+        following_double = following_square << 1
+
+    if n & 1:
+        return middle, following_double
+    else:
+        return current_double, middle
+
+
 def _is_wieferich(p: int) -> bool:
     """Returns true when p meets the Wieferich condition:
     2**(p-1) % p**2 == 1
@@ -269,15 +297,16 @@ def grid_nullity(n: int) -> int:
     if l == 1 and signed_order_2(p)**2 > p:
         return 0
 
-    """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2
-    is the square of a square-free polynomial R.
-    Therefore, d(b-1) = 2 * deg(gcd(R(x), R(x+1))).
+    """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2.
+    Let R_m(x) = F_m(x) + F_{m+1}(x).
+    Then d(b-1) = 2 * deg(gcd(R_m(x), R_m(x+1))).
     """
     m = b >> 1
-    root = fibonacci_polynomial(m) + fibonacci_polynomial(m + 1)
-    translated_root = root @ GF2Polynomial.from_number(0b11)
+    current, following = _adjacent_fibonacci_pair(m, shifted=False)
+    root = current + following
+    shifted_current, shifted_following = _adjacent_fibonacci_pair(m, shifted=True)
+    translated_root = shifted_current + shifted_following
     g = GF2Polynomial.gcd(root, translated_root)
-
     return 2 * g.degree
 
 
