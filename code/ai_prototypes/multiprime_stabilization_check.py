@@ -1,15 +1,13 @@
 """Exact checks for the finite-support stabilization examples.
 
-Install the required arithmetic package with:
-
-    python -m pip install python-flint
+Build ai_prototypes/ntl_gf2x_gcd.cpp against NTL before running this script.
 """
 
 from __future__ import annotations
 
 from itertools import product
 
-from wieferich_check import (
+from ai_prototypes.wieferich_check import (
     grid_nullity_at_m_minus_one,
     multiplicative_order_2,
     wieferich_depth,
