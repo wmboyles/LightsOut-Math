@@ -9,34 +9,24 @@ If tau_m = F_r + F_(r+1), then
     d(m - 1) = 2 * deg(gcd(tau_m(x), tau_m(x + 1))).
 
 This script constructs tau_m and its translate with the main Fibonacci
-implementation, converts them to FLINT polynomials over GF(2), and computes
-the exact GCD.
+implementation and computes their exact GCD with NTL.
 
-Install the required package with:
-
-    python -m pip install python-flint
+The script expects ntl_gf2x_gcd.exe beside this file. Compile
+ntl_gf2x_gcd.cpp against NTL, or specify its location with --ntl-executable.
 """
 
 from __future__ import annotations
 
-import gc
+import argparse
+import json
+from pathlib import Path
+import struct
+import subprocess
 from time import perf_counter
 
 from kernel_size import SAFE_WIEFERICH_PRIMES, _adjacent_fibonacci_pair
 
-try:
-    from flint import nmod_poly
-except ImportError as exc:
-    raise SystemExit(
-        "wieferich_check.py requires python-flint: "
-        "python -m pip install python-flint"
-    ) from exc
-
-
-_COEFFICIENT_BITS = tuple(
-    tuple((value >> bit) & 1 for bit in range(8))
-    for value in range(256)
-)
+DEFAULT_NTL_EXECUTABLE = Path(__file__).with_name("ntl_gf2x_gcd.exe")
 
 
 def prime_factors(n: int) -> set[int]:
@@ -77,27 +67,8 @@ def wieferich_depth(p: int) -> int:
     return depth
 
 
-def packed_to_flint(value: int) -> nmod_poly:
-    """Convert packed GF(2) coefficients to a FLINT polynomial."""
-
-    if value == 0:
-        return nmod_poly([], 2)
-
-    raw = value.to_bytes((value.bit_length() + 7) // 8, "little")
-    coefficients = [
-        coefficient
-        for byte in raw
-        for coefficient in _COEFFICIENT_BITS[byte]
-    ]
-    del coefficients[value.bit_length():]
-    polynomial = nmod_poly(coefficients, 2)
-    del coefficients
-    gc.collect()
-    return polynomial
-
-
-def grid_nullity_at_m_minus_one(m: int) -> int:
-    """Compute d(m-1) exactly for a positive odd m."""
+def _square_free_roots(m: int) -> tuple[int, int]:
+    """Return tau_m(x) and tau_m(x+1) as packed coefficient bits."""
 
     if m <= 0 or m % 2 == 0:
         raise ValueError("m must be a positive odd integer")
@@ -108,28 +79,128 @@ def grid_nullity_at_m_minus_one(m: int) -> int:
         half,
         shifted=True,
     )
-    tau = packed_to_flint((current + following)._value)
-    shifted_tau = packed_to_flint(
+    return (
+        (current + following)._value,
         (shifted_current + shifted_following)._value,
     )
-    return 2 * tau.gcd(shifted_tau).degree()
+
+
+def packed_ntl_gcd(
+    left: int,
+    right: int,
+    executable: Path = DEFAULT_NTL_EXECUTABLE,
+    threads: int = 1,
+) -> dict[str, int | float | bool]:
+    """Compute a packed GF(2) polynomial GCD with the NTL helper."""
+
+    if threads < 1:
+        raise ValueError("threads must be positive")
+    if not executable.is_file():
+        raise FileNotFoundError(f"NTL helper not found: {executable}")
+
+    left_bytes = left.to_bytes((left.bit_length() + 7) // 8, "little")
+    right_bytes = right.to_bytes((right.bit_length() + 7) // 8, "little")
+    payload = b"".join((
+        struct.pack("<Q", len(left_bytes)),
+        left_bytes,
+        struct.pack("<Q", len(right_bytes)),
+        right_bytes,
+    ))
+    completed = subprocess.run(
+        [executable, str(threads)],
+        input=payload,
+        capture_output=True,
+        check=True,
+    )
+    return json.loads(completed.stdout)
+
+
+def benchmark_grid_nullity_at_m_minus_one(
+    m: int,
+    executable: Path = DEFAULT_NTL_EXECUTABLE,
+    threads: int = 1,
+) -> tuple[int, dict[str, int | float | bool]]:
+    """Compute d(m-1) with NTL's packed GF2X implementation."""
+
+    roots_started = perf_counter()
+    root, shifted_root = _square_free_roots(m)
+    roots_finished = perf_counter()
+    backend_started = perf_counter()
+    statistics = packed_ntl_gcd(
+        root,
+        shifted_root,
+        executable,
+        threads,
+    )
+    backend_finished = perf_counter()
+    statistics["root_seconds"] = roots_finished - roots_started
+    statistics["backend_wall_seconds"] = backend_finished - backend_started
+    return 2 * int(statistics["degree"]), statistics
+
+
+def grid_nullity_at_m_minus_one(
+    m: int,
+    executable: Path = DEFAULT_NTL_EXECUTABLE,
+    threads: int = 1,
+) -> int:
+    """Compute d(m-1) exactly with NTL's packed GF2X implementation."""
+
+    result, _ = benchmark_grid_nullity_at_m_minus_one(
+        m,
+        executable,
+        threads,
+    )
+    return result
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--ntl-executable",
+        type=Path,
+        default=DEFAULT_NTL_EXECUTABLE,
+        help="Path to the compiled NTL GF2X helper",
+    )
+    parser.add_argument(
+        "--ntl-threads",
+        type=int,
+        default=1,
+        help="NTL worker threads (default: 1)",
+    )
+    args = parser.parse_args()
+
     for p in sorted(SAFE_WIEFERICH_PRIMES):
         started = perf_counter()
         order = multiplicative_order_2(p)
         depth = wieferich_depth(p)
-        base_nullity = grid_nullity_at_m_minus_one(p)
-        square_nullity = grid_nullity_at_m_minus_one(p * p)
+        base_nullity, base_statistics = (
+            benchmark_grid_nullity_at_m_minus_one(
+                p,
+                args.ntl_executable,
+                args.ntl_threads,
+            )
+        )
+        square_nullity, square_statistics = (
+            benchmark_grid_nullity_at_m_minus_one(
+                p * p,
+                args.ntl_executable,
+                args.ntl_threads,
+            )
+        )
         assert depth == 2
         assert base_nullity == square_nullity == 0
         elapsed = perf_counter() - started
-        print(
-            f"p={p}: ord_p(2)={order}, depth={depth}, "
-            f"d(p-1)={base_nullity}, d(p^2-1)={square_nullity} "
-            f"({elapsed:.2f}s)"
-        )
+        result = {
+            "p": p,
+            "order": order,
+            "depth": depth,
+            "base_nullity": base_nullity,
+            "square_nullity": square_nullity,
+            "elapsed_seconds": elapsed,
+            "base_backend": base_statistics,
+            "square_backend": square_statistics,
+        }
+        print(json.dumps(result))
 
 
 if __name__ == "__main__":
