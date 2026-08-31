@@ -8,6 +8,11 @@ from polynomials import GF2Polynomial
 
 FIBONACCI_POLYNOMIAL_BRUTE_FORCE_THRESHOLD: int = 256
 
+SAFE_WIEFERICH_PRIMES: set[int] = {1093, 3511}
+"""Wieferich primes p for which we've proven
+d(p^k - 1) = d(p - 1) for all k.
+"""
+
 _spf: list[int] | None = None
 
 
@@ -284,11 +289,12 @@ def grid_nullity(n: int) -> int:
 
     """We proved that if n+1 = p**l for a non-Wieferich prime p, then
     d(n) = d(p-1).
+    We also showed d(n) = d(p-1) when p is 1093 or 3511, the known Wieferich primes.
 
     Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
     """
     p, l = prime_power(b)
-    if l > 1 and not _is_wieferich(p): # b is a prime power
+    if l > 1 and (not _is_wieferich(p) or p in SAFE_WIEFERICH_PRIMES): # b is a prime power
         return grid_nullity(p - 1)
 
     """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an

@@ -8,8 +8,9 @@ If tau_m = F_r + F_(r+1), then
 
     d(m - 1) = 2 * deg(gcd(tau_m(x), tau_m(x + 1))).
 
-This script constructs tau_m and its translate as packed coefficient bits,
-converts them to FLINT polynomials over GF(2), and computes the exact GCD.
+This script constructs tau_m and its translate with the main Fibonacci
+implementation, converts them to FLINT polynomials over GF(2), and computes
+the exact GCD.
 
 Install the required package with:
 
@@ -21,6 +22,8 @@ from __future__ import annotations
 import gc
 from time import perf_counter
 
+from kernel_size import SAFE_WIEFERICH_PRIMES, _adjacent_fibonacci_pair
+
 try:
     from flint import nmod_poly
 except ImportError as exc:
@@ -30,53 +33,10 @@ except ImportError as exc:
     ) from exc
 
 
-KNOWN_WIEFERICH_PRIMES = (1093, 3511)
-_SQUARE_BYTE = tuple(
-    sum(((value >> bit) & 1) << (2 * bit) for bit in range(8))
-    for value in range(256)
-)
-_SQUARE_BYTES = tuple(value.to_bytes(2, "little") for value in _SQUARE_BYTE)
 _COEFFICIENT_BITS = tuple(
     tuple((value >> bit) & 1 for bit in range(8))
     for value in range(256)
 )
-
-
-def square_polynomial(value: int) -> int:
-    """Square a packed polynomial over GF(2)."""
-
-    if value == 0:
-        return 0
-    raw = value.to_bytes((value.bit_length() + 7) // 8, "little")
-    return int.from_bytes(
-        b"".join(_SQUARE_BYTES[byte] for byte in raw),
-        "little",
-    )
-
-
-def fibonacci_pair(n: int, shifted: bool = False) -> tuple[int, int]:
-    """Return packed F_n and F_(n+1), optionally evaluated at x+1."""
-
-    if n == 0:
-        return 0, 1
-
-    current, following = fibonacci_pair(n >> 1, shifted)
-    current_square = square_polynomial(current)
-    following_square = square_polynomial(following)
-    x_current = (
-        (current_square << 1) ^ current_square
-        if shifted
-        else current_square << 1
-    )
-    x_following = (
-        (following_square << 1) ^ following_square
-        if shifted
-        else following_square << 1
-    )
-
-    if n & 1:
-        return current_square ^ following_square, x_following
-    return x_current, current_square ^ following_square
 
 
 def prime_factors(n: int) -> set[int]:
@@ -143,15 +103,20 @@ def grid_nullity_at_m_minus_one(m: int) -> int:
         raise ValueError("m must be a positive odd integer")
 
     half = (m - 1) // 2
-    current, following = fibonacci_pair(half)
-    shifted_current, shifted_following = fibonacci_pair(half, shifted=True)
-    tau = packed_to_flint(current ^ following)
-    shifted_tau = packed_to_flint(shifted_current ^ shifted_following)
+    current, following = _adjacent_fibonacci_pair(half)
+    shifted_current, shifted_following = _adjacent_fibonacci_pair(
+        half,
+        shifted=True,
+    )
+    tau = packed_to_flint((current + following)._value)
+    shifted_tau = packed_to_flint(
+        (shifted_current + shifted_following)._value,
+    )
     return 2 * tau.gcd(shifted_tau).degree()
 
 
 def main() -> None:
-    for p in KNOWN_WIEFERICH_PRIMES:
+    for p in sorted(SAFE_WIEFERICH_PRIMES):
         started = perf_counter()
         order = multiplicative_order_2(p)
         depth = wieferich_depth(p)
