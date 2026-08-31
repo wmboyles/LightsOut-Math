@@ -31,10 +31,68 @@
 	$n$, then $D=d(n_0)$ for an explicitly bounded $n_0$.
 	In particular, whether a given integer occurs as a grid nullity is
 	decidable by a finite computation.
+	Combining the witness bound with a published algorithm for evaluating
+	$d(n)$ gives an exponential-time decision procedure in the numerical
+	target nullity, or a double-exponential upper bound when the target is
+	encoded in binary.
 	The general bound is exponential and deliberately coarse, but the
 	argument gives a much smaller bound for individual values.
-	For example, if 34 occurs, then it occurs for some $n\leq393197$.
+	An exact computation of the resulting finite search proves that 34 is
+	not a grid nullity.
 \end{abstract}
+
+\section{Motivation and prior work}
+
+Prior work gives efficient methods for evaluating $d(n)$ at a specified
+board size and devotes particular attention to reversibility, the condition
+$d(n)=0$.
+Goldwasser, Klostermeyer, and Trapp give an
+$O(n\log^2 n)$ polynomial-GCD algorithm for the nullity of a specified
+grid dimension \cite{GoldwasserKlostermeyerTrapp1997}.
+Although their algorithm is framed as a reversibility test, it constructs
+the full polynomial GCD, whose degree is the nullity, without changing the
+asymptotic running time.
+Sutner proves periodicity when one dimension of a rectangular grid is
+fixed \cite{Sutner1988}, while Goldwasser, Klostermeyer, and Ware and
+Hunziker, Machiavelo, and Park bound the Fibonacci indices of individual
+irreducible factors \cite{Goldwasser2002,HUNZIKER2004465}.
+Hunziker, Machiavelo, and Park also prove that there are infinitely many
+primitive indices at which the square grid is irreversible.
+These results concern evaluation, zero versus positive nullity, or
+individual polynomial factors; they do not determine which positive
+nullity values occur.
+
+Define the image-membership problem
+\[
+	\operatorname{IMAGE}_d
+	=
+	\{N\geq0:\text{there exists }n\geq0\text{ with }d(n)=N\}.
+\]
+Since each $d(n)$ can be computed, this set is computably enumerable:
+one may test $n=0,1,2,\ldots$ until a witness is found.
+This procedure does not halt when $N$ is absent.
+Thus pointwise computability of $d$ does not by itself imply that
+$\operatorname{IMAGE}_d$ is decidable.
+This distinction is familiar from linear recurrence sequences, where
+term evaluation is effective but the general Skolem problem of deciding
+whether a zero ever occurs remains open \cite{BiluEtAl2022}.
+We do not claim a reduction from that problem; it merely illustrates why
+an effective witness bound is substantive.
+
+To our knowledge, prior work does not give a bound depending only on a
+target nullity $N$, prove that $\operatorname{IMAGE}_d$ is decidable, or
+give an explicit complexity upper bound for this image-membership problem.
+The purpose of this paper is to supply such a bound.
+Besides settling decidability, the bound turns finite computations into
+certificates that particular values are globally impossible.
+This is motivated by the first gaps in the observed range.
+Every positive even value below 26 occurs \cite{OEISA159257}.
+A companion manuscript at \path{tex/finite_fields/finite_fields.tex}
+proves that 26 is impossible and thereby excludes the infinite family
+$2^t(26+2)-2$.
+In the computation through $n=100000$ recorded in
+\path{code/serialization/b159257.txt}, the value 34 is the next gap not
+belonging to that family.
 
 \section{Preliminaries}
 
@@ -351,7 +409,57 @@ Thus $\mathcal{A}_N$ is finite and can be enumerated effectively.
 	that bound using \eqref{eq:nullity}.
 \end{proof}
 
-\section{The candidate nullity 34}
+\section{Computational complexity}
+
+The complexity depends strongly on how the input is encoded.
+The $O(n\log^2 n)$ evaluation bound of
+\cite{GoldwasserKlostermeyerTrapp1997} is polynomial in the numerical
+board dimension $n$, equivalently in a unary encoding of $n$.
+For binary-encoded $n$, the same algorithm is exponential in the input
+length.
+
+\begin{corollary}\label{cor:complexity}
+	For $N>0$, using the bound in Theorem \ref{thm:finite-witness},
+	$\operatorname{IMAGE}_d$ can be decided in time $2^{O(N)}$, up to
+	polynomial factors in the target nullity $N$.
+	If $N$ is encoded in binary with length
+	$L=\lceil\log_2(N+1)\rceil$, this gives the
+	double-exponential upper bound
+	\[
+		2^{2^{O(L)}}.
+	\]
+\end{corollary}
+
+\begin{proof}
+	Set
+	\[
+		B(N)=3(N+2)2^N-1.
+	\]
+	By Theorem \ref{thm:finite-witness}, it suffices to evaluate $d(n)$
+	for $0\leq n\leq B(N)$.
+	Applying the published evaluator independently at every index takes
+	\[
+		\sum_{n\leq B(N)}O(n\log^2 n)
+		=
+		O(B(N)^2\log^2 B(N))
+		=
+		2^{O(N)}.
+	\]
+	Since $N<2^L$, this becomes $2^{2^{O(L)}}$ in terms of the binary
+	input length.
+\end{proof}
+
+\begin{remark}
+	This is only a coarse upper bound.
+	It supplies neither a matching lower bound nor an NP verification
+	procedure, and it does not rule out substantially smaller witnesses
+	or more succinct certificates.
+	We are unaware of a published hardness result for
+	$\operatorname{IMAGE}_d$, or for evaluating $d(n)$ when $n$ is
+	encoded in binary.
+\end{remark}
+
+\section{The impossible nullity 34}
 
 \begin{corollary}\label{cor:34-bound}
 	If $d(n)=34$ for some $n$, then $d(n_0)=34$ for some
@@ -396,7 +504,14 @@ Thus $\mathcal{A}_N$ is finite and can be enumerated effectively.
 	\]
 \end{proof}
 
-\begin{remark}[Reduced computation]
+\begin{theorem}\label{thm:34-impossible}
+	For every $n\geq0$,
+	\[
+		d(n)\neq34.
+	\]
+\end{theorem}
+
+\begin{proof}
 	Corollary \ref{cor:34-bound} does not require computing every
 	nullity through 393197.
 	The unique admissible triple shows that 34 occurs if and only if
@@ -407,9 +522,26 @@ Thus $\mathcal{A}_N$ is finite and can be enumerated effectively.
 	The compression theorem shows that it suffices to check these $b$
 	through 196599.
 	There are 32,767 such candidates.
-	The data through $n=100000$ checks the first 16,667 of them and
-	finds none, leaving 16,100 targeted calculations.
-\end{remark}
+	The data in \path{code/serialization/b159257.txt} through $n=100000$
+	checks the first 16,667 of them and finds none.
+	We computed the remaining 16,100 values exactly using packed
+	Fibonacci polynomials and the \texttt{GF2X} implementation in
+	NTL 11.6.0 \cite{ShoupNTL}.
+	The conversion and exact GCD calculation are implemented in
+	\path{code/ai_prototypes/wieferich_check.py} and
+	\path{code/ai_prototypes/ntl_gf2x_gcd.cpp}.
+	The exhaustive driver is
+	\path{code/ai_prototypes/verify_nullity_34.py}; it may be run with
+	\begin{center}
+		\texttt{cd code \&\& python -m ai\_prototypes.verify\_nullity\_34}.
+	\end{center}
+	The canonical SHA-256 digest of the 16,100 newly computed pairs is
+	\path{64cc5c41bf1bf197c833f695e3aaf3308b4154b358667f1a4f79b40a0a2458ab}.
+	None has $d(b-1)=16$.
+	A separate computation with the Python polynomial-GCD implementation
+	agreed on 104 distributed sample values.
+	Thus no candidate remains, and 34 is impossible.
+\end{proof}
 
 \section{Discussion}
 
@@ -426,6 +558,12 @@ Theorem \ref{thm:compression}.
 Further improvements are possible by classifying the irreducible factors
 of $H$ and their ranks, as in the proof that 26 is impossible, instead of
 using the general estimate in Lemma \ref{lem:rank-bound}.
+
+The result for 34 demonstrates the role of the witness theorem.
+Without Theorem \ref{thm:finite-witness}, absence through any finite
+cutoff would provide only evidence.
+With the theorem, exhausting the bounded candidate set proves global
+impossibility.
 
 \bibliographystyle{amsalpha}
 \bibliography{refs.bib}
