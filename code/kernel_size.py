@@ -4,6 +4,8 @@ of an n x n Lights Out grid or torus.
 """
 
 from functools import cache
+from math import isqrt
+
 from polynomials import GF2Polynomial
 
 FIBONACCI_POLYNOMIAL_BRUTE_FORCE_THRESHOLD: int = 256
@@ -12,9 +14,6 @@ SAFE_WIEFERICH_PRIMES: set[int] = {1093, 3511}
 """Wieferich primes p for which we've proven
 d(p^k - 1) = d(p - 1) for all k.
 """
-
-_spf: list[int] | None = None
-
 
 def two_adic_decomposition(n: int) -> tuple[int, int]:
     """Returns the odd b and non-negative k such that n = b*2**k.
@@ -183,6 +182,21 @@ def _is_wieferich(p: int) -> bool:
     return pow(2, p-1, p**2) == 1
 
 
+def _smallest_prime_factor(n: int) -> int:
+    """Returns the smallest prime factor of n."""
+
+    if n < 2:
+        raise ValueError("n must be at least 2")
+    elif n % 2 == 0:
+        return 2
+
+    for factor in range(3, isqrt(n) + 1, 2):
+        if n % factor == 0:
+            return factor
+
+    return n
+
+
 def signed_order_2(p: int) -> int:
     """Returns the least r > 0 such that 2**r is congruent to 1 or -1 modulo p.
 
@@ -191,36 +205,17 @@ def signed_order_2(p: int) -> int:
     the signed order is H/2 when H is even and H when H is odd.
     """
 
-    if _spf is None or len(_spf) <= p:
-        build_spf(p)
-    assert _spf is not None
-
-    prime_factors = set()
     n = p - 1
+    multiplicative_order = n
     while n > 1:
-        factor = _spf[n]
-        prime_factors.add(factor)
+        factor = _smallest_prime_factor(n)
         while n % factor == 0:
             n //= factor
 
-    multiplicative_order = p - 1
-    for factor in prime_factors:
         while multiplicative_order % factor == 0 and pow(2, multiplicative_order // factor, p) == 1:
             multiplicative_order //= factor
 
     return multiplicative_order // 2 if multiplicative_order % 2 == 0 else multiplicative_order
-
-
-# TODO: This function is only fast enough for N < 1_000_000
-def build_spf(N) -> None:
-    global _spf
-
-    _spf = list(range(N + 1))
-    for p in range(2, int(N**0.5) + 1):
-        if _spf[p] == p:
-            for k in range(p * p, N + 1, p):
-                if _spf[k] == k:
-                    _spf[k] = p
 
 
 def prime_power(q: int) -> tuple[int, int]:
@@ -232,10 +227,7 @@ def prime_power(q: int) -> tuple[int, int]:
 
     assert q >= 2
 
-    build_spf(q)
-    assert _spf != None
-
-    p = _spf[q]
+    p = _smallest_prime_factor(q)
     k = 0
     while q % p == 0:
         q //= p
