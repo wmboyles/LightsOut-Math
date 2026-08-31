@@ -1,33 +1,42 @@
 """
-This module contains methods for finding the kernel size (i.e. nullity) of an n x n Lights Out grid or torus.
+This module contains methods for finding the kernel size (i.e. nullity)
+of an n x n Lights Out grid or torus.
 """
 
 from functools import cache
 from polynomials import GF2Polynomial
 
+FIBONACCI_POLYNOMIAL_BRUTE_FORCE_THRESHOLD: int = 256
+
 _spf: list[int] | None = None
 
-def find_bk(n: int) -> tuple[int, int]:
-    """Calculates n = b*2^k - 1, where b and k are naturals and b is odd.
 
-    Raises:
-        ValueError: If n <= 0
+def two_adic_decomposition(n: int) -> tuple[int, int]:
+    """Returns the odd b and non-negative k such that n = b*2**k.
     """
 
     if n <= 0:
         raise ValueError("n must be positive")
 
-    m = n+1
-    k = (m & -m).bit_length() - 1
-    b = m >> k
-
-    return b, k
+    k = (n & -n).bit_length() - 1
+    return n >> k, k
 
 
 def power_of_two_exponent(n: int) -> int | None:
     """Returns k when n = 2**k, or None when n is not a power of two."""
 
     return n.bit_length() - 1 if n > 0 and n & (n - 1) == 0 else None
+
+
+def _scale_grid_nullity(base_nullity: int, odd_base: int, exponent: int) -> int:
+    """Returns d(2**exponent * odd_base - 1) from d(odd_base - 1).
+    """
+
+    # We proved d(2^k * b - 1) = 2^b * d(b-1) + correction,
+    # where correction 2(2^k - 1) of b is divisible by 3, else 0.
+    scale = 1 << exponent
+    correction = 2 * (scale - 1) if odd_base % 3 == 0 else 0
+    return scale * base_nullity + correction
 
 
 @cache
@@ -54,40 +63,44 @@ def lights_out_curve_point_count(r: int) -> int:
 
 
 @cache
-def brute_f1(y: int) -> GF2Polynomial:
-    """Calculate f_n(x) via brute force.
-
-    When n is even, Hunziker, Machivelo, and Park tell us that the result is
-    the square of a square-free polynomial, so all its nonzero exponents are even.
-
-    We calculate f_n using its relationship with binomial coefficients.
-    Sutner tells us that f_n(x) = sum_{i=0}^{n}{C(n+1+i, 2i+1) x^i mod 2}, where C(n,m) = n choose m.
-    Thus, we need to find when C(n+1+i, 2i+1) is odd.
-    Kummer's Theorem tells us that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
-    If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
-    So, C(n+1+i, 2i+1) is odd when (y-i) & (2i+1) == 0.
-
-    NOTE: There are two competing ways of enumerating these polynomials in the literature.
-        1. f_0 = 0, f_1 = 1
-        2. f_0 = 1, f_1 = x
-
-        Way 1 seems more useful when discussing divisilibity properties of polynomials.
-        Way 2 seems more useful when thinking about the size of polynomials, since under this way f_n will be degree n
-            and grid_nullity(n) is the GCD of two degree n polynomials.
-        This function mostly uses way 2, but in functions like fibonacci_rank where way 1 is more useful, we correct our indexing.
+def fibonacci_polynomial(n: int) -> GF2Polynomial:
+    """Calculate the nth Fibonacci polynomial F_n over F_2[x].
+    F_0 = 0, F_1 = 1
+    F_{n} = x*F_{n-1} + F_{n-2}
     """
 
-    return GF2Polynomial({i for i in range(y + 1) if ((y - i) & (2 * i + 1)) == 0})
+    # Use brute force for small values
+    if n <= FIBONACCI_POLYNOMIAL_BRUTE_FORCE_THRESHOLD:
+        """We calculate f_n using its relationship with binomial coefficients.
+        Sutner tells us that f_n(x) = sum_{i=0}^{n-1}{C(n+i, 2i+1) x^i mod 2}, where C(n,m) = n choose m.
+        Thus, we need to find when C(n+i, 2i+1) is odd.
+        Kummer's Theorem tells us that the largest q such that 2^q divides C(n,m) is the number of carries when adding (n-m) and m in base q.
+        If the number of carries is 0 (i.e. (n-m) & m == 0), then C(n,m) is odd.
+        So, C(n+i, 2i+1) is odd when (n-i-1) & (2i+1) == 0.
+        """
+        return GF2Polynomial({
+            i
+            for i in range(n)
+            if ((n - i - 1) & (2 * i + 1)) == 0
+        })
+
+    # F_{2m} = x*F_{m}^2
+    # Expanding, F_{2^k b} = x^{2^k - 1} * F_{b}^{2^k}
+    b, k = two_adic_decomposition(n)
+    if k > 0:
+        power = 1 << k
+        return (fibonacci_polynomial(b)**power) << (power - 1)
+
+    # F_{2m+1} = F_{m}^2 + F_{m+1}^2
+    m = n >> 1
+    return fibonacci_polynomial(m)**2 + fibonacci_polynomial(m + 1)**2
 
 
 @cache
 def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
-    """Recursively define the following polynomials over Z_2[x]:
-        f(0,x) = 1, f(1,x) = x
-        f(n+1,x) = x*f(n,x) + f(n-1,x)
-    This method gives f(n,x) and f(n,x+1)
-
-    It's known that deg gcd(f(n,x), f(n,x+1)) is the nullity of an n x n lights out grid.
+    """Returns F_(n+1)(x) and F_(n+1)(x+1),
+    where F_n is the nth Fibonacci polynomial.
+    The degree of their GCD is the nullity of an n x n Lights Out grid.
 
     Raises:
         ValueError: if n < 0
@@ -95,27 +108,9 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
 
     if n < 0:
         raise ValueError("n must be positive")
-    # Base Case: f(0,x) = f(0,x+1) = 1
-    elif n == 0:
-        return GF2Polynomial({0}), GF2Polynomial({0})
-    # Base Case: f(1,x) = x, f(1,x+1) = x+1
-    elif n == 1:
-        return GF2Polynomial({1}), GF2Polynomial({0, 1})
 
-    """From Hunziker, Machivelo, and Park:
-    "Chebyshev Polynomials Over Finite Fields and Reversibility of Sigma-automata on Square Grids"
-    Lemma 2.6 (restated in our notation to avoid confusing offset)
-    Let n = b*2^k - 1, where b is odd
-    f(n, x) = x^(2^k - 1)   * f(b-1, x) ** (2^k)
-    """
-    b, k = find_bk(n)
-
-    polyb_f1 = brute_f1(b - 1)
-
-    exp = 2**k
-    f1 = GF2Polynomial({exp - 1}) * (polyb_f1**exp)
-    # Calculate f(n,x+1) by evaluating f(n,x) at x+1
-    f2 = f1 @ GF2Polynomial({0, 1})
+    f1 = fibonacci_polynomial(n + 1)
+    f2 = f1 @ GF2Polynomial.from_number(0b11)
 
     return f1, f2
 
@@ -145,7 +140,7 @@ def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1 << 1, (f2 << 1) + f2
 
 
-def is_wieferich(p: int) -> bool:
+def _is_wieferich(p: int) -> bool:
     """Returns true when p meets the Wieferich condition:
     2**(p-1) % p**2 == 1
     When p is a prime number, p is called a "Wieferich Prime".
@@ -219,18 +214,17 @@ def prime_power(q: int) -> tuple[int, int]:
 def grid_nullity(n: int) -> int:
     """Returns the nullity of an n x n grid.
 
-    Does so by calculating the degree of the GCD of f_n(x) and f_n(x+1).
-    We use a few tricks that mostly apply when n+1 is divible by 2 a lot to speed up the calculation in some cases.
+    Does so by calculating the degree of the GCD of F_(n+1)(x) and F_(n+1)(x+1).
+    We use several proven reductions before falling back to the polynomial GCD.
     """
 
-    """
-    d(0) = 0
-    Hunziker, Machivelo, and Park and also Sutner proved d(2^k - 1) = 0.
-    """
+    # d(0) = 0
     if n == 0:
         return 0
 
-    (b,k) = find_bk(n)
+    # d(2^k - 1) = 0
+    # Cite:[Hunziker, Machivelo, and Park][Sutner]
+    b, k = two_adic_decomposition(n + 1)
     if b == 1:
         return 0
 
@@ -244,32 +238,29 @@ def grid_nullity(n: int) -> int:
     if r is not None:
         torus_nullity = lights_out_curve_point_count(r) - 4
         base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
-        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
-        return (1 << k) * base_nullity + correction
+        return _scale_grid_nullity(base_nullity, b, k)
 
     r = power_of_two_exponent(b - 1)
     if r is not None:
         torus_nullity = lights_out_curve_point_count(r)
         base_nullity = (torus_nullity - (4 if b % 3 == 0 else 0)) // 2
-        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
-        return (1 << k) * base_nullity + correction
+        return _scale_grid_nullity(base_nullity, b, k)
 
     """We proved
-    For n+1 = b * 2**k,
-    d(n) = 2**k * d(b-1) + (2*(2**k - 1) if (b % 3 == 0) else 0)
+    For n+1 = b * 2^k,
+    d(n) = 2^k * d(b-1) + (2*(2^k - 1) if (b % 3 == 0) else 0)
     """
     if k > 0:
-        base = (1 << k) * grid_nullity(b - 1)
-        correction = 2 * ((1 << k) - 1) if b % 3 == 0 else 0
-        return base + correction
+        base_nullity = grid_nullity(b - 1)
+        return _scale_grid_nullity(base_nullity, b, k)
 
     """We proved that if n+1 = p**l for a non-Wieferich prime p, then
     d(n) = d(p-1).
 
     Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
     """
-    (p,l) = prime_power(b)
-    if l > 1 and not is_wieferich(p): # b is a prime power
+    p, l = prime_power(b)
+    if l > 1 and not _is_wieferich(p): # b is a prime power
         return grid_nullity(p - 1)
 
     """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
@@ -278,14 +269,14 @@ def grid_nullity(n: int) -> int:
     if l == 1 and signed_order_2(p)**2 > p:
         return 0
 
-    """For odd b, Hunziker, Machivelo, and Park prove f_(b-1) is the square
-    of a square-free polynomial R. Therefore,
-    d(b-1) = 2 * deg(gcd(R(x), R(x+1))).
+    """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2
+    is the square of a square-free polynomial R.
+    Therefore, d(b-1) = 2 * deg(gcd(R(x), R(x+1))).
     """
-    f1 = brute_f1(b - 1)
-    root = GF2Polynomial({degree // 2 for degree in f1.degrees})
-    translated_root = root @ GF2Polynomial({0, 1})
-    g = GF2Polynomial.gcd(root, translated_root) # brute force
+    m = b >> 1
+    root = fibonacci_polynomial(m) + fibonacci_polynomial(m + 1)
+    translated_root = root @ GF2Polynomial.from_number(0b11)
+    g = GF2Polynomial.gcd(root, translated_root)
 
     return 2 * g.degree
 
@@ -318,10 +309,8 @@ def fibonacci_rank(p: GF2Polynomial) -> int:
     """Calculates the smallest m such that f_m divides p.
     """
 
-    i = 0
-    while brute_f1(i) % p != 0:
+    i = 1
+    while fibonacci_polynomial(i) % p != 0:
         i += 1
 
-    # This corrects for indexing of the polynomials. See note in brute_f1.
-    # brute_f1(fibonacci_rank(p)-1) % p == 0
-    return i + 1
+    return i
