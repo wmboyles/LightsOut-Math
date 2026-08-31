@@ -1,0 +1,433 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\DeclareMathOperator{\rank}{rank}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\title{Finite Witness Bounds for \textit{Lights Out} Nullities}
+\author{William Boyles}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+	Let $d(n)$ be the nullity over $\F_2$ of the $n\times n$ bounded
+	\textit{Lights Out} grid.
+	We prove that for every positive integer $D$, if $D=d(n)$ for some
+	$n$, then $D=d(n_0)$ for an explicitly bounded $n_0$.
+	In particular, whether a given integer occurs as a grid nullity is
+	decidable by a finite computation.
+	The general bound is exponential and deliberately coarse, but the
+	argument gives a much smaller bound for individual values.
+	For example, if 34 occurs, then it occurs for some $n\leq393197$.
+\end{abstract}
+
+\section{Preliminaries}
+
+Let $F_n(x)\in\F_2[x]$ be the Fibonacci polynomials
+\[
+	F_0(x)=0,\qquad F_1(x)=1,\qquad
+	F_n(x)=xF_{n-1}(x)+F_{n-2}(x).
+\]
+The nullity of the $n\times n$ grid is
+\begin{equation}\label{eq:nullity}
+	d(n)=
+	\deg\gcd\!\left(F_{n+1}(x),F_{n+1}(x+1)\right)
+\end{equation}
+\cite{Sutner00sigma-automataand}.
+We include the empty grid by setting $d(0)=0$, which also agrees with
+\eqref{eq:nullity}.
+
+We use the Fibonacci divisibility identity
+\begin{equation}\label{eq:fibonacci-gcd}
+	\gcd(F_m,F_n)=F_{\gcd(m,n)}
+\end{equation}
+over $\F_2[x]$ \cite{HUNZIKER2004465}.
+For a non-zero polynomial $P\in\F_2[x]$, define
+\[
+	\rank(P)=\min\{r>0:P\mid F_r\}.
+\]
+Every non-zero polynomial has finite rank \cite{HUNZIKER2004465}.
+Equation \eqref{eq:fibonacci-gcd} gives the rank criterion
+\begin{equation}\label{eq:rank-criterion}
+	P\mid F_m
+	\quad\Longleftrightarrow\quad
+	\rank(P)\mid m.
+\end{equation}
+
+If $b$ is odd, then
+\begin{equation}\label{eq:square-free-root}
+	F_b(x)=R_b(x)^2
+\end{equation}
+for a square-free polynomial $R_b$ \cite{HUNZIKER2004465}.
+Consequently, if
+\[
+	H_b(x)=\gcd(R_b(x),R_b(x+1)),
+\]
+then
+\begin{equation}\label{eq:base-nullity}
+	d(b-1)=2\deg H_b.
+\end{equation}
+Translation by 1 exchanges the arguments defining $H_b$, so
+$H_b(x+1)=H_b(x)$.
+Since $H_b$ is square-free, translation pairs its roots as
+$\{\alpha,\alpha+1\}$.
+There are no fixed points, and hence $\deg H_b$ is even.
+It follows that
+\begin{equation}\label{eq:even-base-divisibility}
+	4\mid d(b-1).
+\end{equation}
+
+We also use the root parameterization
+\begin{equation}\label{eq:root-parameterization}
+	F_m(\alpha)=0,\quad \alpha\neq0
+	\quad\Longleftrightarrow\quad
+	\alpha=\zeta+\zeta^{-1}
+\end{equation}
+for some non-trivial $m$th root of unity $\zeta$ in
+$\overline{\F}_2$ \cite{HUNZIKER2004465}.
+
+Finally, writing $n+1=2^s b$ with $b$ odd gives
+\begin{equation}\label{eq:two-adic}
+	d(n)
+	=
+	2^s d(b-1)
+	+2(2^s-1)\mathbf{1}_{3\mid b}
+\end{equation}
+\cite{boylesResolutionSutner}.
+
+\section{Bounding polynomial ranks}
+
+\begin{lemma}\label{lem:rank-bound}
+	Let $P\in\F_2[x]$ be a nonconstant square-free polynomial with
+	$P(0)\neq0$.
+	Then
+	\[
+		\rank(P)\leq2^{2\deg P}-1.
+	\]
+\end{lemma}
+
+\begin{proof}
+	Factor $P$ into distinct monic irreducibles,
+	\[
+		P=P_1\cdots P_t,
+		\qquad
+		e_i=\deg P_i.
+	\]
+	Choose a root $\alpha_i$ of $P_i$.
+	Then $\alpha_i\in\F_{2^{e_i}}$ and $\alpha_i\neq0$.
+	Let $\zeta_i$ be a root of
+	\[
+		z^2+\alpha_i z+1.
+	\]
+	This quadratic splits over an extension of degree at most two, so
+	$\zeta_i\in\F_{2^{2e_i}}$.
+	Furthermore, $\zeta_i\neq1$, since otherwise $\alpha_i=0$.
+	If $m_i$ is the multiplicative order of $\zeta_i$, then
+	\[
+		m_i\mid 2^{2e_i}-1.
+	\]
+	By \eqref{eq:root-parameterization}, $\alpha_i$ is a root of
+	$F_{m_i}$, and therefore
+	\[
+		\rank(P_i)\leq m_i\leq2^{2e_i}-1.
+	\]
+
+	Since the factors $P_i$ are distinct, the rank criterion gives
+	\[
+		\rank(P)
+		=
+		\mathop{\operatorname{lcm}}_{1\leq i\leq t}\rank(P_i).
+	\]
+	Hence
+	\[
+		\rank(P)
+		\leq
+		\prod_{i=1}^t(2^{2e_i}-1)
+		<
+		2^{2\sum_i e_i}
+		=
+		2^{2\deg P}.
+	\]
+	The rank is an integer, which gives the stated bound.
+\end{proof}
+
+\section{Compressing an occurrence}
+
+\begin{theorem}[Odd-base compression]\label{thm:compression}
+	Let $b$ be a positive odd integer and set $D=d(b-1)$.
+	There is an odd divisor $b_0$ of $b$ such that
+	\[
+		d(b_0-1)=D,
+		\qquad
+		3\mid b_0\Longleftrightarrow3\mid b.
+	\]
+	If $D>0$, then $b_0$ may be chosen so that
+	\[
+		b_0\leq
+		\begin{cases}
+			2^D-1 & 3\nmid b,\\
+			3(2^D-1) & 3\mid b.
+		\end{cases}
+	\]
+	If $D=0$, one may take $b_0=1$ when $3\nmid b$ and $b_0=3$
+	when $3\mid b$.
+\end{theorem}
+
+\begin{proof}
+	The case $D=0$ follows from $d(0)=d(2)=0$, so suppose $D>0$.
+	Write $F_b=R_b^2$ as in \eqref{eq:square-free-root}, and let
+	\[
+		H=\gcd(R_b(x),R_b(x+1)).
+	\]
+	The polynomial $H$ is square-free, and \eqref{eq:base-nullity} gives
+	\[
+		\deg H=\frac{D}{2}.
+	\]
+	Translation by 1 exchanges the two arguments of the GCD and has
+	order two over $\F_2$, so
+	\[
+		H(x+1)=H(x).
+	\]
+	Also, $H(0)\neq0$ because $F_b(0)=1$ for odd $b$.
+
+	Set $r=\rank(H)$.
+	Since $H\mid F_b$, the rank criterion gives $r\mid b$.
+	In particular, $r$ is odd.
+	By definition, $H\mid F_r(x)$.
+	Translating this divisibility and using $H(x+1)=H(x)$ gives
+	\[
+		H\mid F_r(x+1).
+	\]
+	Because $H$ is square-free and $r$ is odd, equation
+	\eqref{eq:square-free-root} implies that $H$ divides both
+	$R_r(x)$ and $R_r(x+1)$.
+	Therefore
+	\[
+		d(r-1)\geq2\deg H=D.
+	\]
+	On the other hand, $r\mid b$, so Fibonacci divisibility gives
+	\[
+		d(r-1)\leq d(b-1)=D.
+	\]
+	Thus
+	\begin{equation}\label{eq:rank-preserves-nullity}
+		d(r-1)=D.
+	\end{equation}
+
+	Lemma \ref{lem:rank-bound} now gives
+	\[
+		r\leq2^{2\deg H}-1=2^D-1.
+	\]
+	If $3\nmid b$, take $b_0=r$.
+	If $3\mid b$, take
+	\[
+		b_0=\operatorname{lcm}(r,3).
+	\]
+	In the second case, $r\mid b_0\mid b$.
+	Combining \eqref{eq:rank-preserves-nullity} with Fibonacci
+	divisibility gives
+	\[
+		D=d(r-1)\leq d(b_0-1)\leq d(b-1)=D.
+	\]
+	Hence $d(b_0-1)=D$.
+	The construction preserves divisibility by 3, and the claimed bound
+	follows from $b_0\leq3r$.
+\end{proof}
+
+\section{A finite witness theorem}
+
+For a positive integer $N$, define the finite set
+\[
+	\mathcal{A}_N
+	=
+	\left\{
+		(s,\epsilon,D):
+		\begin{array}{l}
+			s\geq0,\quad \epsilon\in\{0,1\},\quad
+			D\geq0,\quad4\mid D,\\[2pt]
+			N=2^sD+2\epsilon(2^s-1)
+		\end{array}
+	\right\}.
+\]
+For $(s,\epsilon,D)\in\mathcal{A}_N$, set
+\[
+	B_\epsilon(D)
+	=
+	\begin{cases}
+		1 & D=0,\ \epsilon=0,\\
+		3 & D=0,\ \epsilon=1,\\
+		2^D-1 & D>0,\ \epsilon=0,\\
+		3(2^D-1) & D>0,\ \epsilon=1.
+	\end{cases}
+\]
+For $N>0$, the defining equation gives $2^s\leq N+2$.
+Thus $\mathcal{A}_N$ is finite and can be enumerated effectively.
+
+\begin{theorem}[Finite witness bound]\label{thm:finite-witness}
+	Let $N>0$.
+	If $d(n)=N$ for some $n$, then $\mathcal{A}_N$ is nonempty and
+	there is another occurrence $d(n_0)=N$ with
+	\begin{equation}\label{eq:refined-bound}
+		n_0
+		\leq
+		\max_{(s,\epsilon,D)\in\mathcal{A}_N}
+		\left(2^sB_\epsilon(D)-1\right).
+	\end{equation}
+	In particular,
+	\begin{equation}\label{eq:coarse-bound}
+		n_0\leq3(N+2)2^N-1.
+	\end{equation}
+\end{theorem}
+
+\begin{proof}
+	Suppose $d(n)=N$, and write $n+1=2^s b$ with $b$ odd.
+	Set
+	\[
+		D=d(b-1),
+		\qquad
+		\epsilon=\mathbf{1}_{3\mid b}.
+	\]
+	Equation \eqref{eq:two-adic} gives
+	\[
+		N=2^sD+2\epsilon(2^s-1).
+	\]
+	Moreover, \eqref{eq:even-base-divisibility} gives $4\mid D$, so
+	$(s,\epsilon,D)\in\mathcal{A}_N$.
+
+	Apply Theorem \ref{thm:compression} to obtain $b_0$.
+	The divisibility condition on 3 is preserved, so another application
+	of \eqref{eq:two-adic} gives
+	\[
+		d(2^s b_0-1)=N.
+	\]
+	The bound on $b_0$ proves \eqref{eq:refined-bound}.
+
+	It remains to prove the coarse bound.
+	For $\epsilon=0$, the equality $N=2^sD$ and $N>0$ give
+	$2^s\leq N$.
+	For $\epsilon=1$,
+	\[
+		N+2=2^s(D+2),
+	\]
+	so $2^s\leq N+2$.
+	In both cases $D\leq N$ and
+	\[
+		B_\epsilon(D)\leq3\cdot2^D.
+	\]
+	Therefore
+	\[
+		2^sB_\epsilon(D)-1
+		\leq3(N+2)2^N-1,
+	\]
+	as desired.
+\end{proof}
+
+\begin{corollary}\label{cor:decidable}
+	Whether an integer occurs as $d(n)$ is decidable by a finite
+	computation.
+\end{corollary}
+
+\begin{proof}
+	Negative integers are impossible because nullities are nonnegative,
+	the value 0 occurs, and every positive odd value is impossible because
+	$d(n)$ is always even.
+	For a positive even $N$, compute the coarse bound
+	\eqref{eq:coarse-bound} and evaluate the finitely many values through
+	that bound using \eqref{eq:nullity}.
+\end{proof}
+
+\section{The candidate nullity 34}
+
+\begin{corollary}\label{cor:34-bound}
+	If $d(n)=34$ for some $n$, then $d(n_0)=34$ for some
+	\[
+		n_0\leq393197.
+	\]
+\end{corollary}
+
+\begin{proof}
+	The equation defining $\mathcal{A}_{34}$ is
+	\[
+		34=2^sD+2\epsilon(2^s-1),
+		\qquad
+		4\mid D.
+	\]
+	If $\epsilon=0$, the only integral possibilities are
+	$(s,D)=(0,34)$ and $(1,17)$, neither of which has $4\mid D$.
+	If $\epsilon=1$, then
+	\[
+		36=2^s(D+2).
+	\]
+	The integral possibilities give $D=34,16,7$ for $s=0,1,2$,
+	respectively.
+	Hence the only admissible triple is
+	\[
+		(s,\epsilon,D)=(1,1,16).
+	\]
+
+	In the proof of Theorem \ref{thm:compression}, the rank $r$ is odd
+	and satisfies
+	\[
+		r\leq2^{16}-1=65535.
+	\]
+	If $3\mid r$, then $b_0=r\leq65535$.
+	If $3\nmid r$, then oddness gives $r\leq65533$, and therefore
+	\[
+		b_0=3r\leq196599.
+	\]
+	Thus in all cases
+	\[
+		n_0=2b_0-1\leq393197.
+	\]
+\end{proof}
+
+\begin{remark}[Reduced computation]
+	Corollary \ref{cor:34-bound} does not require computing every
+	nullity through 393197.
+	The unique admissible triple shows that 34 occurs if and only if
+	there is an odd multiple $b$ of 3 such that
+	\[
+		d(b-1)=16.
+	\]
+	The compression theorem shows that it suffices to check these $b$
+	through 196599.
+	There are 32,767 such candidates.
+	The data through $n=100000$ checks the first 16,667 of them and
+	finds none, leaving 16,100 targeted calculations.
+\end{remark}
+
+\section{Discussion}
+
+Theorem \ref{thm:finite-witness} gives an a priori finite test for every
+candidate nullity.
+Its coarse bound is not intended to be computationally sharp.
+The useful part of the argument is that an occurrence at an arbitrarily
+large odd base can be replaced by one whose base is controlled by the
+degree of its common factor.
+
+For a particular target $N$, one should first enumerate the admissible
+triples in $\mathcal{A}_N$ and then apply the corresponding bounds from
+Theorem \ref{thm:compression}.
+Further improvements are possible by classifying the irreducible factors
+of $H$ and their ranks, as in the proof that 26 is impossible, instead of
+using the general estimate in Lemma \ref{lem:rank-bound}.
+
+\bibliographystyle{amsalpha}
+\bibliography{refs.bib}
+
+\end{document}
