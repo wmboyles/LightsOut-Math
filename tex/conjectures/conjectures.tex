@@ -1,0 +1,474 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\abs}[1]{\left|#1\right|}
+\DeclareMathOperator{\MCP}{MCP}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\title{Open Problems and Resolved Conjectures for \textit{Lights Out} Nullity}
+\author{William Boyles}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+	Let $d(n)$ be the nullity over $\F_2$ of the bounded $n\times n$
+	\textit{Lights Out} grid.  Earlier notes in this directory mixed genuine
+	open problems with statements subsequently proved in other manuscripts,
+	standard Fibonacci-polynomial identities, computational observations,
+	and several false parameterizations.  This document is the canonical
+	status list as of September 2026.
+
+	The surviving problems concern prime-power stabilization at unknown
+	base-$2$ Wieferich primes, prime ``mad'' numbers, the global
+	$4/5$ maximum-nullity bound and its record holders, independent
+	impossible-nullity seeds, and the Most Clicks Problem beyond nullity two.
+	We also record the exact fixed-odd-part theorem that supersedes the old
+	$b$-factoring notebook, the computer-assisted proof that $34$ is
+	impossible, and explicit counterexamples to the retired formulations.
+\end{abstract}
+
+\tableofcontents
+
+\section{Definitions and status conventions}
+
+Let
+\[
+	F_0(x)=0,\qquad F_1(x)=1,\qquad
+	F_n(x)=xF_{n-1}(x)+F_{n-2}(x)
+\]
+in $\F_2[x]$.  Sutner's formula is
+\begin{equation}\label{eq:sutner}
+	d(n)=\deg\gcd\!\left(F_{n+1}(x),F_{n+1}(x+1)\right)
+\end{equation}
+\cite{Sutner2000}.
+
+For a graph $G$, the Most Clicks Problem asks for the largest, over solvable
+configurations, of the minimum number of clicks needed to solve the
+configuration.  We write $\MCP(n)$ for the answer on the $n\times n$ grid.
+
+The status descriptions below distinguish:
+\begin{itemize}
+	\item \emph{published theorem}: available in the cited literature;
+	\item \emph{repository theorem}: proved in another manuscript in this
+	      repository, but not necessarily published;
+	\item \emph{computer-assisted repository theorem}: reduced to a finite
+	      exact computation whose code and certificate are in the repository;
+	\item \emph{open}: no proof or counterexample is known;
+	\item \emph{retired}: proved, superseded, malformed, or false, and
+	      therefore no longer stated as a conjecture.
+\end{itemize}
+
+\section{The fixed-odd-part theorem}
+\label{sec:fixed-odd}
+
+This theorem disposes of the old $b$-specific polynomial conjectures and
+the meta-conjecture about the recurrence in $k$.
+
+\begin{theorem}[Fixed odd part]\label{thm:fixed-odd}
+	Let $b$ be odd, $k\geq1$, $s=k-1$, and
+	$\epsilon_b=[\,3\mid b\,]$.  Define
+	\[
+		C_{b,k}(x)
+		=\gcd\!\left(F_{b2^s}(x),F_{b2^s}(x+1)\right).
+	\]
+	Then
+	\begin{equation}\label{eq:gcd-fixed-odd}
+		C_{b,k}(x)
+		=[x(x+1)]^{\epsilon_b(2^s-1)}
+		 C_{b,1}(x)^{2^s}.
+	\end{equation}
+	Consequently
+	\begin{equation}\label{eq:d-fixed-odd}
+		d\!\left(b2^{k-1}-1\right)
+		=2^s d(b-1)+2\epsilon_b(2^s-1),
+	\end{equation}
+	and
+	\begin{equation}\label{eq:d-fixed-recurrence}
+		d\!\left(b2^k-1\right)
+		=2d\!\left(b2^{k-1}-1\right)+2[\,3\mid b\,].
+	\end{equation}
+\end{theorem}
+
+\begin{proof}
+	Hunziker, Machiavelo, and Park prove
+	\[
+		F_{b2^s}(x)=x^{2^s-1}F_b(x)^{2^s}
+	\]
+	\cite{HunzikerMachiaveloPark2004}; the same identity has recently been
+	revisited in the classification of powerful Fibonacci polynomials
+	\cite{BatesEtAl2027}.  Substitute $x+1$ for $x$.
+
+	For odd $b$, $F_b$ is the square of a square-free polynomial.
+	The factor $x+1$ divides $F_b(x)$ exactly when $3\mid b$, and then its
+	multiplicity is exactly two; symmetrically, $x$ divides $F_b(x+1)$
+	exactly in the same case.  Neither $x$ nor $x+1$ divides
+	$C_{b,1}$.  Taking the gcd of the two displayed factorizations gives
+	\eqref{eq:gcd-fixed-odd}.  Degrees give \eqref{eq:d-fixed-odd}, and
+	comparing $s$ with $s+1$ gives \eqref{eq:d-fixed-recurrence}.
+	The corresponding nullity recurrence is also proved in
+	\cite{BoylesSutner}.
+\end{proof}
+
+\begin{corollary}\label{cor:31-33}
+	For every $k\geq1$,
+	\[
+		d\!\left(31\cdot2^{k-1}-1\right)=5\cdot2^{k+1},
+		\qquad
+		d\!\left(33\cdot2^{k-1}-1\right)=11\cdot2^k-2.
+	\]
+\end{corollary}
+
+\begin{proof}
+	The exact evaluations $d(30)=20$ and $d(32)=20$ give the result from
+	\eqref{eq:d-fixed-odd}.  Equivalently, the Kloosterman calculation in
+	\path{tex/upper_bound/upper_bound.tex} gives $G(31)=20$ and
+	$G(33)=22$.
+\end{proof}
+
+\begin{remark}
+	The explicit formulas formerly conjectured for $b=1,3,5,7,9$ are all
+	instances of the published Fibonacci factorization used above.
+	The ``zero once, zero always'' conjecture and the claimed recurrence
+	$d(b,k+1)\in\{2d(b,k),2d(b,k)+2\}$ are both immediate consequences of
+	\eqref{eq:d-fixed-recurrence}.
+\end{remark}
+
+\section{Resolved and retired claims}
+
+\begin{center}
+\begin{tabular}{p{0.31\textwidth}p{0.18\textwidth}p{0.43\textwidth}}
+\toprule
+Former claim & Status & Current source or correction\\
+\midrule
+Rule-90 and rule-150 coefficient recurrences &
+Published theorem / direct substitution &
+Sutner's coefficient formula and the substitution $x\mapsto x+1$ give the
+two cellular-automaton recurrences \cite{Sutner2000}.  They are expository
+identities, not conjectures.\\
+\addlinespace
+$F_{b2^s}=x^{2^s-1}F_b^{2^s}$ and the $b$-factoring iteration &
+Published theorem &
+Theorem~\ref{thm:fixed-odd}; see
+\cite{HunzikerMachiaveloPark2004,BatesEtAl2027}.\\
+\addlinespace
+The $b=31$ and $b=33$ nullity formulas &
+Repository theorem &
+Corollary~\ref{cor:31-33} and
+\path{tex/upper_bound/upper_bound.tex}.\\
+\addlinespace
+Eventual constancy of $d(a^k-1)$ for fixed odd $a$ &
+Repository theorem &
+The finite-support truncation theorem in
+\path{tex/multiprime_stabilization/multiprime_stabilization.tex}.\\
+\addlinespace
+$26$ is impossible, and impossibility propagates by $A\mapsto2A+2$ &
+Repository theorem &
+\path{tex/finite_fields/finite_fields.tex}.\\
+\addlinespace
+$34$ is impossible &
+Computer-assisted repository theorem &
+\path{tex/finite_witness_bounds/finite_witness_bounds.tex}; the independent
+exact rerun checks all $32\,767$ candidates and reproduces, for the
+$16\,100$ newly computed pairs, SHA-256
+\texttt{64cc5c41bf1bf197c833f695e3aaf3308b4154b358667f1a4f79b40a0a2458ab}.\\
+\addlinespace
+All nullity-$12$ grids have size $340k-256$ &
+False &
+$d(594)=12$, and $594=340\cdot2-86$.  The corrected necessary classes are
+$n\equiv84\pmod{170}$.\\
+\addlinespace
+The displayed higher-nullity MCP quadratics in the old summary &
+False as written &
+They used the subsequence index in place of the multiplier
+$q=(n+1)/a$; for example the old formula predicts $\MCP(14)=48$, while
+the exact value is $123$.\\
+\addlinespace
+Every varying polynomial gcd is a geometric series with a power-of-two
+number of terms &
+False &
+For $b=15$, $C_{15,1}=1+x^2+x^4$ has three terms, while
+$C_{15,2}=x+x^2+x^5+x^6+x^9+x^{10}$ has six and is not a geometric
+series.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Prime-power stabilization}
+
+For a prime $p>5$, put
+\[
+	c_p=v_p\!\left(2^{\operatorname{ord}_p(2)}-1\right).
+\]
+Every non-Wieferich prime has $c_p=1$.
+
+\begin{conjecture}[Wieferich endpoint]\label{conj:prime-power}
+	For every prime $p>5$ and every $k\geq1$,
+	\[
+		d(p^k-1)=d(p-1).
+	\]
+\end{conjecture}
+
+The statement is a theorem for every non-Wieferich prime.  More generally,
+\[
+	d(p^k-1)=d(p^{c_p}-1)\qquad(k\geq c_p).
+\]
+The two known base-$2$ Wieferich primes, $1093$ and $3511$, both have
+$c_p=2$, and exact endpoint computations give
+\[
+	d(p^2-1)=d(p-1)=0.
+\]
+Thus Conjecture~\ref{conj:prime-power} holds for every currently known
+prime and, in particular, for every $p<2^{64}$.
+
+The minimal unresolved assertion is the endpoint lemma: if $\theta$ has
+order $p^{c_p}$ and
+\[
+	1+\theta^a+\theta^{-a}+\theta^b+\theta^{-b}=0,
+\]
+then $p^{c_p-1}\mid a,b$.  See
+\path{tex/five_term_plateau/five_term_plateau.tex} for the equivalent
+polynomial, cyclotomic, coding, dynamical, elliptic, and group-theoretic
+forms.
+
+\section{Prime mad numbers}
+
+For a prime $p>3$, let
+\[
+	R_p=
+	\left\{\zeta+\zeta^{-1}:
+	\operatorname{ord}(\zeta)=p\right\}
+	\subseteq\overline{\F}_2.
+\]
+
+\begin{proposition}\label{prop:prime-mad}
+	For every prime $p>3$,
+	\[
+		d(p-1)=2\abs{R_p\cap(R_p+1)}.
+	\]
+	Thus $d(p-1)>0$ exactly when there are nontrivial $p$-th roots
+	$t,s$ satisfying
+	\[
+		1+t+t^{-1}+s+s^{-1}=0.
+	\]
+\end{proposition}
+
+This is the bounded-grid form of the prime Button Madness problem studied
+through Dickson polynomials in \cite{BlokhuisEtAl2018}.
+
+\begin{problem}[Arithmetic characterization]\label{prob:prime-mad}
+	Characterize the primes $p$ for which
+	$R_p\cap(R_p+1)\neq\varnothing$.
+\end{problem}
+
+\begin{conjecture}[Prime infinitude]\label{conj:prime-mad}
+	There are infinitely many primes $p$ for which $d(p-1)>0$.
+\end{conjecture}
+
+Every Mersenne prime greater than $7$ and every Fermat prime greater than
+$3$ has this property; exact Kloosterman formulas appear in
+\path{tex/five_term_plateau/five_term_plateau.tex}.  Brouwer and Blokhuis
+prove infinitely many mad \emph{integers}, but that does not prove
+Conjecture~\ref{conj:prime-mad}, since infinitude of the relevant prime
+subfamily remains open \cite{BrouwerMadness}.  The necessary condition
+\[
+	\rho_2(p)=\min\{r>0:2^r\equiv\pm1\pmod p\}\leq\sqrt p
+\]
+is not sufficient: $\rho_2(241)=12<\sqrt{241}$ but $d(240)=0$.
+
+\section{Maximum nullity}
+
+\begin{conjecture}[The $4/5$ bound]\label{conj:four-fifths}
+	For every $n\geq1$,
+	\[
+		5d(n)\leq4(n+1),
+	\]
+	with equality if and only if
+	$n=5\cdot2^k-1$ for some $k\geq0$.
+\end{conjecture}
+
+The equality family itself is proved:
+\[
+	d(5\cdot2^k-1)=4\cdot2^k.
+\]
+The manuscript \path{tex/upper_bound/upper_bound.tex} reduces the global
+bound to a multiplicative-subgroup point count on an elliptic curve and
+proves it:
+\begin{itemize}
+	\item when the odd part of $n+1$ is $2^r\pm1$;
+	\item under an explicit Weil-type criterion;
+	\item for every odd base $b\leq10^5$ by exact computation.
+\end{itemize}
+In all these regimes $b=5$ is the unique equality case.  No published or
+repository proof of the uniform bound for every $b$ is known.
+The strongest general published comparison remains Sarkar's theorem
+$d(n)=n$ if and only if $n=4$ \cite{Sarkar1996}.
+
+Define the positive record-holder set
+\[
+	\mathcal M=
+	\{n\geq1:d(n)>0\text{ and }d(n)>d(m)\text{ for every }m<n\}.
+\]
+
+\begin{conjecture}[Record holders]\label{conj:records}
+	\[
+		\mathcal M=
+		\{5\cdot2^{k-1}-1:k\geq1\}
+		\cup\{31\cdot2^{k-1}-1:k\geq1\}
+		\cup\{33\cdot2^{k-1}-1:k\geq2\}.
+	\]
+\end{conjecture}
+
+This is verified for all $n\leq100000$.  The exclusion of
+$33\cdot2^0-1=32$ is necessary because $d(32)=20$ only ties the earlier
+record at $n=30$.
+
+\section{Impossible nullities}
+
+Let
+\[
+	I=\{A\in2\N:A\neq d(n)\text{ for every }n\}.
+\]
+If $A\in I$, call it a \emph{seed} when it is not obtained from a smaller
+member of $I$ by iterating $A\mapsto2A+2$.
+
+The repository proves that $26$ and $34$ are seeds.  The doubling
+recurrence then gives the two infinite impossible families
+\[
+	2^t(26+2)-2
+	\quad\text{and}\quad
+	2^t(34+2)-2
+	\qquad(t\geq0).
+\]
+The finite-witness theorem in
+\path{tex/finite_witness_bounds/finite_witness_bounds.tex} further proves
+that membership in the image of $d$ is decidable by a finite computation
+for each prescribed value.
+
+\begin{conjecture}[Infinitely many seeds]\label{conj:seeds}
+	The set $I$ contains infinitely many seed values.
+\end{conjecture}
+
+\section{Small nullities and the Most Clicks Problem}
+
+The two-adic formula \eqref{eq:d-fixed-odd}, together with the ranks of the
+small translation-invariant Fibonacci factors, gives the following global
+necessary conditions.
+
+\begin{theorem}[Small-nullity congruences]\label{thm:small-nullities}
+	\[
+	\begin{array}{rcl}
+	d(n)=4 &\Longrightarrow& n\equiv4\pmod{10},\\
+	d(n)=6 &\Longrightarrow& n\equiv11\pmod{24},\\
+	d(n)=8 &\Longrightarrow&
+		n\equiv9\pmod{20}\ \text{or}\ n\equiv16\pmod{34},\\
+	d(n)=10&\Longrightarrow& n\equiv29\pmod{60},\\
+	d(n)=12&\Longrightarrow& n\equiv84\pmod{170}.
+	\end{array}
+	\]
+\end{theorem}
+
+\begin{proof}
+	Write $n+1=2^sb$, with $b$ odd, and put $D=d(b-1)$.
+	For even boards $b-1$, one has $4\mid D$.  Solving
+	\[
+		d(n)=2^sD+2[\,3\mid b\,](2^s-1)
+	\]
+	for the five target values gives the possible pairs $(s,D)$.
+
+	If $D=4$, the square-free half of the common Fibonacci factor is
+	$x^2+x+1$, of Fibonacci rank $5$, so $5\mid b$.
+	If $D=8$, the corresponding translation-invariant factor is
+	$x^4+x+1$, of rank $17$, so $17\mid b$.
+	If $D=12$, the only viable degree-six factor has rank $85$.
+	The two alternative rank-$63$ factors occur together and would force
+	nullity at least $24$, so $85\mid b$.  Substitution gives the displayed
+	congruences.  The exact rank calculation is recorded in
+	\path{tex/finite_witness_bounds/finite_witness_bounds.tex} and the
+	supporting nullity code.
+\end{proof}
+
+For nullity two, the repository proves that every grid has size $6k-1$ and
+\[
+	\MCP(6k-1)=26k^2-12k+1;
+\]
+see \path{tex/nullity2/nullity2.tex} and \cite{BoylesMostClicks}.
+No higher-nullity family has been proved.
+
+The following corrected fits use the natural multiplier
+$q=(n+1)/a$, not the subsequence index that appeared in the old summary.
+
+\begin{conjecture}[Empirical MCP fits]\label{conj:mcp-fits}
+	For each row below, if $n=aq-1$ with $q$ odd and $d(n)$ has the stated
+	value, then $\MCP(n)=P(q)$.
+	\[
+	\begin{array}{ccl}
+	d(n)&a&P(q)\\
+	\hline
+	4&5&17q^2-10q\\
+	6&12&88q^2-24q+1\\
+	8&10&60q^2-20q-3\\
+	8&17&161q^2-34q-3\\
+	10&30&506q^2-60q-3
+	\end{array}
+	\]
+\end{conjecture}
+
+The rows agree with respectively $19,6,7,6,$ and $4$ exact values in
+\path{code/serialization/min_clicks_answers.txt}, but no proof is known.
+The former nullity-$12$ fit is not retained: even $\MCP(84)$ is known only
+within the interval $3579\leq\MCP(84)\leq3591$, and the old source used
+inconsistent coefficients.
+
+\begin{problem}[Higher-nullity MCP]\label{prob:higher-mcp}
+	Determine $\MCP(n)$ on any infinite family of grids with nullity at
+	least four.  More generally, determine whether the MCP is polynomial or
+	quasi-polynomial in the multiplier $q$ on a fixed nullity family.
+\end{problem}
+
+\section{Computational evidence and maintenance}
+
+The nullity data in \path{code/serialization/b159257.txt} contains every
+$d(n)$ for $1\leq n\leq100000$.  It verifies:
+\begin{itemize}
+	\item Conjecture~\ref{conj:four-fifths}, with the stated equality cases,
+	      throughout that range;
+	\item Conjecture~\ref{conj:records} throughout that range;
+	\item all congruences in Theorem~\ref{thm:small-nullities};
+	\item the necessity of both nullity-$8$ classes (the first omitted old
+	      case is $d(69)=8$);
+	\item both mod-$340$ subprogressions of the single nullity-$12$ class
+	      $n\equiv84\pmod{170}$ (the first omitted old case is
+	      $d(594)=12$, with $594\equiv254\pmod{340}$).
+\end{itemize}
+
+The old standalone $b$-factoring, maximum-nullity, and rule-90/rule-150
+notes have been removed from the conjectures directory.  Their valid
+content is either Theorem~\ref{thm:fixed-odd}, a cited published identity,
+or material in the dedicated manuscripts named above.  Generated PDFs and
+unused figures were removed with them so that this source remains the only
+status document in the directory.
+
+\bibliographystyle{amsalpha}
+\bibliography{refs.bib}
+
+\end{document}

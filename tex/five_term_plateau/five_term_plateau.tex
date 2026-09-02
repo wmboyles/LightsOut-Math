@@ -1,0 +1,3877 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsfonts, amsmath, amssymb, amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{heuristic}[theorem]{Heuristic}
+
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\ord}[2][]{\operatorname{ord}_{#1}\!\left(#2\right)}
+\newcommand{\abs}[1]{\left|#1\right|}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\Sp}{\operatorname{Sp}}
+\newcommand{\SL}{\operatorname{SL}}
+\newcommand{\PSL}{\operatorname{PSL}}
+\DeclareMathOperator{\Res}{Res}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Nm}{N}
+\DeclareMathOperator{\Gal}{Gal}
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+
+\title{Reciprocal Five-Term Relations among $p^j$-th Roots of Unity\\
+in Characteristic Two: Reductions, Obstructions, and the Wieferich Plateau}
+\author{William Boyles}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+	Let $p>5$ be prime, let $j\geq2$, and let $\theta\in\overline{\F}_2$ have
+	exact order $p^j$.
+	We study the equation
+	\[
+		1+\theta^{a}+\theta^{-a}+\theta^{b}+\theta^{-b}=0,
+	\]
+	whose only solutions are conjectured to have $p\mid a$ and $p\mid b$.
+	This is equivalent to the stabilization
+	$d(p^k-1)=d(p-1)$ of the nullity of the bounded
+	\textit{Lights Out} grid.  This article consolidates the algebraic,
+	cyclotomic, local, additive, coding-theoretic, dynamical, elliptic, and
+	symplectic attacks on that conjecture, including the points at which
+	each method becomes sharp but inconclusive.
+
+	The equation is encoded by the reciprocal quartic
+	$Q_Y(T)=T^4+T^3+YT^2+T+1$ and by a shifted-Dickson sequence
+	$C_n(S)$ whose repeated roots are exactly the quartics dividing
+	$T^n+1$.  We prove that every repeated root of $C_n$ has multiplicity
+	exactly two, with $C_n^{[2]}(Y)=Y^{-2}$, and obtain an exact bridge to
+	Sutner's nullity formula.  An integer lift factors over the maximal real
+	cyclotomic field and turns stabilization into the simultaneous oddness
+	of an internal and a mixed collision norm.  Arithmetic dynamics gives
+	the same off-plateau descent through the degree-two covering
+	$u\mapsto u+u^{-1}$ and identifies irreducible factors with doubling
+	orbits of collision pairs.  The equation also becomes a translated
+	coordinate intersection on an elliptic curve and the trace-one locus of
+	a regular semisimple element of $\Sp_4$; both reformulations clarify the
+	geometry but return to the original incidence problem on the plateau.
+
+	If
+	$c_p=v_p(2^{\ord[p]{2}}-1)$, every solution has
+	$\ord{\theta^a},\ord{\theta^b}\leq p^{c_p}$, so only
+	$2\leq j\leq c_p$ remains.  The whole theorem is therefore equivalent
+	to one endpoint assertion at order $p^{c_p}$.  Characteristic-zero
+	vanishing sums, cyclotomic units, ray classes, power residues, modular
+	vanishing-sum theorems, cyclic-code bounds, and maximal-torus
+	classification all stop at that same endpoint.  The semi-local residue
+	module is explicitly
+	$\Z[\bar G]/(\sigma_2-2)$, and its Frobenius, sign, distribution, and
+	norm relations leave the primitive orbit values freely parameterized;
+	explicit phantom systems show that these relations, even together with
+	the known trace constraints, do not force avoidance.
+
+	Genuinely additive input does prove new cases.  The Artin--Schreier law
+	$\Tr(\bar\lambda_x^{-1})=\delta$ and the global law
+	$\Tr(\theta^x)+\Tr(\theta^y)=\ord[p^j]{2}\bmod2$ exclude several
+	families, including $d(3510)=d(72)=d(88)=d(232)=0$.  At the opposite
+	extreme, the Mersenne and Fermat cases admit exact binary Kloosterman
+	formulas.  The statement is false in other residue characteristics, so
+	any proof must use characteristic-two additive structure.  Exact
+	searches verify the endpoint for both known base-$2$ Wieferich primes,
+	$1093$ and $3511$, and a complete resultant computation settles
+	$p^j=49$.  No proof is presently known for a hypothetical new
+	Wieferich endpoint.
+\end{abstract}
+
+\tableofcontents
+
+\section{The problem}\label{sec:problem}
+
+Let $F_n(x)\in\F_2[x]$ be the Fibonacci polynomials
+\[
+	F_0(x)=0,\qquad F_1(x)=1,\qquad F_n(x)=xF_{n-1}(x)+F_{n-2}(x),
+\]
+and let $d(n)$ be the nullity over $\F_2$ of the $n\times n$ bounded
+\textit{Lights Out} grid, so that
+\begin{equation}\label{eq:sutner}
+	d(n)=\deg\gcd\!\left(F_{n+1}(x),\,F_{n+1}(x+1)\right)
+\end{equation}
+by Sutner's formula \cite{Sutner00sigma-automataand}.
+For odd $N>1$ the distinct roots of $F_N$ are
+\begin{equation}\label{eq:strata}
+	\bigcup_{\substack{M\mid N\\M>1}}R_M,
+	\qquad
+	R_M=\left\{\zeta+\zeta^{-1}:\ \ord{\zeta}=M\right\},
+\end{equation}
+and every root has multiplicity two \cite{HUNZIKER2004465}.
+
+A companion manuscript at \path{tex/finite_fields/finite_fields.tex} proves
+the \emph{prime stabilization theorem}: with
+\begin{equation}\label{eq:c}
+	c=c_p=v_p\!\left(2^{\ord[p]{2}}-1\right),
+\end{equation}
+one has $d(p^k-1)=d(p^c-1)$ for all $k\geq c$.
+Since $c=1$ unless $p$ is a Wieferich prime, this settles
+$d(p^k-1)=d(p-1)$ for every non-Wieferich prime, and exact computations
+settle the two known Wieferich primes $1093$ and $3511$.
+The residual obstruction is a single, purely finite-field statement.
+
+\begin{problem}\label{prob:main}
+	Let $p>5$ be prime, let $j\geq2$, and let $\theta\in\overline{\F}_2$
+	have exact order $p^j$.
+	Suppose that
+	\begin{equation}\label{eq:main}
+		1+\theta^{a}+\theta^{-a}+\theta^{b}+\theta^{-b}=0 .
+	\end{equation}
+	Must $p\mid a$ and $p\mid b$?
+\end{problem}
+
+The hypothesis $p>5$ is genuinely needed: for $p=5$ and $j=1$ the relation
+$1+\theta+\theta^{4}+\theta^{2}+\theta^{3}=0$ holds in $\F_{16}$.
+Section~\ref{sec:charzero} explains why $5$ is the only obstruction of this
+kind.
+
+Throughout, $u=\theta^a$ and $v=\theta^b$, and we write
+\[
+	S_{N}=\left\{(a,b)\in(\Z/N\Z)^2:\ 1+\theta^{a}+\theta^{-a}+\theta^{b}+\theta^{-b}=0\right\}
+\]
+for $\theta$ of exact order $N$.
+
+The organization follows the successive changes of language used in the
+attack.  Section~\ref{sec:reformulations} develops the shifted-Dickson,
+reciprocal-quartic, elliptic, and nullity dictionaries.
+Section~\ref{sec:degree} proves descent off the Wieferich plateau and states
+the single endpoint lemma equivalent to the full theorem.
+Sections~\ref{sec:collision-norms} and~\ref{sec:dynamics} give the integer,
+real-cyclotomic, and arithmetic-dynamical forms of the same obstruction.
+Section~\ref{sec:sp4} records the symplectic reformulation and explains why
+maximal-torus and character theory do not decide the trace-one incidence.
+Sections~\ref{sec:charzero}--\ref{sec:units} treat characteristic zero and
+the ratios eliminated by cyclotomic units.
+Sections~\ref{sec:reduction} and~\ref{sec:power} develop the local
+circular-unit, semi-local module, ray-class, power-residue, and additive
+trace attacks.
+Sections~\ref{sec:modular} and~\ref{sec:coding} explain the exact limitations
+of modular vanishing sums and cyclic/Zetterberg codes.
+Sections~\ref{sec:counterexamples} and~\ref{sec:quantitative} record the
+counterexamples in other characteristics and the size heuristic.
+Section~\ref{sec:computations} lists the exact certificates, and
+Section~\ref{sec:summary} collects what is proved, what failed, and what
+remains.
+\subsection{Elementary normalizations}
+
+\begin{lemma}\label{lem:degenerate}
+	Let $N>1$ be odd with $3\nmid N$, let $\theta\in\overline{\F}_2$ have
+	exact order $N$, and let $(a,b)\in S_N$.
+	Then $a\not\equiv0$, $b\not\equiv0$ and $b\not\equiv\pm a$ modulo $N$.
+	In particular the five roots of unity $1,\theta^{\pm a},\theta^{\pm b}$
+	are pairwise distinct.
+\end{lemma}
+
+\begin{proof}
+	If $a\equiv0$ then $\theta^a+\theta^{-a}=1+1=0$, so
+	$\theta^b+\theta^{-b}=1$ and $\theta^{b}$ is a root of $T^2+T+1$,
+	hence of exact order $3$.
+	Then $3\mid N$, a contradiction.
+	The case $b\equiv0$ is symmetric.
+	If $b\equiv\pm a$ then $\theta^{b}+\theta^{-b}=\theta^{a}+\theta^{-a}$
+	and the left side of \eqref{eq:main} equals $1$.
+\end{proof}
+
+\begin{lemma}\label{lem:symmetry}
+	$S_{N}$ is stable under $(a,b)\mapsto(2a,2b)$, under
+	$(a,b)\mapsto(\pm a,\pm b)$ and under $(a,b)\mapsto(b,a)$.
+	If $\theta$ is replaced by $\theta^{t}$ with $\gcd(t,N)=1$ then
+	$S_{N}$ is replaced by $t^{-1}S_{N}$.
+	In particular whether $S_{N}$ is empty does not depend on the choice of
+	$\theta$.
+\end{lemma}
+
+\begin{proof}
+	The first claim is the Frobenius $x\mapsto x^2$ applied to
+	\eqref{eq:main}; the second and third are the substitutions
+	$a\mapsto-a$ and $a\leftrightarrow b$, which permute the summands.
+	The last claim is immediate from
+	$1+(\theta^{t})^{a}+\cdots=1+\theta^{ta}+\cdots$.
+\end{proof}
+
+\subsection{Why the problem is exactly the residual obstruction}
+
+\begin{lemma}\label{lem:d-count}
+	Let $N>1$ be odd with $3\nmid N$ and let $\theta\in\overline{\F}_2$
+	have exact order $N$.
+	Then
+	\[
+		d(N-1)=\tfrac12\abs{S_N}.
+	\]
+\end{lemma}
+
+\begin{proof}
+	By \eqref{eq:strata} the roots of $F_N$ are exactly the elements
+	$u+u^{-1}$ with $u\in\mu_N\setminus\{1\}$, each of multiplicity two.
+	A common root of $F_N(x)$ and $F_N(x+1)$ is an $\alpha$ with
+	$\alpha=u+u^{-1}$ and $\alpha+1=v+v^{-1}$ for some
+	$u,v\in\mu_N\setminus\{1\}$, i.e.\ with
+	$1+u+u^{-1}+v+v^{-1}=0$.
+	Writing $u=\theta^a$ and $v=\theta^b$ identifies the set of such
+	$\alpha$ with $S_N$ modulo the action of
+	$\{\pm1\}\times\{\pm1\}$ on $(a,b)$; the action is free because
+	$a\equiv-a$ would force $a\equiv0$, which Lemma~\ref{lem:degenerate}
+	excludes.
+	Hence the number of common roots is $\abs{S_N}/4$, and
+	\eqref{eq:sutner} together with multiplicity two gives
+	$d(N-1)=2\cdot\abs{S_N}/4$.
+\end{proof}
+
+\begin{corollary}\label{cor:reduction}
+	If Problem~\ref{prob:main} has an affirmative answer for a prime $p>5$
+	and all $j\geq2$, then $d(p^k-1)=d(p-1)$ for all $k\geq1$.
+\end{corollary}
+
+\begin{proof}
+	Let $k\geq2$ and let $\theta$ have exact order $p^k$.
+	Any element of $S_{p^k}$ has $p\mid a$ and $p\mid b$, so
+	$\theta^a,\theta^b\in\mu_{p^{k-1}}$ and the same relation is an element
+	of $S_{p^{k-1}}$ after replacing $\theta$ by $\theta^{p}$.
+	Iterating, $\abs{S_{p^k}}=\abs{S_{p}}$, and Lemma~\ref{lem:d-count}
+	gives $d(p^k-1)=d(p-1)$.
+\end{proof}
+
+Lemma~\ref{lem:d-count} was verified numerically against the independent
+grid-nullity code in \path{code/kernel_size.py}: for $p=5,17,31$ the counts
+$\abs{S_p}=8,16,40$ match $d(4)=4$, $d(16)=8$, $d(30)=20$, and for
+$p=7,11,41,43,73$ the empty solution sets match
+$d(6)=d(10)=d(40)=d(42)=d(72)=0$.
+
+\subsection{The reciprocal quartic}
+
+Set
+\[
+	Q_Y(T)=T^4+T^3+YT^2+T+1\in\overline{\F}_2[Y][T],
+\]
+a monic reciprocal quartic whose roots have product $1$.
+
+\begin{lemma}\label{lem:quartic}
+	Let $\alpha\in\overline{\F}_2$ and $Y=\alpha^2+\alpha$.
+	Then
+	\[
+		Q_Y(T)=\left(T^2+\alpha T+1\right)\left(T^2+(\alpha+1)T+1\right).
+	\]
+	Consequently, for $u,v\in\overline{\F}_2^{\times}$ the following are
+	equivalent.
+	\begin{enumerate}
+		\item $1+u+u^{-1}+v+v^{-1}=0$.
+		\item $u,u^{-1},v,v^{-1}$ are exactly the roots of $Q_Y$ for
+		      $Y=\alpha^2+\alpha$ with $\alpha=u+u^{-1}$.
+	\end{enumerate}
+	Moreover Problem~\ref{prob:main} has a negative answer for the pair
+	$(p,j)$ if and only if there is $Y\in\overline{\F}_2$ such that
+	$Q_Y(T)\mid T^{p^j}+1$ and at least one root of $Q_Y$ has exact order
+	$p^{j}$.
+\end{lemma}
+
+\begin{proof}
+	Expanding the product gives
+	$T^4+(\alpha+\alpha+1)T^3+(1+\alpha(\alpha+1)+1)T^2+(\alpha+\alpha+1)T+1$,
+	which is $Q_{\alpha^2+\alpha}(T)$.
+	The quadratic $T^2+\alpha T+1$ has root set $\{u,u^{-1}\}$ precisely
+	when $u+u^{-1}=\alpha$; likewise $T^2+(\alpha+1)T+1$ has root set
+	$\{v,v^{-1}\}$ precisely when $v+v^{-1}=\alpha+1$, which is
+	statement~(1).
+	For the last assertion, $T^{p^j}+1$ has exactly the elements of
+	$\mu_{p^j}$ as roots, each simple, so $Q_Y\mid T^{p^j}+1$ says
+	precisely that $u,v\in\mu_{p^j}$; and a counterexample to
+	Problem~\ref{prob:main} is exactly a relation in which $\theta^a$ or
+	$\theta^b$ has exact order $p^j$.
+\end{proof}
+
+The next lemma identifies the resultant that appears in
+Lemma~\ref{lem:quartic} with a Fibonacci-polynomial expression, and is the
+bridge between the quartic picture and \eqref{eq:sutner}.
+Let $D_N$ denote the Dickson polynomial of the first kind
+\cite[Ch.~7]{lidl-niederreiter}, determined by
+$D_N(t+t^{-1})=t^{N}+t^{-N}$.
+
+\begin{lemma}\label{lem:dickson}
+	Over $\F_2$ one has $D_N(s)=s\,F_N(s)$ for every $N\geq0$.
+	Consequently, for odd $N$,
+	\[
+		\Res_T\!\left(Q_Y(T),\,T^{N}+1\right)
+		=
+		Y\cdot\Res_s\!\left(s^2+s+Y,\,F_N(s)\right),
+	\]
+	and for $Y=\alpha^2+\alpha$ with $\alpha\ne0,1$,
+	\[
+		\Res_s\!\left(s^2+s+Y,\,F_N(s)\right)=F_N(\alpha)F_N(\alpha+1).
+	\]
+\end{lemma}
+
+\begin{proof}
+	Both $D_N$ and $sF_N$ satisfy the recursion $X_N=sX_{N-1}+X_{N-2}$ over
+	$\F_2$; the Dickson recursion is $D_N=sD_{N-1}-D_{N-2}$, and $-1=1$.
+	The initial values agree, since $D_0=2=0=s\cdot F_0$ and
+	$D_1=s=s\cdot F_1$.
+
+	For the resultant, let $t_1,\ldots,t_4$ be the roots of $Q_Y$, paired
+	as $\{t,t^{-1}\}$ by Lemma~\ref{lem:quartic}.
+	In characteristic two,
+	$(t^{N}+1)(t^{-N}+1)=t^{N}+t^{-N}=D_N(t+t^{-1})$, so
+	\[
+		\Res_T\!\left(Q_Y,\,T^{N}+1\right)
+		=\prod_{i=1}^{4}\left(t_i^{N}+1\right)
+		=D_N(\alpha)D_N(\alpha+1)
+		=\alpha(\alpha+1)F_N(\alpha)F_N(\alpha+1),
+	\]
+	and $\alpha(\alpha+1)=\alpha^2+\alpha=Y$.
+	The roots of $s^2+s+Y$ are $\alpha$ and $\alpha+1$, which gives the
+	second displayed identity.
+\end{proof}
+
+\section{Shifted-Dickson, nullity, and elliptic reformulations}
+\label{sec:reformulations}
+
+The reciprocal quartic can be packaged into one explicit polynomial
+sequence.  This is useful for two reasons: it records the repeated-root
+locus with its exact multiplicity, and it turns the desired stabilization
+into ordinary square-freeness and coprimality statements.
+
+\begin{definition}\label{def:Cn}
+	Since $D_n(X)+D_n(X+1)$ is invariant under $X\mapsto X+1$, there is a
+	unique polynomial $C_n(S)\in\F_2[S]$ such that
+	\begin{equation}\label{eq:Cn-def}
+		C_n(X^2+X)=D_n(X)+D_n(X+1).
+	\end{equation}
+\end{definition}
+
+\begin{proposition}[Power sums and generating function]
+\label{prop:Cn-powersum}
+	The polynomial $C_n(S)$ is the $n$-th Newton power sum of the four roots
+	of $Q_S(T)$:
+	\[
+		C_n(S)=\sum_{Q_S(\rho)=0}\rho^n.
+	\]
+	Moreover
+	\begin{equation}\label{eq:Cn-gf}
+		\sum_{n\geq0}C_n(S)t^n
+		=\frac{t(1+t)^2}{Q_S(t)}
+		=\frac{t+t^3}{1+t+St^2+t^3+t^4}.
+	\end{equation}
+	Hence
+	\[
+		C_{n+4}=C_{n+3}+S C_{n+2}+C_{n+1}+C_n,
+		\qquad
+		(C_0,C_1,C_2,C_3)=(0,1,1,S).
+	\]
+\end{proposition}
+
+\begin{proof}
+	Write $S=X^2+X$.  By Lemma~\ref{lem:quartic}, the roots of $Q_S$ are
+	$\zeta,\zeta^{-1},\eta,\eta^{-1}$ with
+	$\zeta+\zeta^{-1}=X$ and $\eta+\eta^{-1}=X+1$.  Their $n$-th power
+	sum is therefore $D_n(X)+D_n(X+1)=C_n(S)$.
+	If $g(t)=Q_S(t)$, reciprocity gives
+	$\prod_\rho(1-\rho t)=g(t)$, and
+	\[
+		-\frac{t g'(t)}{g(t)}
+		=\sum_{\rho}\frac{\rho t}{1-\rho t}
+		=\sum_{n\geq1}\left(\sum_\rho\rho^n\right)t^n.
+	\]
+	In characteristic two, $g'(t)=1+t^2=(1+t)^2$ and $C_0=4=0$.
+	This proves \eqref{eq:Cn-gf}; clearing the denominator gives the
+	recurrence.
+\end{proof}
+
+\begin{proposition}[Elementary identities]\label{prop:Cn-identities}
+	For all $m,n\geq1$:
+	\[
+		C_{2n}=C_n^2,
+		\qquad
+		m\mid n\Longrightarrow C_m\mid C_n.
+	\]
+\end{proposition}
+
+\begin{proof}
+	The first identity is Frobenius applied to the power sum.  For the
+	second write $n=mk$ and use Dickson composition:
+	\[
+		D_n(X)+D_n(X+1)
+		=D_k(D_m(X))+D_k(D_m(X+1)).
+	\]
+	The difference $A+B$ divides $D_k(A)+D_k(B)$ in characteristic two,
+	so the right side is divisible by
+	$D_m(X)+D_m(X+1)$.  The substitution
+	$\F_2[S]\hookrightarrow\F_2[X]$, $S\mapsto X^2+X$, is injective.
+\end{proof}
+
+For $f(S)=\sum_i a_iS^i$, write
+$f^{[r]}=\sum_i a_i\binom{i}{r}S^{i-r}$ for its $r$-th Hasse derivative.
+
+\begin{proposition}[Hasse-derivative generating function]
+\label{prop:Cn-hasse}
+	For every $r\geq0$,
+	\begin{equation}\label{eq:Cn-hasse}
+		\sum_{n\geq0}C_n^{[r]}(S)t^n
+		=\frac{t^{2r+1}(1+t)^2}{Q_S(t)^{r+1}}.
+	\end{equation}
+\end{proposition}
+
+\begin{proof}
+	The polynomial $Q_S(t)=t^2S+(1+t+t^3+t^4)$ is affine in $S$.
+	The Hasse expansion of its reciprocal gives
+	$\partial_S^{[r]}Q_S(t)^{-1}=t^{2r}Q_S(t)^{-r-1}$.
+	Apply this to \eqref{eq:Cn-gf}.
+\end{proof}
+
+For odd $n$, the polynomial $F_n$ is the square of a square-free
+polynomial \cite[Prop.~2.11]{HUNZIKER2004465}; write
+\[
+	F_n(X)=H_n(X)^2.
+\]
+Then $D_n(X)=XH_n(X)^2$ and
+\begin{equation}\label{eq:Cn-H}
+	C_n(X^2+X)=XH_n(X)^2+(X+1)H_n(X+1)^2.
+\end{equation}
+
+\begin{lemma}[Repeated roots and dividing quartics]\label{lem:Cn-repeated}
+	Let $n$ be odd.  A value $Y\in\overline{\F}_2$ is a repeated root of
+	$C_n$ if and only if
+	\[
+		Y=X_0^2+X_0
+	\]
+	for a common root $X_0$ of $F_n(X)$ and $F_n(X+1)$.  Equivalently,
+	$Y\neq0$ and $Q_Y(T)\mid T^n+1$.
+\end{lemma}
+
+\begin{proof}
+	Differentiating \eqref{eq:Cn-H} gives
+	\[
+		\frac{d}{dX}C_n(X^2+X)
+		=H_n(X)^2+H_n(X+1)^2.
+	\]
+	At a repeated root $X_0$, the two values
+	$H_n(X_0)$ and $H_n(X_0+1)$ are equal.  Substitution in
+	\eqref{eq:Cn-H} then shows that their common value is zero.  The
+	converse is immediate.  The map $X\mapsto X^2+X$ identifies the pair
+	$\{X_0,X_0+1\}$, and Lemma~\ref{lem:quartic} together with the standard
+	root parametrization of $F_n$ gives the quartic criterion.
+	Since $F_n(0)=1$ for odd $n$, neither $X_0=0$ nor $X_0=1$ occurs, so
+	$Y\neq0$.
+\end{proof}
+
+\begin{theorem}[Multiplicity Two]\label{thm:Cn-mult2}
+	If $n$ is odd and $Y$ is a repeated root of $C_n$, then
+	\begin{equation}\label{eq:Cn-second}
+		C_n^{[2]}(Y)=Y^{-2}\neq0.
+	\end{equation}
+	Thus every repeated root has multiplicity exactly two, and
+	\begin{equation}\label{eq:Cn-factor}
+		C_n=A_nB_n^2,\qquad
+		\gcd(C_n,C_n')=B_n^2,
+	\end{equation}
+	where $A_n$ and $B_n$ are square-free and coprime and the roots of
+	$B_n$ are precisely the values in Lemma~\ref{lem:Cn-repeated}.
+\end{theorem}
+
+\begin{proof}
+	Let $Y=X_0^2+X_0$ be repeated, and write the two reciprocal root pairs
+	of $Q_Y$ as
+	$\{\zeta,\zeta^{-1}\}$ and $\{\eta,\eta^{-1}\}$, where
+	$X_0=\zeta+\zeta^{-1}$ and
+	$X_0+1=\eta+\eta^{-1}$.  All four roots are distinct $n$-th roots of
+	unity.  Put $m=(n-1)/2$.  If $X=t+t^{-1}$, then
+	\[
+		H_n(X)=\frac{t^n+1}{t^m(t+1)}.
+	\]
+	Differentiating at $t=\zeta$ and using
+	$dX/dt=(t+1)^2/t^2$ gives
+	\[
+		H_n'(X_0)^2=\frac{\zeta^3}{(\zeta+1)^6},
+	\]
+	and the analogous identity holds with $\eta$ and $X_0+1$.
+	The coefficient of $(X-X_0)^2$ in \eqref{eq:Cn-H} is therefore
+	\[
+		X_0H_n'(X_0)^2+(X_0+1)H_n'(X_0+1)^2
+		=\frac{\zeta^2}{(\zeta+1)^4}
+		 \frac{\eta^2}{(\eta+1)^4}.
+	\]
+	Since $\zeta/(\zeta+1)^2=X_0^{-1}$ and
+	$\eta/(\eta+1)^2=(X_0+1)^{-1}$, this is
+	\[
+		\left(\frac1{X_0}+\frac1{X_0+1}\right)^2
+		=(X_0^2+X_0)^{-2}=Y^{-2}.
+	\]
+	The substitution $S=X^2+X$ has derivative $1$, so this coefficient is
+	exactly $C_n^{[2]}(Y)$.  The factorization follows.
+\end{proof}
+
+\begin{theorem}[Bridge to Sutner's nullity]\label{thm:Cn-bridge}
+	For odd $n$,
+	\begin{equation}\label{eq:Cn-bridge}
+		\gcd\!\left(F_n(X),F_n(X+1)\right)
+		=\gcd(C_n,C_n')(X^2+X).
+	\end{equation}
+	In particular
+	\[
+		d(n-1)=4\deg B_n=2\deg\gcd(C_n,C_n').
+	\]
+\end{theorem}
+
+\begin{proof}
+	With $F_n=H_n^2$, the square-free polynomial
+	$\gcd(H_n(X),H_n(X+1))$ has roots in translation pairs
+	$\{X_0,X_0+1\}$.  Lemma~\ref{lem:Cn-repeated} identifies the polynomial
+	obtained after quotienting those pairs as $B_n$, so
+	\[
+		\gcd(H_n(X),H_n(X+1))=B_n(X^2+X).
+	\]
+	Square and use \eqref{eq:Cn-factor}.  The degree statement follows
+	from Sutner's formula \eqref{eq:sutner}.
+\end{proof}
+
+\subsection{Product coordinates and an elliptic translation}
+
+There is also a geometric normalization that retains both multiplicative
+coordinates.  Put
+\[
+	z=uv,\qquad r=u/v.
+\]
+Then, in characteristic two,
+\begin{equation}\label{eq:product-coordinates}
+	1+u+u^{-1}+v+v^{-1}=0
+	\quad\Longleftrightarrow\quad
+	(z+z^{-1})(r+r^{-1})=1.
+\end{equation}
+Indeed the right side is the square of
+$u+u^{-1}+v+v^{-1}$.
+
+\begin{proposition}[Elliptic translation model]\label{prop:elliptic-translation}
+	Let
+	\[
+		E:\quad Y^2+XY=X^3+X,\qquad T=(1,0)\in E(\F_2).
+	\]
+	The point $T$ has order four.  Away from the degenerate values
+	$z,r\in\{0,1\}$, the curve in \eqref{eq:product-coordinates} is
+	isomorphic to the open subset of $E$ under
+	\[
+		P=\left(z,(r+1)(z+1)^2\right).
+	\]
+	Under this correspondence
+	\[
+		X(P)=z,\qquad X(P+T)=r.
+	\]
+	Consequently a five-term relation of conductor $n$ is a point $P$ for
+	which both $X(P)$ and $X(P+T)$ lie in $\mu_n$.
+\end{proposition}
+
+\begin{proof}
+	Set $y=(r+1)(z+1)^2$.  After clearing denominators,
+	\eqref{eq:product-coordinates} is
+	\[
+		z^2r^2+zr+z^2+r^2+1=0,
+	\]
+	which is equivalent to
+	$y^2+zy=z^3+z$.  Thus $(z,y)\in E$.
+	The addition law on the binary Weierstrass model gives
+	\[
+		X(P+T)=1+\frac{Y(P)}{(X(P)+1)^2}=r.
+	\]
+	Conversely, the curve equation implies
+	\[
+		(X+X^{-1})\bigl(X(P+T)+X(P+T)^{-1}\bigr)=1.
+	\]
+	A direct doubling calculation gives $2T=(0,0)$ and $2(0,0)=O$.
+\end{proof}
+
+\begin{remark}[What the elliptic model does and does not give]
+	The model explains the genus-one geometry behind the equation and
+	relates the two multiplicative coordinates by translation by a rational
+	four-torsion point.  It does not turn the problem into an ordinary
+	torsion question on $E$: the condition is that two \emph{$X$-coordinates}
+	lie in the subgroup $\mu_{p^j}\subset\overline{\F}_2^\times$, not that
+	$P$ belongs to a specified subgroup of $E$.  Isogenies, complex
+	multiplication, and point-count estimates therefore return to the same
+	subgroup-incidence problem.  This is why the elliptic attack gives
+	exact formulas in full-torus cases but does not resolve a Wieferich
+	plateau.
+\end{remark}
+
+\section{The degree argument and the Wieferich plateau}\label{sec:degree}
+
+For odd $M>1$ put
+\[
+	\rho_2(M)=\min\{r>0:\ 2^{r}\equiv\pm1\pmod M\},
+\]
+so that $[\F_2(\alpha):\F_2]=\rho_2(M)$ for $\alpha\in R_M$; this is the
+field-extension-size lemma of the companion manuscript at
+\path{tex/finite_fields/finite_fields.tex}.
+
+\begin{lemma}\label{lem:orders}
+	Let $p$ be an odd prime and $c=c_p$ as in \eqref{eq:c}.
+	Then for every $i\geq1$,
+	\[
+		\ord[p^i]{2}=\ord[p]{2}\,p^{\max(0,\,i-c)},
+		\qquad
+		\rho_2(p^{i})=\rho_2(p)\,p^{\max(0,\,i-c)} .
+	\]
+\end{lemma}
+
+\begin{proof}
+	The first identity is the lifting-the-exponent computation carried out
+	in \path{tex/finite_fields/finite_fields.tex}.
+	For the second, $\rho_2(M)=\ord[M]{2}$ or $\ord[M]{2}/2$ according as
+	$-1\notin\langle2\rangle$ or $-1\in\langle2\rangle$ in
+	$(\Z/M\Z)^{\times}$.
+	The group $(\Z/p^i\Z)^{\times}$ is cyclic and contains a unique element
+	of order two, namely $-1$; hence $-1\in\langle2\rangle$ if and only if
+	$\ord[p^i]{2}$ is even, i.e.\ if and only if $\ord[p]{2}$ is even,
+	because $p^{\max(0,i-c)}$ is odd.
+	The criterion is therefore independent of $i$, and the second identity
+	follows from the first.
+\end{proof}
+
+\begin{definition}
+	The \emph{base-$2$ plateau} of $p$ is the set of exponents
+	$1\leq i\leq c_p$.
+	Equivalently, $i$ lies on the plateau if and only if
+	$\mu_{p^{i}}\subseteq\F_{2^{f_1}}$ with $f_1=\ord[p]{2}$, if and only
+	if $2$ splits completely in $\Q(\zeta_{p^{i}})/\Q(\zeta_p)$.
+	The plateau has length $\geq2$ exactly when $p$ is a Wieferich prime.
+\end{definition}
+
+\begin{proposition}[Frobenius-orbit restriction]\label{prop:frobenius-orbit}
+	Suppose \eqref{eq:main} holds, $\gcd(a,p)=1$, and
+	$b\equiv\pm2^k a\pmod{p^j}$.
+	Put $d=\rho_2(p^j)$ and reduce $k$ modulo $d$ to $0\leq k<d$.
+	Then $d$ is even and $k=d/2$.
+	In particular, when $\rho_2(p^j)$ is odd, a counterexample cannot pair
+	two trace values in the same Frobenius orbit.
+\end{proposition}
+
+\begin{proof}
+	Set $\alpha=\theta^a+\theta^{-a}$. Since $\theta^a$ has exact order
+	$p^j$, one has $[\F_2(\alpha):\F_2]=d$. The congruence on $b$ and
+	\eqref{eq:main} give
+	\[
+		\alpha^{2^k}=\theta^b+\theta^{-b}=\alpha+1.
+	\]
+	Applying the same Frobenius power once more yields
+	$\alpha^{2^{2k}}=(\alpha+1)^{2^k}=\alpha$, so $d\mid2k$.
+	One cannot have $d\mid k$, since that would give
+	$\alpha^{2^k}=\alpha\neq\alpha+1$.
+	With $0<k<d$, the divisibility $d\mid2k$ therefore forces
+	$d$ even and $k=d/2$.
+\end{proof}
+
+\begin{proposition}[Orbit divisibility]\label{prop:orbit-divisibility}
+	Let $\Delta_j=\abs{S_{p^j}}-\abs{S_{p^{j-1}}}$, where the lower solution
+	set is embedded by $(a,b)\mapsto(pa,pb)$, and put
+	$\rho=\rho_2(p^j)$. Then
+	\[
+		\Delta_j\in
+		\begin{cases}
+			8\rho\,\Z,&\rho\ \text{odd},\\
+			4\rho\,\Z,&\rho\ \text{even}.
+		\end{cases}
+	\]
+	Thus any nonzero new stratum contains at least $8\rho$ ordered solutions
+	when $\rho$ is odd and at least $4\rho$ when $\rho$ is even.
+\end{proposition}
+
+\begin{proof}
+	On solution pairs $(u,v)=(\theta^a,\theta^b)$, independent inversion of
+	the two coordinates and transposition generate a dihedral group of order
+	$8$. Its action is free for $p>3$: a fixed inversion forces a coordinate
+	to be $1$, while a fixed signed transposition forces $v=u^{\pm1}$ and
+	then $(u+u^{-1})^2=1$, so $u$ has order $3$.
+
+	Frobenius acts by $(u,v)\mapsto(u^2,v^2)$. If
+	$f=\ord[p^j]{2}$ is odd, then $f=\rho$ and its cyclic group meets the
+	dihedral group trivially. If $f$ is even, then $f=2\rho$ and
+	Frobenius to the power $\rho$ is simultaneous inversion, so the combined
+	effective group still has order $8\rho$.
+
+	A nontrivial stabilizer in this effective group must involve a signed
+	transposition. With one coordinate primitive, such a stabilizer gives
+	$2^{2k}\equiv-1\pmod{p^j}$; the $+1$ alternative again forces
+	$v=u^{\pm1}$. Hence it can occur only when $\rho$ is even, with
+	$k\equiv\rho/2\pmod\rho$, and then its order is exactly $2$.
+	The new solutions therefore split into orbits of size $8\rho$ when
+	$\rho$ is odd and of size $8\rho$ or $4\rho$ when $\rho$ is even.
+\end{proof}
+
+\begin{theorem}\label{thm:A}
+	Let $p>3$ be prime, let $\theta\in\overline{\F}_2$ have exact order
+	$p^j$, and suppose \eqref{eq:main} holds.
+	Then
+	\[
+		\ord{\theta^{a}}\leq p^{c},
+		\qquad
+		\ord{\theta^{b}}\leq p^{c}.
+	\]
+	In particular $p^{\,j-c}$ divides both $a$ and $b$ whenever $j>c$.
+\end{theorem}
+
+\begin{proof}
+	By Lemma~\ref{lem:degenerate} the orders $p^{i_1}=\ord{\theta^a}$ and
+	$p^{i_2}=\ord{\theta^b}$ satisfy $i_1,i_2\geq1$.
+	Put $\alpha=\theta^{a}+\theta^{-a}$, so $\alpha\in R_{p^{i_1}}$ and
+	$\alpha+1\in R_{p^{i_2}}$ by \eqref{eq:main}.
+	Since $\F_2(\alpha)=\F_2(\alpha+1)$, we get
+	$\rho_2(p^{i_1})=\rho_2(p^{i_2})$, whence
+	$\max(0,i_1-c)=\max(0,i_2-c)$ by Lemma~\ref{lem:orders}.
+	Therefore either $i_1,i_2\leq c$, and we are done, or $i_1=i_2=:i>c$.
+
+	Assume $i>c$.
+	Both $\theta^{a}$ and $\theta^{b}$ have exact order $p^{i}$, so writing
+	$\zeta=\theta^{a}$ we have $\theta^{b}=\zeta^{s}$ for some $s$ with
+	$\gcd(s,p)=1$, and $\zeta$ is a root of
+	\begin{equation}\label{eq:Ps}
+		P(x)=1+x+x^{p^{i}-1}+x^{s}+x^{p^{i}-s}\in\F_2[x].
+	\end{equation}
+	Let $m=p^{\,i-c}>1$.
+	Then $\zeta^{m}$ has exact order $p^{c}$, and its minimal polynomial
+	$g$ over $\F_2$ has degree $\ord[p^{c}]{2}=\ord[p]{2}$ by
+	Lemma~\ref{lem:orders}.
+	Hence
+	\[
+		\deg g(x^{m})=\ord[p]{2}\,p^{\,i-c}=\ord[p^{i}]{2},
+	\]
+	which is the degree of the minimal polynomial of $\zeta$; as $\zeta$ is
+	a root of $g(x^m)$, that polynomial \emph{is} the minimal polynomial of
+	$\zeta$, and therefore $g(x^{m})\mid P(x)$.
+
+	Decompose $P(x)=\sum_{r=0}^{m-1}x^{r}P_r(x^{m})$, which is possible in
+	exactly one way.
+	Writing $P=g(x^{m})H$ and $H=\sum_r x^{r}H_r(x^{m})$ and comparing the
+	unique decompositions gives $P_r=gH_r$ for every $r$; in particular
+	$g\mid P_0$.
+	The five exponents in \eqref{eq:Ps} reduce modulo $m$ to
+	$0,\ 1,\ -1,\ s,\ -s$.
+	Since $m$ is an odd prime power exceeding $1$ and $\gcd(s,p)=1$, none
+	of $1,-1,s,-s$ is $\equiv0\pmod m$.
+	Hence $P_0=1$ and $g\mid1$, contradicting $\deg g\geq1$.
+\end{proof}
+
+\begin{corollary}\label{cor:nonwieferich}
+	Problem~\ref{prob:main} has an affirmative answer for every
+	non-Wieferich prime $p>3$ and every $j\geq2$, and more generally
+	whenever $j>c_p$.
+	Consequently a counterexample requires a Wieferich prime $p$ with
+	$c_p\geq2$ and an exponent $j$ with $2\leq j\leq c_p$; that is, the
+	problem is open \emph{exactly on the base-$2$ Wieferich plateau}.
+\end{corollary}
+
+\begin{proof}
+	If $p$ is not Wieferich then $c_p=1<2\leq j$, so
+	Theorem~\ref{thm:A} gives $p^{\,j-1}\mid a,b$, and in particular
+	$p\mid a,b$.
+	If $j>c_p$ the same argument applies verbatim.
+	A counterexample therefore has $j\leq c_p$, and $j\geq2$ forces
+	$c_p\geq2$.
+\end{proof}
+
+\begin{corollary}\label{cor:2^64}
+	Problem~\ref{prob:main} has an affirmative answer for every prime
+	$5<p<2^{64}$ and every $j\geq2$.
+	Hence $d(p^k-1)=d(p-1)$ for every such $p$ and every $k$.
+\end{corollary}
+
+\begin{proof}
+	The only Wieferich primes below $2^{64}$ are $1093$ and $3511$
+	\cite{CrandallSearch,KellerRichstein2005,DoraisKlyve2011,PrimeGridWieferich},
+	and both have $c_p=2$.
+	Corollary~\ref{cor:nonwieferich} handles every other $p$, and handles
+	$j\geq3$ for $p\in\{1093,3511\}$.
+	The remaining case $j=2$ for $p\in\{1093,3511\}$ is settled by the
+	direct searches of Section~\ref{sec:computations}, which find no
+	solutions; alternatively it follows from the exact polynomial gcd
+	evaluations $d(1093^2-1)=d(3511^2-1)=0$ recorded
+	in \path{tex/finite_fields/finite_fields.tex} together with
+	Lemma~\ref{lem:d-count}.
+	Corollary~\ref{cor:reduction} converts this into the statement about
+	$d$.
+\end{proof}
+
+Theorem~\ref{thm:A} is a small sharpening of the argument in the companion
+manuscript, which treats only the case of equal orders.
+The point of stating it in this form is Corollary~\ref{cor:nonwieferich}:
+the plateau is not merely where the known proof stops, it is the exact
+locus of the residual problem.
+Section~\ref{sec:counterexamples} shows that on the analogous plateau in
+other residue characteristics the statement can genuinely fail.
+
+\subsection{The single endpoint statement}
+
+The preceding reduction can be sharpened from a finite list of plateau
+levels to one statement at the top of the plateau.
+
+\begin{theorem}[Endpoint equivalence]\label{thm:endpoint-equivalence}
+	Fix a prime $p>5$ with $c=c_p\geq2$.  The following are equivalent.
+	\begin{enumerate}
+		\item Problem~\ref{prob:main} has an affirmative answer for every
+		      $j\geq2$.
+		\item Whenever $\Theta$ has exact order $p^c$ and
+		      \[
+			      1+\Theta^a+\Theta^{-a}+\Theta^b+\Theta^{-b}=0,
+		      \]
+		      one has $p^{c-1}\mid a$ and $p^{c-1}\mid b$.
+		\item $B_{p^c}=B_p$.
+		\item Writing $F_n=H_n^2$ as in Section~\ref{sec:reformulations},
+		      \begin{equation}\label{eq:endpoint-gcd}
+			      \gcd\!\left(
+				      \frac{H_{p^c}(X)}{H_p(X)},
+				      H_{p^c}(X+1)
+			      \right)=1.
+		      \end{equation}
+	\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+	By Theorem~\ref{thm:A}, levels above $c$ introduce no new solution.
+	Thus (1) implies (2).  Conversely suppose (2), and let
+	$2\leq j\leq c$.  Choose $\Theta$ of order $p^c$ and put
+	$\theta=\Theta^{p^{c-j}}$.  A relation at level $p^j$ becomes one at
+	level $p^c$ with exponents $p^{c-j}a,p^{c-j}b$.  Statement (2) then
+	gives $p^{j-1}\mid a,b$, hence in particular $p\mid a,b$.
+	This proves (1).
+
+	Lemma~\ref{lem:Cn-repeated} identifies the roots of $B_{p^k}$ with
+	the common-root pairs whose two multiplicative orders divide $p^k$.
+	Therefore $B_{p^c}=B_p$ says exactly that every endpoint relation has
+	both orders dividing $p$, which is (2).  Finally, the quotient
+	$H_{p^c}/H_p$ records the roots whose order is new above level $p$;
+	its coprimality with the translate of $H_{p^c}$ is exactly the absence
+	of a common-root pair with at least one new coordinate.  This is (3).
+\end{proof}
+
+\begin{definition}\label{def:Cn-primitive}
+	For $j\geq1$ define the shifted-Dickson primitive quotient
+	\[
+		\Pi_{p^j}(S)=\frac{C_{p^j}(S)}{C_{p^{j-1}}(S)},
+		\qquad C_{p^0}=C_1=1.
+	\]
+	The letter $\Pi$ is used to avoid confusion with the cyclotomic
+	polynomial $\Phi_{p^j}$.
+\end{definition}
+
+\begin{proposition}[Polynomial stabilization criterion]
+\label{prop:Cn-stabilization}
+	For every $j\geq1$ the following are equivalent:
+	\begin{enumerate}
+		\item $B_{p^j}=B_{p^{j-1}}$;
+		\item
+		      $\gcd(C_{p^j},C_{p^j}')=
+		       \gcd(C_{p^{j-1}},C_{p^{j-1}}')$;
+		\item $\Pi_{p^j}$ is square-free and coprime to
+		      $C_{p^{j-1}}$.
+	\end{enumerate}
+	Moreover $B_{p^j}=B_{p^c}$ for every $j\geq c$, so the full theorem
+	is equivalent to $B_{p^c}=B_p$.
+\end{proposition}
+
+\begin{proof}
+	The first two statements are equivalent by
+	\eqref{eq:Cn-factor}.  Because every repeated root of every $C_n$ has
+	exact multiplicity two, a new repeated root at level $p^j$ either
+	appears twice in $\Pi_{p^j}$ or appears once in both
+	$\Pi_{p^j}$ and $C_{p^{j-1}}$; these are exactly the two failures in
+	(3).  The final statement is Theorem~\ref{thm:A} translated through
+	Lemma~\ref{lem:Cn-repeated}.
+\end{proof}
+
+\section{Integer lifts and cyclotomic collision norms}
+\label{sec:collision-norms}
+
+The shifted-Dickson target has a useful integral lift.  It does not remove
+the endpoint obstruction, but it isolates it as the parity of two explicit
+integer norms and makes clear that both a primitive--primitive and a
+primitive--lower collision must be excluded.
+
+\begin{proposition}[Integer lift]\label{prop:integer-lift}
+	For odd $n$ there is a monic polynomial
+	$\widetilde C_n\in\Z[Y]$ such that
+	\begin{equation}\label{eq:integer-lift}
+		D_n(X)+D_n(X+1)
+		=(2X+1)\widetilde C_n(X^2+X),
+		\qquad
+		\widetilde C_n\equiv C_n\pmod2.
+	\end{equation}
+\end{proposition}
+
+\begin{proof}
+	The involution $\iota(X)=-1-X$ fixes $Y=X^2+X$.  For odd $n$, the
+	integer Dickson polynomial $D_n$ is odd, so
+	$D_n(X)+D_n(X+1)$ is anti-invariant under $\iota$.
+	Write an arbitrary element of $\Z[X]$ uniquely as $A(Y)+XB(Y)$.
+	Anti-invariance forces $B=2A$, and hence the polynomial is
+	$(2X+1)A(Y)$.  Its leading term shows that $A=\widetilde C_n$ is
+	monic.  Reducing modulo two gives \eqref{eq:Cn-def}.
+\end{proof}
+
+For odd $k$, put
+\[
+	L_k[A,B]=\frac{D_k(A)+D_k(B)}{A+B}\in\Z[A,B].
+\]
+
+\begin{proposition}[Composition and telescoping]\label{prop:integer-telescope}
+	If $m$ and $k$ are odd, then
+	\[
+		\frac{\widetilde C_{mk}}{\widetilde C_m}
+		=L_k[D_m(X),D_m(X+1)]\in\Z[Y].
+	\]
+	In particular $\widetilde C_m\mid\widetilde C_n$ whenever $m\mid n$,
+	and
+	\begin{equation}\label{eq:integer-telescope}
+		\widetilde\Pi_{p^j}(Y)
+		:=\frac{\widetilde C_{p^j}(Y)}
+		        {\widetilde C_{p^{j-1}}(Y)}
+		=L_p[D_{p^{j-1}}(X),D_{p^{j-1}}(X+1)].
+	\end{equation}
+\end{proposition}
+
+\begin{proof}
+	Dickson composition gives
+	\[
+		D_{mk}(X)+D_{mk}(X+1)
+		=D_k(A)+D_k(B)=(A+B)L_k[A,B],
+	\]
+	with $A=D_m(X)$ and $B=D_m(X+1)$.  The quotient is invariant under
+	$X\mapsto-1-X$, hence lies in $\Z[Y]$.  Cancel the common factor
+	$2X+1$ from \eqref{eq:integer-lift}.
+\end{proof}
+
+\begin{theorem}[Discriminant/resultant certificate]
+\label{thm:integer-certificate}
+	At level $p^j$, the equality
+	$B_{p^j}=B_{p^{j-1}}$ holds if and only if both integers
+	\[
+		\operatorname{disc}(\widetilde\Pi_{p^j})
+		\quad\text{and}\quad
+		\Res(\widetilde\Pi_{p^j},\widetilde C_{p^{j-1}})
+	\]
+	are odd.
+\end{theorem}
+
+\begin{proof}
+	Reduction modulo two commutes with discriminants and resultants.
+	Thus the first integer is odd exactly when $\Pi_{p^j}$ is square-free,
+	and the second is odd exactly when $\Pi_{p^j}$ is coprime to
+	$C_{p^{j-1}}$.  Apply Proposition~\ref{prop:Cn-stabilization}.
+\end{proof}
+
+\subsection{Factorization over the maximal real cyclotomic field}
+
+Let
+\[
+	\lambda_k=\zeta_n^k+\zeta_n^{-k},
+	\qquad
+	1\leq k\leq\frac{n-1}{2},
+\]
+and let $\psi_m$ be the minimal polynomial of
+$\zeta_m+\zeta_m^{-1}$.  Put
+\[
+	\mathcal R_n(\lambda)=\prod_{\substack{d\mid n\\d>1}}\psi_d(\lambda).
+\]
+
+\begin{proposition}[Real-cyclotomic factorization]
+\label{prop:real-factorization}
+	For odd $n$,
+	\begin{equation}\label{eq:real-factorization}
+		\widetilde C_n(Y)
+		=\prod_{k=1}^{(n-1)/2}
+		 \bigl((\lambda_k+2)Y+\lambda_k^2-3\bigr)
+		=\Res_\lambda\!\left(
+			\mathcal R_n(\lambda),
+			\lambda^2+Y\lambda+2Y-3
+		\right).
+	\end{equation}
+	Its roots are
+	\[
+		y(\lambda)=\frac{3-\lambda^2}{\lambda+2},
+	\]
+	and its primitive quotient is obtained by replacing
+	$\mathcal R_n$ with $\psi_{p^j}$.
+\end{proposition}
+
+\begin{proof}
+	The standard factorization of
+	$(D_n(A)+D_n(B))/(A+B)$ over
+	$\Q(\zeta_n+\zeta_n^{-1})$ gives, after substituting
+	$B=A+1$ and $Y=A^2+A$, the displayed linear factors; equivalently,
+	direct substitution shows that every $y(\lambda_k)$ is a root, and
+	the degrees agree.
+	The leading coefficient is
+	$\prod_k(\lambda_k+2)=\prod_{k=1}^{n-1}(1+\zeta_n^k)=1$.
+	Grouping the trace values by exact order gives the primitive statement.
+\end{proof}
+
+Define the collision factor
+\[
+	\nu(\lambda,\mu)=(\lambda+2)(\mu+2)-1.
+\]
+The elementary identity
+\begin{equation}\label{eq:y-difference}
+	y(\lambda)-y(\mu)
+	=\frac{(\mu-\lambda)\nu(\lambda,\mu)}
+	       {(\lambda+2)(\mu+2)}
+\end{equation}
+separates the ordinary cyclotomic discriminant from the new source of
+two-adic divisibility.
+
+\begin{theorem}[Two collision norms]\label{thm:two-collision-norms}
+	Let $\Lambda_j$ be the primitive $p^j$ trace values and let
+	$\Lambda_{<j}$ be the nontrivial trace values of order dividing
+	$p^{j-1}$.  Then:
+	\begin{enumerate}
+		\item the parity of
+		      $\operatorname{disc}(\widetilde\Pi_{p^j})$ is the parity of
+		      the internal product
+		      \[
+			      N_j^{\mathrm{int}}
+			      =\prod_{\{\lambda,\mu\}\subset\Lambda_j}
+			       \nu(\lambda,\mu);
+		      \]
+		\item the parity of
+		      $\Res(\widetilde\Pi_{p^j},\widetilde C_{p^{j-1}})$ is the
+		      parity of the mixed product
+		      \[
+			      N_j^{\mathrm{mix}}
+			      =\prod_{\lambda\in\Lambda_j,\ \mu\in\Lambda_{<j}}
+			       \nu(\lambda,\mu).
+		      \]
+	\end{enumerate}
+	Consequently stabilization at level $p^j$ is equivalent to the
+	simultaneous oddness of the internal and mixed collision norms.
+\end{theorem}
+
+\begin{proof}
+	Equation~\eqref{eq:y-difference} expresses the discriminant and
+	resultant as products of ordinary trace differences times the stated
+	collision factors.  Since $2$ is unramified in every odd-conductor
+	cyclotomic field, the discriminants of
+	$\mathcal R_n$ and $\psi_{p^j}$ are odd.  The factors
+	$\lambda+2$ are cyclotomic units of odd norm.  Thus all two-adic
+	divisibility is carried by the two displayed products.
+	Theorem~\ref{thm:integer-certificate} finishes the proof.
+\end{proof}
+
+\begin{remark}[Circular-unit form]
+	If
+	$\epsilon_a=\zeta^{-a/2}(1+\zeta^a)$, then
+	$\epsilon_a^2=\lambda_a+2$, so
+	\[
+		\nu(\lambda_a,\lambda_b)
+		=\epsilon_a^2\epsilon_b^2-1.
+	\]
+	At a prime above two this vanishes exactly when
+	$\epsilon_a\epsilon_b\equiv1$.  With
+	$s_a=\zeta^{-a/2}(1-\zeta^a)$ one has
+	$\epsilon_a=\sigma_2(s_a)/s_a$, and the same congruence is equivalent
+	to $s_as_b\equiv1$.  Thus the two norms here are precisely the
+	primitive--primitive and primitive--lower sine-unit obstructions of
+	Section~\ref{sec:reduction}.
+\end{remark}
+
+\subsection{The collision involution and relative norms}
+
+Set
+\[
+	\mathfrak m(x)=\frac1{x+2}-2=-\frac{2x+3}{x+2}.
+\]
+It is an involution, conjugate under $U=x+2$ to $U\mapsto U^{-1}$, and
+\[
+	\nu(\lambda,\mu)=(\lambda+2)(\mu-\mathfrak m(\lambda)).
+\]
+Modulo two, $\mathfrak m(x)=x^{-1}$.  Thus the internal norm is odd
+exactly when the primitive trace polynomial is coprime modulo two to its
+reciprocal, and the mixed norm is odd exactly when no primitive trace is
+the inverse of a lower trace.
+
+For a monic polynomial $h$, write
+\[
+	h^{\mathfrak m}(X)
+	=(X+2)^{\deg h}h(\mathfrak m(X)).
+\]
+The diagonal contribution to
+$\Res(\psi_n,\psi_n^{\mathfrak m})$ is odd for odd $n\neq3$, because
+$\psi_n(-2)=\pm1$ and $\psi_n(-1),\psi_n(-3)$ are odd.  Hence
+\begin{equation}\label{eq:collision-resultants}
+	N_j^{\mathrm{mix}}\ \text{is odd}
+	\Longleftrightarrow
+	\Res\!\left(\psi_{p^j},
+		\Bigl(\prod_{i<j}\psi_{p^i}\Bigr)^{\mathfrak m}\right)
+	\ \text{is odd},
+\end{equation}
+and the two-adic valuation of
+$\Res(\psi_{p^j},\psi_{p^j}^{\mathfrak m})$ is twice that of the internal
+product.
+
+There is also an exact one-step norm identity.  If
+$K_i^+=\Q(\zeta_{p^i}+\zeta_{p^i}^{-1})$,
+$\lambda=\theta+\theta^{-1}$ has exact level $p^j$,
+$\lambda_p=\theta^p+\theta^{-p}$, and $\mu\in K_{j-1}^+$, then
+\begin{equation}\label{eq:relative-collision-norm}
+	\Nm_{K_j^+/K_{j-1}^+}
+	\left((\lambda+2)(\mu+2)-1\right)
+	=(\mu+2)^p\left(\lambda_p-D_p(\mathfrak m(\mu))\right).
+\end{equation}
+Multiplying this identity over lower trace orbits gives a recurrence of
+ordinary cyclotomic resultants.  This makes the obstruction computable
+without constructing $C_{p^j}$, but it does not force its parity: on the
+plateau the right side can vanish modulo a chosen prime above two.
+
+\begin{theorem}[Mixed oddness off the plateau]
+\label{thm:mixed-odd}
+	If $j>c_p$, then $N_j^{\mathrm{mix}}$ is odd.
+\end{theorem}
+
+\begin{proof}
+	A mixed collision gives $\theta$ of exact order $p^j$ and $\eta$ of
+	order dividing $p^{j-1}$ such that
+	\[
+		(\theta+\theta^{-1})(\eta+\eta^{-1})=1.
+	\]
+	The inverse lower trace lies in a field of degree dividing
+	$f_{j-1}=\ord[p^{j-1}]{2}$, and $\theta$ satisfies a quadratic over
+	that field.  Hence $f_j\mid2f_{j-1}$.  For every $j>c_p$ one has
+	$f_j=p f_{j-1}$, which would force the odd prime $p$ to divide $2$.
+\end{proof}
+
+The same degree argument says nothing about the internal norm, since both
+traces already lie at exact level $p^j$.  The global degree theorem,
+Theorem~\ref{thm:A}, rules out new internal collisions off the plateau by
+using the five-term sparsity; collision-norm algebra alone does not.
+
+\begin{theorem}[Plateau inversion criterion]\label{thm:plateau-inversion}
+	Assume $j\leq c_p$, and in the common residue field put
+	\[
+		\mathcal T_i
+		=\{x+x^{-1}:x\in\mu_{p^i}\}.
+	\]
+	Then:
+	\begin{enumerate}
+		\item $N_j^{\mathrm{mix}}$ is even if and only if
+		      \[
+			      \mathcal T_{j-1}^{-1}
+			      \cap(\mathcal T_j\setminus\mathcal T_{j-1})
+			      \neq\emptyset;
+		      \]
+		\item $N_j^{\mathrm{int}}$ is even if and only if
+		      $\mathcal T_j\setminus\mathcal T_{j-1}$ meets its own
+		      inverse.
+	\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+	On the plateau all the groups $\mu_{p^i}$ lie in one finite field, and
+	$\mathfrak m$ reduces to inversion.  Distinct pairs
+	$\{x,x^{-1}\}$ give distinct traces, so the primitive trace values are
+	exactly $\mathcal T_j\setminus\mathcal T_{j-1}$.  The two assertions
+	are therefore direct translations of the mixed and internal collision
+	conditions.
+\end{proof}
+
+\begin{remark}[What was learned]
+	The integral route is an exact reformulation, not a parity theorem.
+	It corrects a tempting but insufficient reduction to a single
+	discriminant: the mixed resultant is an independent obstruction and
+	must also be odd.  Off the plateau its parity follows from degree
+	growth, while on the plateau the problem becomes the concrete question
+	whether a finite set of primitive trace values meets its own inverse or
+	the inverse of the lower trace set.  No general cyclotomic resultant
+	formula determines those intersections.
+\end{remark}
+
+\section{Arithmetic dynamics of the collision locus}\label{sec:dynamics}
+
+Let $f=D_p$ over $\F_2$.  Dickson composition gives
+$D_{p^j}=f^{\circ j}$, so the roots of $D_{p^j}$ form the depth-$j$
+preimage tree of the fixed point $0$.
+
+\begin{proposition}[Critically fixed structure]\label{prop:dynamics-critical}
+	The map $f$ fixes $0$.  Its finite critical points are exactly the
+	nonzero roots of $D_p$, each of ramification index two, and every one
+	of them maps to $0$.
+\end{proposition}
+
+\begin{proof}
+	For odd $p$, $D_p(X)=XH_p(X)^2$, so
+	$f'(X)=H_p(X)^2=F_p(X)$.  The square-free roots of $H_p$ are therefore
+	the critical points, and $D_p$ sends all of them to zero.  The point
+	$0$ is a simple fixed point because $H_p(0)=1$.
+\end{proof}
+
+Let
+\[
+	\mathcal Z_j=(f^{\circ j})^{-1}(0),\qquad
+	\operatorname{Coll}_j=\mathcal Z_j\cap(\mathcal Z_j+1).
+\]
+Lemma~\ref{lem:Cn-repeated} identifies $\operatorname{Coll}_j$, modulo
+$X\mapsto X+1$, with the repeated roots of $C_{p^j}$.
+
+\begin{proposition}[Chebyshev linearization]\label{prop:dynamics-linearization}
+	The degree-two map
+	\[
+		\phi:\mathbb G_m\longrightarrow\mathbb A^1,
+		\qquad \phi(u)=u+u^{-1},
+	\]
+	satisfies
+	\[
+		f^{\circ j}\circ\phi=\phi\circ[u\mapsto u^{p^j}],
+	\]
+	and maps $\mu_{p^j}$ two-to-one onto $\mathcal Z_j$, except above
+	$\phi(1)=0$.
+\end{proposition}
+
+\begin{proof}
+	This is the Dickson identity
+	$D_{p^j}(u+u^{-1})=u^{p^j}+u^{-p^j}$
+	\cite{lidl-dickson}.
+\end{proof}
+
+Fix a generator $\zeta$ of $\mu_{p^j}$ and write
+$\lambda_a=\zeta^a+\zeta^{-a}$.  A \emph{collision pair} is an unordered
+pair $\{a,b\}$ with $\lambda_a+\lambda_b=1$, modulo independent sign
+changes.  It is new at level $j$ when at least one of $a,b$ is prime to
+$p$.
+
+\begin{theorem}[Covering-degree bound]\label{thm:dynamics-covering}
+	If $\{a,b\}$ is a mixed collision pair with $p\nmid a$ and $p\mid b$,
+	then
+	\[
+		\ord[p^j]{2}\mid2\ord[p^{j-1}]{2}.
+	\]
+	Hence no mixed collision exists for $j>c_p$.
+\end{theorem}
+
+\begin{proof}
+	The lower trace $\lambda_b$ lies in
+	$\F_{2^{f_{j-1}}}$, and $\lambda_a=1+\lambda_b$ lies there as well.
+	The primitive root $\zeta^a$ satisfies
+	$T^2+\lambda_aT+1=0$, a quadratic over that field.  Thus
+	$f_j=[\F_2(\zeta^a):\F_2]\mid2f_{j-1}$.
+	For $j>c_p$, $f_j=pf_{j-1}$.
+\end{proof}
+
+\begin{theorem}[Doubling-orbit factorization]\label{thm:dynamics-orbits}
+	The collision pairs decompose into orbits under
+	\[
+		\{a,b\}\longmapsto\{2a,2b\}.
+	\]
+	An orbit of size $d$ contributes one irreducible factor of degree $d$
+	to $B_{p^j}$, and every irreducible factor arises in this way.
+\end{theorem}
+
+\begin{proof}
+	Frobenius gives $\lambda_a^2=\lambda_{2a}$ and therefore
+	\[
+		(\lambda_a^2+\lambda_a)^2
+		=\lambda_{2a}^2+\lambda_{2a}.
+	\]
+	The degree of the minimal polynomial of a repeated root is the size of
+	its Frobenius orbit.  The map from a collision pair to
+	$Y=\lambda_a^2+\lambda_a$ is injective modulo independent signs and
+	interchange, because $T^2+T+Y$ recovers the unordered pair
+	$\{\lambda_a,\lambda_b\}$.
+\end{proof}
+
+\begin{remark}[Why dynamics also stops]
+	On the plateau $f_j=f_{j-1}$, so the covering-degree bound is vacuous.
+	The monodromy is the same cyclic-by-inversion group in every residue
+	characteristic, while Section~\ref{sec:counterexamples} gives genuine
+	plateau failures outside characteristic two.  Dynamics therefore
+	identifies the exact finite object to control---doubling orbits of
+	collision pairs in one finite field---but monodromy alone cannot prove
+	that this object is empty.
+\end{remark}
+
+\section{The symplectic and group-theoretic attack}\label{sec:sp4}
+
+A separable reciprocal quartic is naturally a characteristic polynomial in
+rank two.  This places the problem inside a well-understood finite group,
+but the classification controls the ambient tori rather than the required
+trace-one incidence.
+
+\begin{theorem}[$\Sp_4$ reformulation]\label{thm:sp4-equivalence}
+	A counterexample at level $p^j$ is equivalent to a regular semisimple
+	element $g\in\Sp_4(\F_{2^d})$, for some $d$, such that
+	\[
+		\operatorname{charpol}(g)
+		=Q_Y(T)=T^4+T^3+YT^2+T+1,
+	\]
+	all eigenvalues lie in $\mu_{p^j}$, and
+	$\operatorname{ord}(g)=p^j$.  Equivalently, it is a regular
+	semisimple element of pure $p$-power order and trace one.
+\end{theorem}
+
+\begin{proof}
+	A semisimple symplectic element has eigenvalues
+	$\lambda,\lambda^{-1},\mu,\mu^{-1}$, and its characteristic
+	polynomial is
+	\[
+		T^4+(\alpha+\beta)T^3+\alpha\beta T^2
+		     +(\alpha+\beta)T+1,
+	\]
+	where $\alpha=\lambda+\lambda^{-1}$ and
+	$\beta=\mu+\mu^{-1}$.  In characteristic two its trace is one exactly
+	when $\alpha+\beta=1$, which is the five-term equation.  For $p>5$ the
+	four eigenvalues are distinct by Lemma~\ref{lem:degenerate}, and at
+	least one has exact order $p^j$.  Conversely, the eigenvalues of such a
+	$g$ give the required exponents.  The realization and rational
+	conjugacy statement for a separable reciprocal quartic are standard
+	for symplectic groups \cite{Wall1963,Enomoto1972}.
+\end{proof}
+
+Here $Y$ is a fixed element of $\overline{\F}_2$, not an indeterminate.
+Let $k=\F_2(Y)\subseteq\overline{\F}_2$ be the finite field it generates,
+put $q=\abs{k}$, and let $\alpha$ be a root of $T^2+T+Y$.
+
+\begin{theorem}[Maximal-torus dichotomy]\label{thm:sp4-tori}
+	The regular class in Theorem~\ref{thm:sp4-equivalence} lies in one of
+	the following tori.
+	\begin{enumerate}
+		\item If $\Tr_{k/\F_2}(Y)=0$, then $\alpha\in k$ and the class lies
+		      in a product of two like $\SL_2$ tori, of order
+		      $(q-1)^2$ or $(q+1)^2$.
+		\item If $\Tr_{k/\F_2}(Y)=1$, then $\alpha\notin k$, the two
+		      symplectic planes are Galois conjugate, and the class lies
+		      in a cyclic torus of order $q^2-1$ or $q^2+1$.
+	\end{enumerate}
+	The mixed product type $(q-1)(q+1)$ cannot contain the required
+	$p^j$-eigenvalue configuration.
+\end{theorem}
+
+\begin{proof}
+	The Artin--Schreier criterion decides whether $T^2+T+Y$ splits over
+	$k$.  In the split case the two reciprocal quadratics are separately
+	defined over $k$.  Each is either split, with eigenvalues in
+	$k^\times$, or anisotropic, with eigenvalues in the norm-one circle of
+	order $q+1$.  An odd prime power cannot divide both $q-1$ and $q+1$,
+	so the two factors have the same type.
+
+	In the nonsplit case Frobenius over $k$ interchanges $\alpha$ and
+	$\alpha+1$, hence interchanges the two reciprocal pairs.  The four
+	eigenvalues form one orbit in a cyclic torus of order $q^2-1$ or
+	$q^2+1$.  This is the standard rank-two torus classification
+	\cite{Carter1985,Enomoto1972}.
+\end{proof}
+
+On a Wieferich plateau, $p^j$ divides the order of one of these tori, so
+elements of order $p^j$ are guaranteed.  What is not guaranteed is trace
+one.  In product type that condition is
+\[
+	t_1+t_1^{-1}+t_2+t_2^{-1}=1,
+	\qquad t_1,t_2\in\mu_{p^j},
+\]
+which is the original equation; in cyclic type the same equation holds
+with $t_2$ a Frobenius conjugate of $t_1$.  Thus ``order is cheap, trace one
+is not.''
+
+\subsection{Why character theory and $\PSL_2$ do not close the gap}
+
+For a regular element in a maximal torus $T$, the exact class count is a
+sum over Weyl orbits in $T[p^j]$ satisfying trace one.  Deligne--Lusztig
+characters and Enomoto's character table reorganize this sum, but the inner
+condition is still the same incidence on $T[p^j]$.  Averaging the trace-one
+indicator by additive characters gives the Kloosterman expression of
+Section~\ref{sec:quantitative}; its square-root error is much larger than
+the expected main term on a plateau.
+
+There is also a superficially similar trace identity in
+$\PSL_2(q)=\SL_2(q)$ for $q$ even:
+\[
+	\operatorname{tr}(A)\operatorname{tr}(C)
+	=\operatorname{tr}(AC)+\operatorname{tr}(A^{-1}C).
+\]
+Requiring $AC$ of order three and $A^{-1}C$ of order two gives
+$\operatorname{tr}(A)\operatorname{tr}(C)=1$, whereas the five-term locus
+is $\operatorname{tr}(A)+\operatorname{tr}(C)=1$.  The two loci meet only
+where $x^2+x+1=0$, namely in the order-three configuration excluded by
+$p>5$.  Triangle-group and subgroup-classification results in $\PSL_2$
+therefore address a transverse problem.
+
+\begin{remark}[What was learned]
+	The group-theoretic reformulation accurately classifies every possible
+	ambient torus and rational conjugacy type.  It also shows why merely
+	finding $p^j$-torsion in $\Sp_4$ is irrelevant.  The missing statement
+	is still that a codimension-one trace condition avoids a particular
+	$p$-Sylow subset; neither maximal-torus classification nor general
+	character estimates encode the characteristic-two additive rigidity
+	needed for that avoidance.
+\end{remark}
+
+\section{Characteristic zero: a complete classification}\label{sec:charzero}
+
+Write $\omega=e^{2\pi i/3}$ and $\zeta_n=e^{2\pi i/n}$.
+
+\begin{theorem}\label{thm:charzero}
+	Let $u,v$ be complex roots of unity with
+	\begin{equation}\label{eq:charzero}
+		1+u+u^{-1}+v+v^{-1}=0 .
+	\end{equation}
+	Then, up to interchanging $u$ and $v$ and replacing either by its
+	inverse, exactly one of the following holds.
+	\begin{enumerate}
+		\item $u=\zeta_5$ and $v=\zeta_5^{2}$; here
+		      $\{1,u,u^{-1},v,v^{-1}\}=\mu_5$ and $Q_Y=\Phi_5$ with $Y=1$.
+		\item $u=i$ and $v=\omega$; here $Q_Y=\Phi_3\Phi_4$ with $Y=2$.
+		\item $u=-1$ and $v=-\omega$; here $Q_Y=\Phi_2^{2}\Phi_6$ with
+		      $Y=0$.
+	\end{enumerate}
+	In particular the order pairs $(\ord{u},\ord{v})$ that occur are
+	exactly $(5,5)$, $(4,3)$ and $(2,6)$.
+\end{theorem}
+
+\begin{proof}
+	The left side of \eqref{eq:charzero} is a vanishing sum of five roots
+	of unity counted with multiplicity.
+	Decompose it into minimal vanishing subsums.
+	By the classification of minimal vanishing sums of weight at most nine
+	\cite[Theorem~6]{ConwayJones1976}, restated with the weight bookkeeping
+	of \cite[Table~1]{PoonenRubinstein1998}, the possible weights of a
+	minimal vanishing sum of roots of unity are
+	$2,3,5,6,7,\ldots$; there is none of weight~$4$, the unique similarity
+	class of weight~$2$ is $\mathcal{R}_2=1+(-1)$, the unique class of
+	weight~$3$ is $\mathcal{R}_3=1+\omega+\omega^2$, and the unique class
+	of weight~$5$ is $\mathcal{R}_5=1+\zeta_5+\zeta_5^2+\zeta_5^3+\zeta_5^4$.
+	Therefore $5=5$ or $5=2+3$.
+
+	Two degenerate configurations are excluded at once.
+	If $u=1$ then \eqref{eq:charzero} reads $3+v+v^{-1}=0$, impossible
+	since $\abs{v+v^{-1}}\leq2$.
+	If $v=u^{\pm1}$ then \eqref{eq:charzero} reads $1+2(u+u^{-1})=0$, so
+	$2\cos\vartheta=-\tfrac12$ for a rational multiple $\vartheta$ of
+	$2\pi$; Niven's theorem \cite[Cor.~3.12]{Niven1956} says the only
+	rational values of $2\cos\vartheta$ are $0,\pm1,\pm2$.
+
+	\emph{Case $5=5$.}
+	The multiset $\{1,u,u^{-1},v,v^{-1}\}$ is $\eta\cdot\mu_5$ for some
+	root of unity $\eta$.
+	It contains $1$, so $\eta^{-1}\in\mu_5$ and the multiset is $\mu_5$
+	itself.
+	Thus $\{u,u^{-1},v,v^{-1}\}=\{\zeta_5,\zeta_5^2,\zeta_5^3,\zeta_5^4\}$,
+	which is alternative~(1).
+
+	\emph{Case $5=2+3$.}
+	Some two-element sub-multiset sums to zero, i.e.\ consists of $x$ and
+	$-x$, and the complementary three-element sub-multiset is a rotation of
+	$\mathcal{R}_3$.
+	We enumerate the possible pairs.
+	\begin{itemize}
+		\item $\{u,u^{-1}\}$: then $u^{-1}=-u$, so $u^2=-1$ and
+		      $u=\pm i$.
+		      The remaining sum $1+v+v^{-1}=0$ forces
+		      $\{1,v,v^{-1}\}=\{1,\omega,\omega^2\}$, i.e.\
+		      $v=\omega^{\pm1}$.
+		      This is alternative~(2).
+		      The symmetric choice $\{v,v^{-1}\}$ gives the same
+		      alternative with $u$ and $v$ interchanged.
+		\item $\{1,u\}$: then $u=-1$, and the remaining multiset
+		      $\{-1,v,v^{-1}\}$ is a rotation $\eta\{1,\omega,\omega^2\}$.
+		      Containing $-1$ forces $\eta\in-\mu_3$, and taking
+		      $\eta=-1$ gives $\{v,v^{-1}\}=\{-\omega,-\omega^2\}$,
+		      which is consistent because $(-\omega)^{-1}=-\omega^2$.
+		      This is alternative~(3); the choice $\{1,v\}$ is symmetric.
+		\item $\{u,v\}$, $\{u,v^{-1}\}$, $\{u^{-1},v\}$ or
+		      $\{u^{-1},v^{-1}\}$: then $v=\pm u^{\pm1}$ up to sign, and
+		      the complementary triple is $\{1,w,-w\}$ for some root of
+		      unity $w$, whose sum is $1\ne0$.
+	\end{itemize}
+	The identification of $Q_Y$ in each case is a direct expansion:
+	$(T^2-\alpha T+1)(T^2-\alpha'T+1)$ with $\alpha=-(u+u^{-1})$,
+	$\alpha'=-(v+v^{-1})$, $\alpha+\alpha'=1$ and $Y=2+\alpha\alpha'$.
+\end{proof}
+
+Theorem~\ref{thm:charzero} was verified by exhaustive search over all pairs
+of roots of unity of order dividing $420=2^2\cdot3\cdot5\cdot7$; the only
+order pairs found were $(5,5)$, $(3,4)$ and $(2,6)$.
+
+\begin{corollary}\label{cor:charzero-pj}
+	Let $p>5$ be prime, $j\geq1$, $\zeta=\zeta_{p^j}$.
+	Then
+	\[
+		\Lambda_{a,b}:=1+\zeta^{a}+\zeta^{-a}+\zeta^{b}+\zeta^{-b}\ne0
+		\qquad\text{for all }a,b\in\Z .
+	\]
+\end{corollary}
+
+\begin{proof}
+	By Theorem~\ref{thm:charzero} any vanishing instance has
+	$\ord{\zeta^a}\in\{2,3,4,5,6\}$, which is impossible for a divisor of
+	$p^j$ with $p>5$ unless $\zeta^a=1$; but the pattern $(u,v)=(1,\ast)$
+	does not occur in the classification.
+	Alternatively, and more directly, Lam and Leung's main theorem
+	\cite[Main Theorem]{LamLeung2000} says that the weights of vanishing
+	sums of $p^j$-th roots of unity form the numerical semigroup
+	$\N p$; since $0<5<p$, the weight $5$ is not attained.
+\end{proof}
+
+\begin{remark}
+	Corollary~\ref{cor:charzero-pj} is the reason Problem~\ref{prob:main}
+	is not a statement about exact vanishing sums at all.
+	The characteristic-zero equation has \emph{no} solutions whatsoever for
+	$p>5$; the entire content of the problem is that
+	$\Lambda_{a,b}$, a nonzero algebraic integer, might nevertheless be
+	divisible by a prime above $2$.
+\end{remark}
+
+\section{Cyclotomic units: an unconditional family}\label{sec:units}
+
+Corollary~\ref{cor:charzero-pj} says $\Lambda_{a,b}\ne0$.
+If in addition $\Lambda_{a,b}$ is a \emph{unit}, then it is nonzero in every
+residue field and \eqref{eq:main} is impossible in every characteristic.
+This section determines exactly when that happens for structural reasons.
+
+For $r\geq1$ put
+\[
+	G_r(x)=x^{2r}+x^{r+1}+x^{r}+x^{r-1}+1\in\Z[x],
+	\qquad\text{so}\qquad
+	G_r(x)=x^{r}\left(1+x+x^{-1}+x^{r}+x^{-r}\right).
+\]
+
+\begin{theorem}\label{thm:units}
+	$G_r$ is a product of cyclotomic polynomials if and only if
+	$r\in\{2,3\}$, in which case
+	\[
+		G_2=\Phi_5,
+		\qquad
+		G_3=\Phi_5\Phi_6 .
+	\]
+\end{theorem}
+
+\begin{proof}
+	The two displayed factorizations are direct expansions.
+	Conversely suppose every root of $G_r$ is a root of unity.
+	If $u$ is a root, then $u\ne0$ and $1+u+u^{-1}+u^{r}+u^{-r}=0$, so
+	$(u,u^{r})$ is one of the pairs of Theorem~\ref{thm:charzero}.
+	Alternative~(2) is impossible because $\ord{u}=4$ and $\ord{u^r}=3$
+	cannot hold simultaneously with $u^{r}$ a power of $u$, and likewise
+	with the roles reversed.
+	Alternative~(1) forces $\ord{u}=5$, alternative~(3) forces
+	$\ord{u}\in\{2,6\}$; and $u=-1$ is excluded because
+	\[
+		G_r(-1)=1+(-1)^{r+1}+(-1)^{r}+(-1)^{r-1}+1=2+(-1)^{r-1}\in\{1,3\}.
+	\]
+	Hence every root of $G_r$ has order $5$ or $6$, so
+	$G_r=\Phi_5^{e_5}\Phi_6^{e_6}$ and $2r=4e_5+2e_6$.
+
+	We show $e_5\leq1$ and $e_6\leq1$.
+	Set $\Lambda(x)=1+x+x^{-1}+x^{r}+x^{-r}$, so that $G_r=x^{r}\Lambda$ and
+	at a root of $G_r$ the derivative $G_r'$ vanishes if and only if
+	$\Lambda'$ does.
+	Now
+	\[
+		\Lambda'(x)=1-x^{-2}+r\left(x^{r-1}-x^{-r-1}\right).
+	\]
+	If $\ord{u}=5$ then, by alternative~(1), $u^{r}=u^{\pm2}$; replacing
+	$u$ by $u^{-1}$ if necessary, $u^{r}=u^{2}$, so $u^{r-1}=u$ and
+	$u^{-r-1}=u^{-3}=u^{2}$, giving
+	$\Lambda'(u)=1-u^{3}+r(u-u^{2})$.
+	As $1,u,u^2,u^3$ is a $\Q$-basis of $\Q(\zeta_5)$, this is nonzero.
+	If $\ord{u}=6$ then $u^{r}=-1$ by alternative~(3), so
+	$u^{r-1}=-u^{-1}=u^{-r-1}$ and the bracket vanishes, leaving
+	$\Lambda'(u)=1-u^{-2}\ne0$ because $u^{2}\ne1$.
+	Hence $G_r$ has no repeated roots, $e_5,e_6\leq1$, and
+	$2r\leq4+2=6$.
+	Finally $r=1$ is excluded because $G_1=2x^2+x+2$ is not monic.
+\end{proof}
+
+\begin{corollary}\label{cor:units}
+	Let $p>5$ be prime and $j\geq1$, and let $a,b$ be integers with
+	\[
+		b\equiv\pm2a,\ \pm3a
+		\quad\text{or}\quad
+		a\equiv\pm2b,\ \pm3b
+		\pmod{p^j}.
+	\]
+	Then $\Lambda_{a,b}$ is a unit of $\Z[\zeta_{p^j}]$ if
+	$a\not\equiv0$, and $\Lambda_{a,b}=5$ if $a\equiv b\equiv0$.
+	In the unit case, \eqref{eq:main} has no solution with these exponents
+	in any residue characteristic. In the degenerate case $\Lambda_{a,b}=5$,
+	it can vanish only in characteristic $5$. In particular, neither case
+	gives a solution in characteristic $2$.
+\end{corollary}
+
+\begin{proof}
+	Since $\Lambda_{a,b}=\Lambda_{b,a}=\Lambda_{a,-b}=\Lambda_{-a,b}$, it
+	suffices to treat $b=2a$ and $b=3a$.
+	Put $\xi=\zeta^{a}$, of exact order $p^{i}$ say.
+	If $i=0$ then $\Lambda=5$.
+	If $i\geq1$ then by Theorem~\ref{thm:units}
+	\[
+		\Lambda_{a,2a}=\xi^{-2}\Phi_5(\xi),
+		\qquad
+		\Lambda_{a,3a}=\xi^{-3}\Phi_5(\xi)\Phi_6(\xi).
+	\]
+	By Apostol's evaluation of resultants of cyclotomic polynomials
+	\cite{ApostolResultants}, $\Res(\Phi_m,\Phi_n)=q^{\varphi(n)}$ when
+	$m/n$ is a power of a prime $q$ and $\Res(\Phi_m,\Phi_n)=1$ otherwise.
+	With $m=p^{i}\geq7$ and $n\in\{5,6\}$ the quotient $m/n$ is not an
+	integer, so both resultants equal $1$.
+	Hence $\Nm_{\Q(\xi)/\Q}\!\left(\Phi_5(\xi)\right)=\pm1$ and
+	$\Nm_{\Q(\xi)/\Q}\!\left(\Phi_6(\xi)\right)=\pm1$, and $\Lambda_{a,b}$
+	is a unit.
+	A unit has odd norm, so its image in $\Z[\zeta_{p^j}]/\mathfrak{p}$ is
+	nonzero for every prime $\mathfrak{p}$.
+\end{proof}
+
+\begin{remark}
+	The two identities behind Corollary~\ref{cor:units} are the cyclotomic
+	unit identities
+	\[
+		1+\xi+\xi^{-1}+\xi^{2}+\xi^{-2}=\xi^{-2}\,\frac{\xi^{5}-1}{\xi-1},
+		\qquad
+		1+\xi+\xi^{-1}+\xi^{3}+\xi^{-3}
+		=\xi^{-3}\,\frac{\xi^{5}-1}{\xi-1}\cdot\frac{\xi^{6}-1}{\xi^{3}-1}\cdot\frac{\xi-1}{\xi^{2}-1}.
+	\]
+	Theorem~\ref{thm:units} says that these are the only two members of the
+	family, so the cyclotomic unit method removes at most $8$ of the
+	$\varphi(p^j)$ possible ratios $b/a$ --- exactly $8$ when the classes
+	$\{\pm2^{\pm1}\}$ and $\{\pm3^{\pm1}\}$ are distinct modulo $p^j$,
+	and only $4$ when they coincide, as they do modulo $7$ --- and cannot
+	remove more.
+\end{remark}
+
+\begin{example}
+	For $p^j=49$ the ratio classes $\{\pm r^{\pm1}\}$ that consist of units
+	are $\{2,24,25,47\}$ and $\{3,16,33,46\}$, exactly as predicted; see
+	Table~\ref{tab:res49}.
+	The class $\{13,15,34,36\}$ also has relative norm $1$, but
+	sporadically: $G_{13}=\Phi_5\cdot H$ with $H$ of degree $22$ and
+	Mahler measure $\approx0.2507>0$, and $\Res(\Phi_{n},G_{13})\ne\pm1$
+	for $n=13,17,23,29,31$.
+\end{example}
+
+\section{Reduction modulo a prime above two}\label{sec:reduction}
+
+Fix $p>5$, $j\geq1$, and set
+\[
+	K=\Q(\zeta_{p^j}),\qquad
+	K^{+}=\Q(\zeta_{p^j}+\zeta_{p^j}^{-1}),\qquad
+	f=\ord[p^j]{2},\qquad
+	g=\frac{\varphi(p^j)}{f}.
+\]
+Since $p$ is odd, $2$ is unramified in $K$ and splits into $g$ distinct
+primes, each with residue field $\F_{2^{f}}$ and decomposition group
+$\langle\sigma_2\rangle$, where $\sigma_t(\zeta)=\zeta^{t}$
+\cite[Ch.~2]{Washington1997}.
+Reduction modulo any prime $\mathfrak{p}\mid2$ restricts to a group
+isomorphism $\mu_{p^j}\to\mu_{p^j}(\F_{2^{f}})$.
+
+\begin{proposition}\label{prop:dictionary}
+	Let $\Sigma_{a,b}=\{\mathfrak{p}\mid2:\ \mathfrak{p}\mid\Lambda_{a,b}\}$.
+	Then:
+	\begin{enumerate}
+		\item \eqref{eq:main} holds for some $\theta$ of exact order $p^j$
+		      and the given $(a,b)$ if and only if
+		      $\Sigma_{a,b}\ne\emptyset$;
+		\item $\Lambda_{a,b}\in\Z[\zeta_{p^j}+\zeta_{p^j}^{-1}]$, so
+		      $\Nm_{K/\Q}(\Lambda_{a,b})=\Nm_{K^{+}/\Q}(\Lambda_{a,b})^{2}$;
+		\item $v_2\!\left(\Nm_{K/\Q}(\Lambda_{a,b})\right)\geq f\cdot\abs{\Sigma_{a,b}}$,
+		      with equality when every $v_{\mathfrak{p}}(\Lambda_{a,b})\leq1$;
+		\item writing $r=b\,a^{-1}$ when $\gcd(a,p)=1$,
+		      \[
+			      \Nm_{K/\Q}(\Lambda_{a,b})=\pm\Res\!\left(\Phi_{p^j}(x),\,G_r(x)\right).
+		      \]
+	\end{enumerate}
+	In particular, Problem~\ref{prob:main} has an affirmative answer for
+	$(p,j)$ if and only if $\Res(\Phi_{p^j},G_r)$ is odd for every
+	nonzero $r\in\Z/p^j\Z$.
+	(A counterexample has $p\nmid a$ or $p\nmid b$; after interchanging
+	$a$ and $b$ we may assume $\gcd(a,p)=1$, and then $r=ba^{-1}$ is a
+	well-defined nonzero element of $\Z/p^j\Z$, not necessarily a unit.)
+\end{proposition}
+
+\begin{proof}
+	(1) is the reduction isomorphism together with the fact that the $g$
+	primes above $2$ are permuted transitively by $\Gal(K/\Q)$, and
+	$\sigma_t(\Lambda_{a,b})=\Lambda_{ta,tb}$.
+	(2) holds because the five summands are stable under
+	$\zeta\mapsto\zeta^{-1}$, and $[K:K^{+}]=2$.
+	(3) is the norm formula
+	$v_2(\Nm_{K/\Q}(x))=\sum_{\mathfrak{p}\mid2}f\,v_{\mathfrak{p}}(x)$
+	valid because $2$ is unramified with residue degree $f$ at every
+	$\mathfrak{p}$.
+	(4) follows from $\Lambda_{a,b}=\zeta^{-ra}G_r(\zeta^{a})$ and
+	$\Nm_{K/\Q}(\zeta)=\pm1$, after the substitution
+	$\zeta\mapsto\zeta^{a}$, which permutes the primitive $p^j$-th roots
+	of unity; the fact that only the ratio $r$ matters is
+	Lemma~\ref{lem:symmetry}.
+\end{proof}
+
+\subsection{Circular units and the exact local obstruction}
+
+The parity question can be made slightly sharper by replacing the
+five-term sum by products of circular units.  Write
+$K_j=\Q(\zeta_j)$, $K_j^+=\Q(\zeta_j+\zeta_j^{-1})$ with
+$\zeta_j=\zeta_{p^j}$, put $n=p^j$, and choose the integer
+$h_j=(n+1)/2$, so that $2h_j\equiv1\pmod n$.  For
+$a\in\Z/n\Z$ define
+\[
+	\epsilon_{j,a}=\zeta_j^{-h_ja}(1+\zeta_j^a).
+\]
+Also put
+\[
+	s_{j,a}=\zeta_j^{-h_ja}(1-\zeta_j^a).
+\]
+Thus $\epsilon_{j,-a}=\epsilon_{j,a}$ and
+\[
+	\epsilon_{j,a}=\zeta_j^{a/2}+\zeta_j^{-a/2},
+	\qquad
+	\epsilon_{j,a}^{\,2}=\lambda_a+2,
+	\qquad
+	\lambda_a=\zeta_j^a+\zeta_j^{-a}.
+\]
+If $a\not\equiv0\pmod n$ then $\epsilon_{j,a}$ is a circular unit: indeed
+$1+\xi=(1-\xi^2)/(1-\xi)$ for $\xi=\zeta_j^a$ of odd order, and
+$\Phi_{\operatorname{ord}(\xi)}(-1)=1$.
+For such $a$, the auxiliary element $s_{j,a}$ is a $p$-unit, integral and a unit at
+every prime above $2$, and for $\sigma_2(\zeta_j)=\zeta_j^2$ one has the
+Hilbert--90 identity
+\begin{equation}\label{eq:epsilon-h90}
+	\frac{\sigma_2(s_{j,a})}{s_{j,a}}
+	=
+	\zeta_j^{-h_ja}(1+\zeta_j^a)
+	=\epsilon_{j,a}.
+\end{equation}
+Thus each $\epsilon_{j,a}$ has local norm one for the unramified
+decomposition extension at $2$, and is not merely a circular unit but a
+specified local coboundary.
+
+\begin{lemma}[norm compatibility]\label{lem:epsilon-norms}
+	For $j>1$,
+	\[
+		\Nm_{K_j/K_{j-1}}(s_{j,a})=s_{j-1,\bar a},
+		\qquad
+		\Nm_{K_j/K_{j-1}}(\epsilon_{j,a})=\epsilon_{j-1,\bar a}
+		\qquad (p\nmid a),
+	\]
+	where $\bar a$ denotes reduction modulo $p^{j-1}$, and
+	\[
+		s_{j,pa}=s_{j-1,a},
+		\epsilon_{j,pa}=\epsilon_{j-1,a}.
+	\]
+\end{lemma}
+
+\begin{proof}
+	The conjugates over $K_{j-1}$ send
+	$\zeta_j$ to $\zeta_j^{1+tp^{j-1}}$, $0\leq t<p$.  Hence
+	\[
+		\Nm_{K_j/K_{j-1}}(1+\zeta_j^a)=1+\zeta_{j-1}^a
+	\]
+	for $p\nmid a$, by evaluating $T^p-\zeta_{j-1}^a$ at $T=-1$; the
+	same evaluation at $T=1$ gives
+	$\Nm_{K_j/K_{j-1}}(1-\zeta_j^a)=1-\zeta_{j-1}^a$.
+	Also $\Nm_{K_j/K_{j-1}}(\zeta_j)=\zeta_{j-1}$, and
+	$h_j\equiv h_{j-1}\pmod {p^{j-1}}$, giving the first identity.
+	The second follows at once from $\zeta_j^p=\zeta_{j-1}$ and the same
+	congruence for $h_j$.
+\end{proof}
+
+\begin{proposition}[Hilbert--90 reformulation]\label{prop:epsilon-reform}
+	Let $\mathfrak{P}\mid2$ be a prime of $K_j$ and let
+	$a,b\in\Z/n\Z$ be nonzero.  Put
+	$w_{j,a,b}=s_{j,a}s_{j,b}$.  Then the following are equivalent:
+	\[
+		\epsilon_{j,a}\epsilon_{j,b}\equiv1\pmod{\mathfrak{P}},
+		\qquad
+		w_{j,a,b}\equiv1\pmod{\mathfrak{P}},
+	\]
+	and
+	\[
+		1+\zeta_j^{(a+b)/2}+\zeta_j^{-(a+b)/2}
+		 +\zeta_j^{(a-b)/2}+\zeta_j^{-(a-b)/2}
+		\equiv0\pmod{\mathfrak{P}} .
+	\]
+	Consequently a conductor-$p^j$ counterexample to
+	Problem~\ref{prob:main} is exactly a congruence
+	$\epsilon_{j,a}\epsilon_{j,b}\equiv1$ modulo one prime above $2$,
+	with at least one of $a,b$ prime to $p$.
+\end{proposition}
+
+\begin{proof}
+	Since $\sigma_2$ lies in the decomposition group at every prime above
+	$2$, reduction modulo $\mathfrak P$ sends $\sigma_2(x)$ to
+	$\bar x^2$.  By \eqref{eq:epsilon-h90},
+	\[
+		\overline{\epsilon_{j,a}\epsilon_{j,b}}
+		=\frac{\overline{w_{j,a,b}}^{\,2}}{\overline{w_{j,a,b}}}
+		=\overline{w_{j,a,b}},
+	\]
+	because $w_{j,a,b}$ is a unit at $\mathfrak P$.  Hence
+	$\epsilon_{j,a}\epsilon_{j,b}\equiv1$ if and only if
+	$w_{j,a,b}\equiv1$.  Equivalently,
+	$\sigma_2(w_{j,a,b})/w_{j,a,b}\equiv1$ forces the residue of
+	$w_{j,a,b}$ to be Frobenius-fixed, hence to lie in
+	$\F_2^\times=\{1\}$.
+
+	Expanding the product gives
+	\[
+		\epsilon_{j,a}\epsilon_{j,b}
+		=\lambda_{(a+b)/2}+\lambda_{(a-b)/2}.
+	\]
+	In the residue field of $\mathfrak{P}$, subtracting $1$ is the same as
+	adding $1$, so the displayed equivalence is immediate.  The change of
+	variables from the original exponents $A,B$ is
+	$a=A+B$, $b=A-B$.  Since $2$ is invertible modulo $p^j$, $A$ and $B$
+	are both divisible by $p$ if and only if $a$ and $b$ are both divisible
+	by $p$.
+\end{proof}
+
+For the local cohomological interpretation, let
+$L=K_{j,\mathfrak P}$, let $U=\mathcal O_L^\times$ and
+$U^1=1+\mathfrak P$, and put $D=\langle\sigma_2\rangle$.
+The coboundary map $\delta(u)=\sigma_2(u)/u$ induces on the residue
+sequence $1\to U^1\to U\to\F_{2^f}^\times\to1$ the map
+$\bar u\mapsto\bar u^2/\bar u=\bar u$.  Therefore
+\[
+	\delta^{-1}(U^1)=U^1,
+\]
+and $H^1(D,U)=H^1(D,U^1)=0$ in this unramified local situation.  Thus
+Hilbert~90 merely says that the norm-one unit
+$\epsilon_{j,a}\epsilon_{j,b}$ is a coboundary; the extra parity
+condition is exactly that the chosen $p$-unit primitive
+$w_{j,a,b}=s_{j,a}s_{j,b}$ already lies in the principal local unit group
+$U^1$.  In ray-class language, if $\mathfrak l_j^+$ is the unique prime
+of $K_j^+$ above $p$ and $v_p(a)=\alpha$, $v_p(b)=\beta$, then
+\[
+	(w_{j,a,b})=(\mathfrak l_j^+)^{(p^\alpha+p^\beta)/2}
+	\qquad\text{in }K_j^+.
+\]
+Thus a primitive--primitive collision is a generator of
+$\mathfrak l_j^+$ that is $1$ modulo one prime above $2$; a
+primitive--lower collision is the analogous ray-class condition for
+$(\mathfrak l_j^+)^{(1+p^\beta)/2}$ with $\beta\geq1$, with the
+generator restricted to the sine-circular form $s_{j,a}s_{j,b}$.
+
+This isolates exactly the two collision norms of
+Theorem~\ref{thm:two-collision-norms}.  Let
+\[
+	P_j=(\Z/p^j\Z)^\times/\{\pm1\},
+	\qquad
+	L_j=\bigl(p\Z/p^j\Z\setminus\{0\}\bigr)/\{\pm1\}.
+\]
+Define
+\[
+	N_j^{\rm pp}=
+	\prod_{\substack{\{a,b\}\subset P_j\\a\ne b}}
+	\Nm_{K_j^+/\Q}\!\left(\epsilon_{j,a}^{\,2}\epsilon_{j,b}^{\,2}-1\right),
+	\qquad
+	N_j^{\rm pl}=
+	\prod_{\substack{a\in P_j\\ b\in L_j}}
+	\Nm_{K_j^+/\Q}\!\left(\epsilon_{j,a}^{\,2}\epsilon_{j,b}^{\,2}-1\right).
+\]
+Because the residue fields above $2$ have characteristic two,
+$x^2-1\equiv0$ for a unit $x$ if and only if $x\equiv1$.  Therefore
+Problem~\ref{prob:main} at level $p^j$ is equivalent to the simultaneous
+oddness of $N_j^{\rm pp}$ and $N_j^{\rm pl}$.  In the notation
+$\nu(\lambda,\mu)=(\lambda+2)(\mu+2)-1$ of the reciprocal-quartic note,
+these are exactly the primitive--primitive and primitive--lower products,
+since $\lambda_a+2=\epsilon_{j,a}^{\,2}$.
+
+Now suppose $2\leq j\leq c_p$, so we are on the base-$2$ plateau.  Then
+$\ord[p^j]{2}=\ord[p^{j-1}]{2}$, and every prime above $2$ in
+$K_{j-1}$ splits completely in $K_j$.  If $\mathfrak{P}$ is a prime of
+$K_{j-1}$ above $2$, then for $p\nmid a$,
+\[
+	\prod_{\mathfrak{Q}\mid\mathfrak{P}}
+		\overline{s_{j,a}}^{\,(\mathfrak Q)}
+	=
+	\overline{s_{j-1,\bar a}}^{\,(\mathfrak P)},
+	\qquad
+	\prod_{\mathfrak{Q}\mid\mathfrak{P}}
+		\overline{\epsilon_{j,a}}^{\,(\mathfrak Q)}
+	=
+	\overline{\epsilon_{j-1,\bar a}}^{\,(\mathfrak P)},
+\]
+and, for lower-level indices,
+\[
+	\prod_{\mathfrak{Q}\mid\mathfrak{P}}
+		\overline{s_{j,pb}}^{\,(\mathfrak Q)}
+	=
+	\left(\overline{s_{j-1,b}}^{\,(\mathfrak P)}\right)^p,
+	\qquad
+	\prod_{\mathfrak{Q}\mid\mathfrak{P}}
+		\overline{\epsilon_{j,pb}}^{\,(\mathfrak Q)}
+	=
+	\left(\overline{\epsilon_{j-1,b}}^{\,(\mathfrak P)}\right)^p .
+\]
+These identities are just Lemma~\ref{lem:epsilon-norms} reduced modulo
+$\mathfrak{P}$.  Thus plateau splitting supplies only a product constraint
+over the $p$ primes above $\mathfrak{P}$: if
+$w_{j,a,b}\equiv1$ (equivalently
+$\epsilon_{j,a}\epsilon_{j,b}\equiv1$) at one of them, the remaining
+$p-1$ conjugate factors must multiply to the prescribed lower-level
+$p$-unit.  There is no contradiction from splitting alone; a proof must
+control the \emph{semi-local} reduction of these particular sine and
+circular units.
+
+Equivalently, let $\mathcal E_j^+$ be the $p$-unit group of $K_j^+$ and
+let $\mathcal C_j^+$ be Sinnott's circular-unit group.  The semi-local
+reduction map
+\[
+	\rho_j:\mathcal E_j^+\longrightarrow
+	\prod_{\mathfrak q\mid2}
+		(\mathcal O_{K_j^+}/\mathfrak q)^\times
+\]
+is the relevant finite quotient.  The desired parity theorem says precisely that
+no sine $p$-unit $s_{j,a}s_{j,b}$, with $a\in P_j$ and
+$b\in P_j\cup L_j$, lies in any one-prime principal-unit kernel
+$\mathcal E_j^+\cap(1+\mathfrak q)$.  Applying the coboundary
+$\delta=\sigma_2-1$ sends this finite set into
+$\mathcal C_j^+$ as the circular units
+$\epsilon_{j,a}\epsilon_{j,b}$; the sine lift is essential, because
+$\delta^{-1}(1+\mathfrak q)=1+\mathfrak q$ only after using the
+characteristic-two residue field.  The standard ray-class sequence
+for modulus $2\mathcal O_{K_j^+}$ identifies
+\[
+	\left(\prod_{\mathfrak q\mid2}
+		(\mathcal O_{K_j^+}/\mathfrak q)^\times\right)\big/
+	\rho_j(\mathcal O_{K_j^+}^{\times})
+\]
+with the kernel of the ray class group modulo $2$ over the ordinary class
+group.  Replacing full units by circular units gives a natural
+surjection from the corresponding circular cokernel to this ray-class
+kernel, with kernel a quotient of
+$\mathcal O_{K_j^+}^{\times}/\mathcal C_j^+$ (whose size is governed by
+Sinnott's formula), while the
+Stickelberger--Jacobi-sum formulas describe character sums and ideal
+classes.  Those tools do not by themselves decide the required pointwise
+avoidance in the finite residue fields: for a chosen
+$\mathfrak q$, the congruence is equivalent to
+$\chi(\epsilon_{j,a})\chi(\epsilon_{j,b})=1$ for every multiplicative
+character $\chi$ of the residue field, and the characters of order
+prime to $p$ are needed as well as the $p$-primary Jacobi-sum data.
+
+\subsection{What the reciprocal symmetry buys}
+
+\begin{proposition}\label{prop:sigma}
+	Let $\Sigma=\Sigma_{a,b}\ne\emptyset$, and assume $\gcd(a,p)=1$, which
+	holds after possibly interchanging $a$ and $b$ in any counterexample to
+	Problem~\ref{prob:main}.
+	Let
+	\[
+		H=\left\{t\in(\Z/p^j\Z)^{\times}:\ \{\pm ta,\pm tb\}=\{\pm a,\pm b\}\right\}
+	\]
+	be the stabilizer of $\Lambda_{a,b}$ in $\Gal(K/\Q)$.
+	Then $\Sigma$ is a union of $H$-orbits, $-1\in H$, and
+	$H\subseteq\{t:\ t^{4}=1\}$, so $\abs{H}\leq4$.
+	Consequently
+	\[
+		\abs{\Sigma}\ \geq\ \frac{\abs{H}}{\abs{H\cap\langle2\rangle}},
+	\]
+	and in particular $\abs{\Sigma}\geq2$ whenever
+	$-1\notin\langle2\rangle$ in $(\Z/p^j\Z)^{\times}$, i.e.\ whenever
+	$\rho_2(p^j)=\ord[p^j]{2}$.
+\end{proposition}
+
+\begin{proof}
+	If $t\in H$ then $\sigma_t(\Lambda_{a,b})=\Lambda_{a,b}$, so
+	$\mathfrak{p}\mid\Lambda_{a,b}$ implies
+	$\sigma_t(\mathfrak{p})\mid\Lambda_{a,b}$; thus $\Sigma$ is
+	$H$-stable.
+	Clearly $-1\in H$.
+	Let $t\in H$.
+	If $ta\equiv\pm a$, then $t\equiv\pm1$ because $a$ is invertible.
+	Otherwise $ta\equiv\pm b$ and $tb\equiv\pm a$; the second relation
+	shows $b$ is invertible, and multiplying the two gives
+	$t^{2}ab\equiv\pm ab$, hence $t^{2}\equiv\pm1$ and $t^{4}\equiv1$.
+	Since $(\Z/p^j\Z)^{\times}$ is cyclic,
+	$\abs{\{t:t^4=1\}}=\gcd(4,p-1)\leq4$.
+	The orbit of $\mathfrak{p}$ under $H$ has size
+	$\abs{H}/\abs{H\cap D_{\mathfrak{p}}}$ with
+	$D_{\mathfrak{p}}=\langle2\rangle$.
+	If $-1\notin\langle2\rangle$ then $-1\in H\setminus\langle2\rangle$, so
+	$\abs{H}/\abs{H\cap\langle2\rangle}\geq2$.
+\end{proof}
+
+\begin{example}
+	For $p=17$, $j=1$, one has $\ord[17]{2}=8$, $\varphi(17)=16$, $g=2$
+	and $-1=2^{4}\in\langle2\rangle$.
+	The ratio class of $r=13$ gives
+	$\Res(\Phi_{17},G_{13})=256=2^{8}$, i.e.\
+	$\abs{\Sigma}=1$; the relation
+	$1+\theta^{3}+\theta^{-3}+\theta^{5}+\theta^{-5}=0$ indeed holds in
+	$\F_{256}$ for a suitable $\theta$ of order $17$, and $\abs{S_{17}}=16$,
+	matching $d(16)=8$.
+
+	For $p=31$, $j=1$, one has $\ord[31]{2}=5$, $\varphi(31)=30$, $g=6$,
+	and $-1\notin\langle2\rangle=\{1,2,4,8,16\}$.
+	The class of $r=5$ gives $\Res(\Phi_{31},G_5)=1024=2^{10}=2^{5\cdot2}$,
+	i.e.\ $\abs{\Sigma}=2$, in exact agreement with
+	Proposition~\ref{prop:sigma}.
+	Here $\abs{S_{31}}=40$ and $d(30)=20$.
+\end{example}
+
+\section{Sine residues, ray classes and power residues}\label{sec:power}
+
+The reformulations of Section~\ref{sec:reduction} say that a counterexample
+is a congruence $s_{j,a}s_{j,b}\equiv1$ at one prime above $2$.
+This section carries that out concretely.
+We compute the residues of the sine $p$-units, prove that the residue map is
+injective on $\pm$-classes, and use this to settle unconditionally every
+ratio lying in the decomposition group at $2$
+(Theorem~\ref{thm:frobratio}).
+We then make the ray-class formulation explicit as a family of power-residue
+conditions, and determine the $p$-primary member of that family --- the
+Stickelberger--Jacobi part --- completely
+(Theorem~\ref{thm:pstructure}).
+The outcome is a genuine obstruction, strong enough to prove
+$d(p^{j}-1)=0$ for every prime in an explicit family, conditional only
+on one power-residue nonvanishing that is verified in every computed case
+(Theorem~\ref{thm:qr}).  Section~\ref{sec:traceobs} then removes that
+hypothesis by an additive (Artin--Schreier) argument
+(Theorem~\ref{thm:trace}, Corollary~\ref{cor:trace-family}).
+The obstruction is vacuous when $\ord[p]{2}$ is
+even, and for odd order its descent fails on the Wieferich plateau
+(Proposition~\ref{prop:plateau-degenerate}).
+
+Throughout this section $p>5$, $n=p^{j}$, $f=\ord[n]{2}$, $q=2^{f}$,
+$\mathfrak P\mid2$ is a fixed prime of $K_j=\Q(\zeta_n)$, and
+$\theta=\zeta_n\bmod\mathfrak P$ has exact order $n$ in $\F_q^\times$.
+For $x\in\Z/n\Z$ we write
+\[
+	\bar\lambda_x=\theta^{x}+\theta^{-x}\in\F_{q},
+\]
+the reduction of $\lambda_x=\zeta_n^{x}+\zeta_n^{-x}$.
+
+\subsection{The residue of a sine unit is a trace}
+
+\begin{lemma}\label{lem:sine-trace}
+	Let $h=(n+1)/2$, so $2h\equiv1\pmod n$.  For every $a\in\Z/n\Z$ with
+	$a\not\equiv0$,
+	\[
+		\overline{s_{j,a}}=\overline{\epsilon_{j,a}}=\bar\lambda_{ha}.
+	\]
+	Moreover, for all $x,y\in\Z/n\Z$,
+	\begin{equation}\label{eq:lam-rules}
+		\bar\lambda_{2x}=\bar\lambda_x^{\,2},
+		\qquad
+		\bar\lambda_{-x}=\bar\lambda_{x},
+		\qquad
+		\bar\lambda_x\bar\lambda_y=\bar\lambda_{x+y}+\bar\lambda_{x-y}.
+	\end{equation}
+\end{lemma}
+
+\begin{proof}
+	From $2h\equiv1$ we get $1-h\equiv h$, hence
+	$\overline{s_{j,a}}=\theta^{-ha}(1+\theta^{a})
+	=\theta^{-ha}+\theta^{a-ha}=\theta^{-ha}+\theta^{ha}$.
+	Reducing \eqref{eq:epsilon-h90} modulo $\mathfrak P$ and using that
+	$\sigma_2$ acts as the Frobenius on the residue field gives
+	$\overline{\epsilon_{j,a}}=\overline{s_{j,a}}^{\,2}/\overline{s_{j,a}}
+	=\overline{s_{j,a}}$, because $s_{j,a}$ is a unit at $\mathfrak P$.
+	The three rules in \eqref{eq:lam-rules} are the Frobenius, the
+	substitution $x\mapsto-x$, and multiplying out.
+\end{proof}
+
+\begin{lemma}[fibre lemma]\label{lem:fibre}
+	For $x,y\in\Z/n\Z$:
+	\begin{enumerate}
+		\item $\bar\lambda_x=0$ if and only if $x\equiv0$;
+		\item $\bar\lambda_x\ne1$ for every $x$;
+		\item $\bar\lambda_x=\bar\lambda_y$ if and only if
+		      $y\equiv\pm x\pmod n$.
+	\end{enumerate}
+	Consequently $\F_2(\bar\lambda_x)=\F_{2^{d}}$, where $d$ is the order
+	of $2$ in $(\Z/m\Z)^{\times}/\{\pm1\}$ and $m=n/\gcd(x,n)$ is the exact
+	order of $\theta^{x}$.
+\end{lemma}
+
+\begin{proof}
+	In characteristic two
+	$(T-\theta^{x})(T-\theta^{-x})=T^{2}+\bar\lambda_xT+1$, so
+	$\bar\lambda_x$ determines the unordered pair
+	$\{\theta^{x},\theta^{-x}\}$, and (3) follows because reduction is
+	injective on $\mu_n$.
+	For (1), $\bar\lambda_x=0$ forces $\theta^{2x}=1$, hence $x\equiv0$
+	because $n$ is odd.
+	For (2), $\bar\lambda_x=1$ forces $\theta^{2x}+\theta^{x}+1=0$, so
+	$\theta^{x}$ has order $3$, impossible for $p>3$.
+	The last statement is (3) applied to $y=2^{k}x$: one has
+	$\bar\lambda_x^{\,2^{k}}=\bar\lambda_{2^{k}x}=\bar\lambda_x$ if and only
+	if $2^{k}\equiv\pm1\pmod m$.
+\end{proof}
+
+\begin{proposition}[product dictionary]\label{prop:product-form}
+	Put $x=h(A+B)$ and $y=h(A-B)$, a bijection of $(\Z/n\Z)^2$ onto itself
+	with inverse $A=x+y$, $B=x-y$.  Then
+	\[
+		\Lambda_{A,B}\equiv0\pmod{\mathfrak P}
+		\quad\Longleftrightarrow\quad
+		\bar\lambda_x\bar\lambda_y=1 ,
+	\]
+	the excluded degenerate cases $A\equiv0$, $B\equiv0$, $B\equiv\pm A$
+	correspond to $y\equiv-x$, $y\equiv x$, $xy\equiv0$, and $p\mid A,B$
+	if and only if $p\mid x,y$.
+	The ratios correspond by the Möbius involution
+	\[
+		r_{\rm sum}=B/A\ \longleftrightarrow\
+		r_{\rm prod}=y/x=\frac{1-r_{\rm sum}}{1+r_{\rm sum}} .
+	\]
+	In particular Problem~\ref{prob:main} at level $p^{j}$ asserts that
+	there is no pair $x,y\in\Z/n\Z$, not both divisible by $p$, with
+	$\bar\lambda_x\bar\lambda_y=1$.
+\end{proposition}
+
+\begin{proof}
+	Immediate from \eqref{eq:lam-rules}: $\bar\lambda_x\bar\lambda_y
+	=\bar\lambda_{x+y}+\bar\lambda_{x-y}=\bar\lambda_A+\bar\lambda_B$,
+	and $\Lambda_{A,B}=1+\lambda_A+\lambda_B$.
+	The statement on ratios is the computation
+	$y/x=(1-B/A)/(1+B/A)$; $h$ is invertible, so $p\mid x,y$ iff
+	$p\mid A,B$.
+\end{proof}
+
+We record two exact identities among the residues, both of which are
+reductions of norm relations and both of which will be used below.
+
+\begin{lemma}\label{lem:lam-relations}
+	\[
+		\prod_{t\in(\Z/n\Z)^{\times}}\bar\lambda_t=1,
+		\qquad
+		\prod_{t\in H_\beta}\bar\lambda_{xt}=\bar\lambda_{p^{\beta}x}
+		\quad(1\leq\beta\leq j),
+	\]
+	where $H_\beta=1+p^{\,j-\beta}\Z/p^{j}\Z$ is the subgroup of order
+	$p^{\beta}$ of $(\Z/n\Z)^{\times}$ and $\gcd(x,p)=1$.
+\end{lemma}
+
+\begin{proof}
+	Write $\bar\lambda_t=\theta^{-t}(1+\theta^{2t})$.  Pairing $t$ with
+	$n-t$ gives $\sum_{t}t\equiv0\pmod n$, while
+	$\prod_{t}(1+\theta^{2t})=\prod_{u}(1+\theta^{u})
+	=\overline{\Phi_{n}(-1)}=1$.  This is the first identity.
+	For the second, $2xt$ runs over $2x+p^{\,j-\beta}\Z/p^{j}\Z$ as $t$
+	runs over $H_\beta$, so
+	$\prod_{t}(1+\theta^{2xt})=\prod_{w\bmod p^{\beta}}
+	(1+\theta^{2x}\eta^{w})=1+\theta^{2p^{\beta}x}$ with
+	$\eta=\theta^{p^{\,j-\beta}}$ of order $p^{\beta}$;
+	and $\sum_{t\in H_\beta}xt\equiv p^{\beta}x\pmod{p^{j}}$.
+\end{proof}
+
+\subsection{The semi-local residue module and a no-go theorem}
+\label{sec:module}
+
+Put
+\[
+	\bar G=(\Z/n\Z)^\times/\{\pm1\},\qquad
+	\bar f=\rho_2(n),\qquad
+	\bar D=\langle2\rangle\subseteq\bar G,\qquad
+	g^+=\frac{\varphi(n)}{2\bar f},
+\]
+and $E=\F_{2^{\bar f}}$.  The $g^+$ primes of $K_j^+$ above two are
+permuted simply transitively by $\bar G/\bar D$, and their residue fields
+are all $E$.  Let
+\[
+	M=\prod_{\mathfrak q\mid2}
+		(\mathcal O_{K_j^+}/\mathfrak q)^\times.
+\]
+
+\begin{theorem}[Semi-local module]\label{thm:semilocal-module}
+	There is an isomorphism of $\bar G$-modules
+	\[
+		M\cong\Z[\bar G]/(\sigma_2-2)\Z[\bar G].
+	\]
+	Reduction at one chosen prime is evaluation on the decomposition
+	group: it kills the cosets outside $\bar D$ and sends
+	$\sigma_2^i$ to multiplication by $2^i$ in
+	$\Z/(2^{\bar f}-1)\Z$.
+\end{theorem}
+
+\begin{proof}
+	As a permutation module on the primes above two,
+	\[
+		M\cong\operatorname{Ind}_{\bar D}^{\bar G}E^\times.
+	\]
+	Choose a generator $\gamma$ of $E^\times$.  The map
+	\[
+		\Z[\bar D]\longrightarrow E^\times,\qquad
+		\sum_i a_i\sigma_2^i\longmapsto
+		\gamma^{\sum_i a_i2^i}
+	\]
+	is surjective with kernel generated by $\sigma_2-2$, since
+	\[
+		\Z[X]/(X^{\bar f}-1,X-2)
+		\cong\Z/(2^{\bar f}-1)\Z.
+	\]
+	Inducing to $\bar G$ proves the first assertion.  Projection to the
+	trivial coset gives the stated one-prime evaluation map.
+\end{proof}
+
+The structural relations satisfied by the true residues are the
+Frobenius and sign rules in \eqref{eq:lam-rules}, the distribution
+relations for circular units \cite{Sinnott1978,Sinnott1980,KubertLang1981},
+and their norm consequence.  Abstract them as follows.
+
+\begin{definition}\label{def:admissible-system}
+	An \emph{admissible system} is a map
+	\[
+		m:(\Z/n\Z)\setminus\{0\}\longrightarrow E^\times
+	\]
+	satisfying
+	\begin{align*}
+		m(2x)&=m(x)^2,\\
+		m(-x)&=m(x),\\
+		\prod_{k=0}^{p-1}m(x+kn/p)&=m(px)
+		\qquad(px\not\equiv0\pmod n).
+	\end{align*}
+\end{definition}
+
+The true system $m(x)=\bar\lambda_x$ is admissible by
+Lemma~\ref{lem:sine-trace} and Lemma~\ref{lem:lam-relations}.
+
+\begin{theorem}[Freeness]\label{thm:admissible-freeness}
+	Choose one representative $x_i$ from each of the $g^+$ orbits of
+	$\langle2,-1\rangle$ on the primitive indices.  Evaluation induces a
+	bijection
+	\[
+		\{\text{admissible systems}\}
+		\longrightarrow(E^\times)^{g^+},
+		\qquad
+		m\longmapsto(m(x_1),\ldots,m(x_{g^+})).
+	\]
+	Thus the primitive-orbit values may be prescribed arbitrarily and
+	independently.
+\end{theorem}
+
+\begin{proof}
+	Frobenius and sign determine $m$ on each primitive orbit from
+	$m(x_i)$.  Every nonzero lower-level index is $pz$, and the
+	distribution relation determines $m(pz)$ from values one level higher;
+	induction gives injectivity.
+
+	Conversely prescribe arbitrary $v_i\in E^\times$ and set
+	$m(\pm2^kx_i)=v_i^{2^k}$.  This is well defined because each orbit has
+	length $\bar f$ and $v_i^{2^{\bar f}}=v_i$.  Define the lower levels
+	recursively by the distribution product.  Changing a lift of $pz$
+	permutes the $p$ factors, and doubling or negating the lift respectively
+	squares or permutes the same product.  Hence all three axioms hold.
+\end{proof}
+
+\begin{corollary}[Multiplicative no-go]\label{cor:multiplicative-nogo}
+	If $g^+\geq2$ and $x,y$ are primitive indices in distinct
+	$\langle2,-1\rangle$-orbits, then exactly
+	$(2^{\bar f}-1)^{g^+-1}$ admissible systems satisfy
+	$m(x)m(y)=1$.  Therefore the Frobenius, sign, distribution, and norm
+	consequences encoded above cannot by themselves exclude a primitive
+	collision.
+\end{corollary}
+
+\begin{proof}
+	In the coordinates of Theorem~\ref{thm:admissible-freeness}, prescribe
+	$v_2=v_1^{-1}$ and choose all remaining coordinates freely.  The norm
+	relation is automatic: on each orbit its product is
+	$v_i^{2^{\bar f}-1}=1$.
+\end{proof}
+
+On a Wieferich plateau $g^+\geq p^{j-1}$, so this no-go theorem applies
+precisely where the universal proof is missing.  The script
+\path{code/ai_prototypes/circular_module.py} constructs explicit systems
+for $(p,j)=(1093,2)$ and $(3511,2)$ that also remain injective on
+$\{\pm x\}$-classes, avoid the value $1$, and contain a primitive
+collision.  The strengthened construction in
+\path{code/ai_prototypes/plateau_endpoint.py} additionally imposes the
+additive distribution law, the Artin--Schreier trace law, and the global
+trace law of Theorem~\ref{thm:global-trace} below.  These are formal
+countermodels to the listed axioms, not counterexamples to the original
+problem: they deliberately omit the full multiplication identity
+\[
+	\bar\lambda_x\bar\lambda_y
+	=\bar\lambda_{x+y}+\bar\lambda_{x-y}.
+\]
+They show exactly that any successful proof in this framework must use
+more of that additive subgroup structure.
+
+\subsubsection{Relation weights and Zech logarithms}
+
+A positive relation of weight $w$ is a multiset of nonzero
+$\{\pm x\}$-classes with product of the corresponding
+$\bar\lambda_x$ equal to $1$.  The main problem is the assertion that
+there is no primitive relation of weight two.  Within one Frobenius orbit
+this invariant is explicit.  If $d_x$ is the multiplicative order of
+$\bar\lambda_x$, then a relation
+\[
+	\prod_k\bar\lambda_{2^kx}^{e_k}=1
+\]
+is equivalent to
+\[
+	\sum_ke_k2^k\equiv0\pmod{d_x}.
+\]
+Thus an orbit supports a weight-two relation exactly when
+$2^i\equiv-1\pmod{d_x}$ for some $i$.  This recovers the exceptional
+decomposition-group ratios but says nothing about collisions between
+different primitive orbits, which are exactly the free coordinates in
+Theorem~\ref{thm:admissible-freeness}.
+
+Equivalently, if $\gamma$ generates $\F_{2^f}^\times$,
+$\theta=\gamma^L$, and $Z$ is the Zech logarithm
+$1+\gamma^m=\gamma^{Z(m)}$, then
+\[
+	\log_\gamma\bar\lambda_x=Z(2xL)-xL,
+\]
+and a collision is
+\[
+	Z(2xL)+Z(2yL)\equiv(x+y)L\pmod{2^f-1}.
+\]
+This is an exact restatement, but available Costas/Sidon properties of
+Zech logarithms do not control the restriction to two independent
+$p^j$-orbits.  The freeness theorem explains why orbitwise identities
+alone cannot do so.
+
+\subsection{Ratios in the decomposition group}
+
+The decomposition group at $\mathfrak P$ is $D=\langle2\rangle\subseteq
+(\Z/n\Z)^{\times}$, and by \eqref{eq:lam-rules} a ratio $y/x\in D$ is
+exactly the case in which the two sine residues are Frobenius conjugate.
+This case can be settled completely and unconditionally.
+
+\begin{theorem}\label{thm:frobratio}
+	Let $x,y\in\Z/n\Z$ be nonzero with $y\equiv2^{i}x\pmod n$ for some
+	$i\geq0$, and suppose $\bar\lambda_x\bar\lambda_y=1$ and
+	$y\not\equiv\pm x$.
+	Let $m$ be the exact order of $\theta^{x}$ and $f_m=\ord[m]{2}$.
+	Then
+	\[
+		4\mid f_m,
+		\qquad
+		2^{f_m/2}\equiv-1\pmod m,
+		\qquad
+		y\equiv\pm\rho^{\pm1}x\ \ \text{with}\ \ \rho=2^{f_m/4},
+		\ \rho^{2}\equiv-1\pmod m ,
+	\]
+	and, writing $\F=\F_{2^{f_m/2}}$ and $\F_0=\F_{2^{f_m/4}}$,
+	\[
+		\bar\lambda_x\in\F^{\times},
+		\qquad
+		\Nm_{\F/\F_0}\!\left(\bar\lambda_x\right)=1 .
+	\]
+	Equivalently, in the sum form of Proposition~\ref{prop:product-form},
+	$B\equiv\mp\rho A$ and $\Tr_{\F/\F_0}(\bar\lambda_A)=1$.
+\end{theorem}
+
+\begin{proof}
+	Since $y=2^{i}x$, both indices have the same $p$-valuation, so
+	replacing $\theta$ by $\theta^{x}$ we may assume $x=1$ and $n=m$; write
+	$f=f_m$.  (This is legitimate: $x(2^{i}\mp1)\equiv0\pmod n$ if and only
+	if $2^{i}\equiv\pm1\pmod m$, so the excluded case is the same one, and
+	the conclusion $2^{i}\equiv\rho^{\pm1}\pmod m$ gives back
+	$y\equiv\rho^{\pm1}x\pmod n$.)
+	By \eqref{eq:lam-rules} the hypothesis reads
+	$\bar\lambda_1^{\,2^{i}+1}=1$, so the multiplicative order of
+	$\bar\lambda_1$ divides
+	\[
+		\gcd\!\left(2^{i}+1,\,2^{f}-1\right)=
+		\begin{cases}
+			2^{d}+1, & f/d\ \text{even},\\
+			1,       & f/d\ \text{odd},
+		\end{cases}
+		\qquad d=\gcd(i,f),
+	\]
+	a standard identity.
+	If $f/d$ is odd then $\bar\lambda_1=1$, contradicting
+	Lemma~\ref{lem:fibre}(2).
+	So $f/d$ is even and $\bar\lambda_1\in\mu_{2^{d}+1}\subseteq
+	\F_{2^{2d}}^{\times}$.
+	Then $\bar\lambda_{2^{2d}}=\bar\lambda_1^{\,2^{2d}}=\bar\lambda_1$, so
+	$2^{2d}\equiv\pm1\pmod n$ by Lemma~\ref{lem:fibre}(3).
+
+	Suppose $2^{2d}\equiv1$.  Then $f\mid2d$; since $d\mid f$ and $f/d$ is
+	even, $f=2d$.  Now $2^{d}$ is a square root of $1$ in the cyclic group
+	$(\Z/n\Z)^{\times}$ and $2^{d}\ne1$, so $2^{d}\equiv-1$.  As
+	$d=\gcd(i,f)$ divides $i$, we get $2^{i}\in\{2^{d},2^{2d}\}=\{-1,1\}$,
+	i.e.\ $y\equiv\pm x$, which was excluded.
+
+	Hence $2^{2d}\equiv-1$.  Then $f\mid4d$ but $f\nmid2d$, and $f/d$ is
+	even, so $f=4d$; thus $\rho:=2^{d}=2^{f/4}$ satisfies
+	$\rho^{2}\equiv-1$ and $2^{f/2}\equiv-1$.
+	From $\gcd(i,4d)=d$ we get $i=kd$ with $k$ odd, so
+	$2^{i}=\rho^{k}=\rho^{\pm1}$.
+	Finally $\bar\lambda_1\in\mu_{2^{d}+1}\subseteq\F_{2^{2d}}^{\times}
+	=\F^{\times}$ and $\bar\lambda_1^{\,2^{d}+1}=1$ is exactly
+	$\Nm_{\F/\F_0}(\bar\lambda_1)=1$.
+
+	For the sum form, Proposition~\ref{prop:product-form} with $y=\rho x$
+	gives $A=(1+\rho)x$, $B=(1-\rho)x$ and
+	$B/A=(1-\rho)/(1+\rho)=-\rho$ because $(1+\rho)^{2}=2\rho$ and
+	$(1+\rho)(1-\rho)=2$.
+	Since $2^{f/2}\equiv-1$ we have
+	$\bar\lambda_A^{\,2^{f/2}}=\bar\lambda_{-A}=\bar\lambda_A$, so
+	$\bar\lambda_A\in\F$, and the relation
+	$\bar\lambda_A+\bar\lambda_B=\bar\lambda_A+\bar\lambda_A^{\,2^{f/4}}=1$
+	is $\Tr_{\F/\F_0}(\bar\lambda_A)=1$.
+\end{proof}
+
+\begin{corollary}\label{cor:frobratio}
+	If $-1\notin\langle2\rangle$ in $(\Z/p^{j}\Z)^{\times}$, or if
+	$4\nmid\ord[p^j]{2}$, then no solution of \eqref{eq:main} has ratio
+	$y/x$ in the decomposition group $\langle2\rangle$.
+	In general the only ratio class in $\langle2\rangle$ that can occur is
+	$\{\pm\rho^{\pm1}\}$ with $\rho=2^{f/4}$ a primitive fourth root of
+	unity modulo $p^{j}$, and in that case the stabilizer of
+	Proposition~\ref{prop:sigma} is $H=\{\pm1,\pm\rho\}\subseteq
+	\langle2\rangle$, so its orbits on the primes above $2$ are singletons
+	and the reciprocal symmetry gives no lower bound on
+	$\abs{\Sigma_{a,b}}$ beyond $1$.
+	(For $p=17$ one indeed has $\abs{\Sigma}=1$.)
+\end{corollary}
+
+Theorem~\ref{thm:frobratio} disposes of the $f$ ratios forming the
+decomposition group, against the $8$ ratios that cyclotomic units dispose of
+(Theorem~\ref{thm:units}); the two families always share
+$r_{\rm prod}=2^{\pm1}$ and generically nothing else.
+It is sharp: the exceptional class really occurs.
+
+\begin{example}\label{ex:17-257}
+	For $p=17$, $f=8$, $\rho=2^{2}=4$ and $\rho^{2}=16=-1$; all eight
+	product-form solutions have ratio in $\{4,13\}=\{\pm\rho^{\pm1}\}$, and
+	in fact $\abs{\Sigma}=1$, matching the example after
+	Proposition~\ref{prop:sigma}.
+	Moreover the eight sum-form indices of those solutions are exactly the
+	eight $A$ with $\Tr_{\F_{16}/\F_{4}}(\bar\lambda_A)=1$, as
+	Theorem~\ref{thm:frobratio} predicts.
+	For $p=257$, $f=16$, $\rho=2^{4}=16$, and of the $144$ product-form
+	solutions exactly $16$ have ratio in $\langle2\rangle$; all of these
+	have ratio $\pm\rho^{\pm1}$.
+	For $p=31$ and $p=127$ one has $-1\notin\langle2\rangle$, and indeed
+	none of the $20$, resp.\ $56$, solutions has ratio in $\langle2\rangle$.
+	For the Wieferich prime $p=1093$ and $j=2$ the exceptional class is
+	present ($f=364$, $\rho=2^{91}$), so Theorem~\ref{thm:frobratio}
+	reduces the $364$ ratios of the decomposition group to a single class,
+	on which the condition becomes
+	$\Tr_{\F_{2^{182}}/\F_{2^{91}}}(\bar\lambda_A)=1$.
+	For the Wieferich prime $p=3511$, by contrast, $f=1755$ is odd, so
+	Corollary~\ref{cor:frobratio} excludes \emph{every} ratio in the
+	decomposition group, at every level $j$ of the plateau.
+\end{example}
+
+\subsection{The ray class of the prime above $p$ as a power-residue
+condition}
+
+We now make the ray-class statement of Section~\ref{sec:reduction}
+explicit.  Recall $\mathfrak l_j^{+}$, the unique prime of $K_j^{+}$ above
+$p$, and put $\pi_0=(1-\zeta_j)(1-\zeta_j^{-1})$, a generator of
+$\mathfrak l_j^{+}$, and $\xi_a=s_{j,a}/s_{j,1}\in\mathcal C_j^{+}$ for
+$p\nmid a$, the standard circular units.
+
+\begin{proposition}\label{prop:rayclass}
+	Let $\mathfrak q\mid2$ in $K_j^{+}$ and let $a,b$ be prime to $p$.
+	Then $s_{j,a}s_{j,b}$ generates $\mathfrak l_j^{+}$ and
+	\[
+		s_{j,a}s_{j,b}\equiv1\pmod{\mathfrak q}
+		\iff
+		\bar\pi_0=\left(\bar\xi_a\bar\xi_b\right)^{-1}
+		\ \text{in}\ (\mathcal O_{K_j^{+}}/\mathfrak q)^{\times}.
+	\]
+	In particular a primitive--primitive collision forces the class of
+	$\mathfrak l_j^{+}$ in the ray class group of $K_j^{+}$ of modulus
+	$\mathfrak q$ to be trivial, i.e.\ forces $\mathfrak l_j^{+}$ to split
+	completely in the ray class field of conductor $\mathfrak q$; and it
+	forces $\bar\pi_0\in\rho_{\mathfrak q}(\mathcal C_j^{+})$, hence
+	$\bar\pi_0\in\rho_{\mathfrak q}(\mathcal O_{K_j^{+}}^{\times})$.
+\end{proposition}
+
+\begin{proof}
+	$(s_{j,a})=\mathfrak l_j$ in $K_j$ for $p\nmid a$, so
+	$(s_{j,a}s_{j,b})=\mathfrak l_j^{2}=\mathfrak l_j^{+}\mathcal O_{K_j}$,
+	and $s_{j,a}s_{j,b}$ is fixed by complex conjugation because
+	$s_{j,-a}=-s_{j,a}$.
+	Also $s_{j,1}^{2}=-\pi_0$, so
+	$s_{j,a}s_{j,b}=-\pi_0\xi_a\xi_b$.  Reducing modulo $\mathfrak q$ and
+	using $-1\equiv1$ gives the displayed equivalence.
+	The ray-class statement is the exact sequence
+	$1\to(\mathcal O/\mathfrak q)^{\times}/
+	\rho_{\mathfrak q}(\mathcal O^{\times})\to Cl_{\mathfrak q}\to Cl\to1$
+	together with the fact that the class of the principal ideal
+	$(\pi_0)$ in $Cl_{\mathfrak q}$ is the class of $\bar\pi_0$.
+\end{proof}
+
+Because $(\mathcal O_{K_j^{+}}/\mathfrak q)^{\times}$ is cyclic of odd
+order, a membership statement in it is equivalent to the vanishing of
+finitely many power-residue symbols.  This is the concrete form of the
+``semi-local units modulo circular units'' condition.
+
+\begin{definition}\label{def:psiell}
+	For a prime $\ell\mid2^{f}-1$ let
+	$\chi_\ell:\F_q^{\times}\to\mu_{\ell^{C_\ell}}$,
+	$\chi_\ell(z)=z^{(q-1)/\ell^{C_\ell}}$, with
+	$C_\ell=v_\ell(q-1)$, be the $\ell$-primary power-residue symbol, fix a
+	generator $\xi$ of $\mu_{\ell^{C_\ell}}$ and define
+	$\Psi_\ell:\Z/n\Z\setminus\{0\}\to\Z/\ell^{C_\ell}\Z$ by
+	$\chi_\ell(\bar\lambda_x)=\xi^{\Psi_\ell(x)}$.
+\end{definition}
+
+\begin{lemma}\label{lem:psi-rules}
+	$\Psi_\ell(2x)=2\Psi_\ell(x)$, $\Psi_\ell(-x)=\Psi_\ell(x)$,
+	$\sum_{t\in(\Z/n\Z)^{\times}}\Psi_\ell(t)=0$, and
+	$\sum_{t\in H_\beta}\Psi_\ell(xt)=\Psi_\ell(p^{\beta}x)$.
+	A solution of \eqref{eq:main} with product-form indices $x,y$ forces
+	\begin{equation}\label{eq:psi-collision}
+		\Psi_\ell(x)+\Psi_\ell(y)\equiv0
+		\pmod{\ell^{C_\ell}}\qquad\text{for every prime }\ell\mid2^{f}-1 ,
+	\end{equation}
+	and conversely \eqref{eq:psi-collision} for all $\ell$ is equivalent to
+	$\bar\lambda_x\bar\lambda_y=1$.
+\end{lemma}
+
+\begin{proof}
+	The first two rules are \eqref{eq:lam-rules}, the last two are
+	Lemma~\ref{lem:lam-relations}, and \eqref{eq:psi-collision} is
+	$\chi_\ell$ applied to $\bar\lambda_x\bar\lambda_y=1$.
+	For the converse, $\F_q^{\times}$ is cyclic of order $q-1$ and the
+	$\chi_\ell$ jointly separate its elements.
+\end{proof}
+
+\subsection{The $p$-primary symbol is determined by Stickelberger
+eigenspaces}
+
+The member $\ell=p$ of the family in Lemma~\ref{lem:psi-rules} is the one
+carrying arithmetic: $p^{C}\,\|\,q-1$ with
+$C=v_p(q-1)=\max(c_p,j)$, and $\chi_p$ is the $p$-power residue symbol whose
+Gauss and Jacobi sums are governed by Stickelberger's theorem.  We determine
+it completely.  Write $\Psi=\Psi_p$, $G=(\Z/n\Z)^{\times}=G'\times G_p$ with
+$G'$ cyclic of order $p-1$ and $G_p$ the principal units of order
+$p^{\,j-1}$, let $\tau:G'\to\mu_{p-1}\subseteq(\Z/p^{C}\Z)^{\times}$ be the
+Teichmüller isomorphism, and let $f_1=\ord[p]{2}$.
+
+\begin{theorem}\label{thm:pstructure}
+	Let $A=\left\{k\bmod p-1:\ k\ \text{even},\ k\equiv1\pmod{f_1}\right\}$.
+	Then:
+	\begin{enumerate}
+		\item $\Psi=\sum_{k\in A}\Psi_k$, where $\Psi_k$ is the
+		      $\tau^{k}$-eigencomponent, i.e.\
+		      $\Psi_k(tx)=\tau(t)^{k}\Psi_k(x)$ for $t\in G'$.
+		      In particular $\abs{A}=(p-1)/(2f_1)$ if $f_1$ is odd, and
+		      $A=\emptyset$ if $f_1$ is even.
+		\item If $f_1$ is even then $\Psi\equiv0$: every $\bar\lambda_x$
+		      is a $p^{C}$-th power in $\F_q^{\times}$, and the whole
+		      $p$-primary obstruction is vacuous.
+		\item $\Psi\bmod p$ is invariant under the subgroup
+		      $\langle v\rangle\subseteq G_p$ of order
+		      $p^{\max(0,\,j-c_p)}$ generated by the $p$-part $v$ of the
+		      element $2\in G$; equivalently, $\Psi(x)\bmod p$ depends
+		      only on $x$ modulo $p^{\min(j,\,c_p)}$.
+		\item If $1\leq\beta\leq j-c_p$ then $\Psi(p^{\beta}x)\equiv0
+		      \pmod p$.
+	\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+	Let $M=\mathrm{Fun}(G,\Z/p^{C}\Z)$ with the translation action
+	$(t\Psi)(x)=\Psi(tx)$.  Since $\abs{G'}=p-1$ is invertible in
+	$\Z/p^{C}\Z$ and $\mu_{p-1}\subseteq(\Z/p^{C}\Z)^{\times}$ by Hensel's
+	lemma, the idempotents
+	$e_k=(p-1)^{-1}\sum_{t\in G'}\tau(t)^{-k}t$ decompose
+	$M=\bigoplus_{k\bmod p-1}M_k$, and each $M_k$ is a module over the
+	local ring $\Lambda=\Z/p^{C}\Z[G_p]$ with maximal ideal
+	$\mathfrak m=(p,\,g-1:g\in G_p)$ and residue field $\F_p$.
+
+	By Lemma~\ref{lem:psi-rules}, $\Psi$ satisfies $\sigma_{-1}\Psi=\Psi$
+	and $\sigma_2\Psi=2\Psi$, where $\sigma_t$ is translation by the group
+	element $t$ and the right-hand $2$ is the scalar $2\in\Z/p^{C}\Z$.
+	As $\tau(-1)=-1$, the element $\sigma_{-1}$ acts on $M_k$ by
+	$(-1)^{k}$, so $\Psi_k=0$ for odd $k$.
+	Write $2=\omega v$ with $\omega\in G'$, $v\in G_p$; then
+	$\omega\equiv2\pmod p$, so $\sigma_\omega$ acts on $M_k$ by
+	$\tau(2)^{k}$ and the condition reads
+	\[
+		\left(\sigma_v-u_k\right)\Psi_k=0\ \text{in}\ M_k,
+		\qquad u_k=2\,\tau(2)^{-k}\in(\Z/p^{C}\Z)^{\times}.
+	\]
+	Since $\sigma_v\equiv1\pmod{\mathfrak m}$, the element
+	$\sigma_v-u_k$ is congruent
+	to the scalar $1-u_k$ modulo $\mathfrak m$, hence is a unit of
+	$\Lambda$ unless $u_k\equiv1\pmod p$.
+	Now $u_k\equiv2^{1-k}\pmod p$, so $u_k\equiv1$ if and only if
+	$k\equiv1\pmod{f_1}$.  This proves (1); the count of $A$ is the number
+	of even residues in the arithmetic progression $1+f_1\Z$ modulo
+	$p-1$, which is $(p-1)/(2f_1)$ when $f_1$ is odd and $0$ when $f_1$ is
+	even.  Statement (2) is the case $A=\emptyset$.
+
+	For (3), let $k\in A$.  Then $\tau(2)^{k}=\tau(2)$ because $\tau(2)$
+	has order $f_1$, so $u_k=2/\tau(2)=\langle2\rangle$ is the principal
+	unit part of $2$, and
+	\[
+		v_p\!\left(\langle2\rangle-1\right)
+		=v_p\!\left(\langle2\rangle^{\,p-1}-1\right)
+		=v_p\!\left(2^{\,p-1}-1\right)=c_p ,
+	\]
+	using that $\langle2\rangle\in1+p\Z_p$ and that $p-1$ is prime to $p$.
+	Hence $u_k\equiv1\pmod p$ and the relation
+	$(\sigma_v-u_k)\Psi_k=0$ gives
+	$(\sigma_v-1)\Psi_k\equiv0\pmod p$, i.e.\ $\Psi_k\bmod p$ is
+	$v$-invariant.  Since $\ord_G(2)=f=f_1p^{\max(0,j-c_p)}$ and $\omega$
+	has order $f_1$ prime to $p$, the element $v$ has order
+	$p^{\max(0,j-c_p)}$, and $\langle v\rangle$ is the kernel of the
+	reduction $(\Z/p^{j}\Z)^{\times}\to(\Z/p^{\min(j,c_p)}\Z)^{\times}$,
+	being the unique subgroup of that order in the cyclic group $G_p$.
+
+	For (4), apply Lemma~\ref{lem:psi-rules} with $H_\beta\subseteq
+	\langle v\rangle$, which holds for $\beta\leq j-c_p$: modulo $p$ the
+	left-hand side is $p^{\beta}\Psi(x)\equiv0$.
+\end{proof}
+
+Part (2) is already decisive for one of the two known Wieferich primes.
+
+\begin{corollary}\label{cor:1093-ppart}
+	For $p=1093$ one has $\ord[p]{2}=364$, which is even, so
+	$\Psi\equiv0$ at every level $j$: every $\bar\lambda_x$ is a
+	$p^{C}$-th power in $\F_{2^{364}}^{\times}$.
+	No Stickelberger, Jacobi-sum or $p$-power-residue argument can
+	contribute anything at all to the case $p=1093$.
+\end{corollary}
+
+When $f_1$ is odd the symbol is nonzero in every case we have computed, and
+in the extreme case $\abs{A}=1$ it has a closed form, which yields a
+theorem conditional only on the single nonvanishing $\alpha\ne0$.
+
+\begin{theorem}\label{thm:qr}
+	Let $p\equiv7\pmod 8$ with $\ord[p]{2}=(p-1)/2$, so that $f_1$ is odd
+	and $A=\{k_0\}$ with $k_0=f_1+1$.
+	Let $j\geq1$ satisfy $\min(j,c_p)=1$, i.e.\ $j=1$, or $p$ is not a
+	Wieferich prime.
+	Assume $\alpha:=\Psi(1)\not\equiv0\pmod p$, i.e.\ $\bar\lambda_1$ is
+	not a $p$-th power in $\F_q^{\times}$.
+	Then
+	\[
+		\Psi(x)\equiv\alpha\,\bar x\left(\frac{\bar x}{p}\right)\pmod p
+		\quad(p\nmid x),
+		\qquad
+		\Psi(x)\equiv0\pmod p\quad(p\mid x),
+	\]
+	where $\bar x=x\bmod p$ and $\left(\frac\cdot p\right)$ is the Legendre
+	symbol.  Moreover every pair $x,y$ with
+	$\bar\lambda_x\bar\lambda_y=1$ has $p\mid x$ and $p\mid y$; that is,
+	Problem~\ref{prob:main} has an affirmative answer for $(p,j)$.
+\end{theorem}
+
+\begin{proof}
+	The residues modulo $p-1=2f_1$ that are $\equiv1\pmod{f_1}$ are $1$ and
+	$1+f_1$; as $f_1$ is odd, exactly the second is even, so $A=\{k_0\}$,
+	$k_0=f_1+1=(p+1)/2$.
+	By Theorem~\ref{thm:pstructure}(1) and (3), and because
+	$\min(j,c_p)=1$, the function $\Psi\bmod p$ factors through
+	$(\Z/p\Z)^{\times}$: writing $x=tu$ with $t\in G'$ and $u\in G_p$ one
+	has $\Psi(x)=\tau(t)^{k_0}\Psi(u)$ and $\Psi(u)\equiv\Psi(1)$ modulo
+	$p$, because $u\equiv1\pmod p$; since $\tau(t)\equiv t\equiv x\pmod p$
+	this gives $\Psi(x)\equiv\alpha\bar x^{\,k_0}$.
+	Euler's criterion gives
+	$\bar x^{\,k_0}=\bar x^{\,(p+1)/2}
+	=\bar x\cdot\bar x^{(p-1)/2}=\bar x\left(\frac{\bar x}p\right)$.
+	Theorem~\ref{thm:pstructure}(4) with $c_p=1$ gives
+	$\Psi(p^{\beta}x)\equiv0$ for $\beta\geq1$.
+
+	Put $F(x)=\bar x\left(\frac{\bar x}p\right)$.  If $\bar x$ is a
+	quadratic residue then $F(x)=\bar x$ is a quadratic residue; if
+	$\bar x$ is a non-residue then $F(x)=-\bar x$, again a quadratic
+	residue because $p\equiv3\pmod4$ makes $-1$ a non-residue.  So $F$
+	takes only nonzero square values.
+
+	Suppose $\bar\lambda_x\bar\lambda_y=1$ with $x,y\ne0$ and, after
+	interchanging $x$ and $y$, with $p\nmid x$.  By
+	Lemma~\ref{lem:psi-rules}, $\Psi(x)+\Psi(y)\equiv0\pmod p$.
+	If $p\mid y$ this reads $\alpha F(x)\equiv0$, impossible since
+	$\alpha\ne0$ and $F(x)\ne0$.
+	If $p\nmid y$ it reads $F(x)=-F(y)$, with $F(x)$ a square and $-F(y)$ a
+	non-zero non-square: impossible.
+	Thus every solution has $p\mid x$ and $p\mid y$, which by
+	Proposition~\ref{prop:product-form} is the assertion of
+	Problem~\ref{prob:main}.
+\end{proof}
+
+\begin{corollary}\label{cor:qr-nullity}
+	Under the hypotheses of Theorem~\ref{thm:qr} for every level
+	$1\leq j'\leq j$, one has $S_{p^{j}}=\emptyset$ and $d(p^{j}-1)=0$.
+\end{corollary}
+
+\begin{proof}
+	Induct on $j$.  For $j=1$ every nonzero index is prime to $p$, so
+	Theorem~\ref{thm:qr} gives $S_p=\emptyset$.  For $j>1$,
+	Theorem~\ref{thm:qr} leaves only pairs with $p\mid x$ and $p\mid y$;
+	such a pair is a solution for $\theta^{p}$, of exact order $p^{j-1}$,
+	hence is excluded by the inductive hypothesis.  Now apply
+	Lemma~\ref{lem:d-count}.
+\end{proof}
+
+\begin{corollary}\label{cor:3511-level1}
+	For $p=3511$ one has $p\equiv7\pmod8$ and $\ord[p]{2}=1755=(p-1)/2$,
+	and $\bar\lambda_1$ is not a $p$-th power in $\F_{2^{1755}}^{\times}$
+	(verified in \path{code/ai_prototypes/sine_unit_obstruction.py}).
+	Hence $S_{3511}=\emptyset$ and $d(3510)=0$, by a power-residue argument
+	using one power-residue computation but no enumeration of exponent pairs.
+	The same conclusion is obtained unconditionally, without a
+	power-residue or finite-field computation, in
+	Corollary~\ref{cor:trace-family} below.
+\end{corollary}
+
+\begin{example}\label{ex:qr-family}
+	The hypotheses of Theorem~\ref{thm:qr} hold for
+	$p=7,23,47,71,79,103,167,191,199,239,\ldots$, and in every one of these
+	cases the computation confirms both $\alpha\ne0$ and the closed form
+	$\Psi(x)\equiv\alpha\bar x\left(\frac{\bar x}{p}\right)$ at level
+	$j=1$, hence $d(p-1)=0$; the same was confirmed at $j=2,3$ for $p=7$
+	and at $j=2$ for $p=23$, so Corollary~\ref{cor:qr-nullity} gives
+	$d(7^{j}-1)=0$ for $j\leq3$ and $d(23^{j}-1)=0$ for $j\leq2$.
+	For $p=7$ this reproves, in three lines, the case
+	$p^{j}=49$ that Table~\ref{tab:res49} settles by fourteen resultant
+	factorizations.
+	The obstruction is not always this strong: for $p=31$ and $p=127$,
+	where $\abs{A}=3$ and $\abs{A}=9$, the admissible ratio classes cut
+	out by \eqref{eq:psi-collision} with $\ell=p$ are exactly the ratio
+	classes of the solutions that do exist, so the $p$-part is sharp but
+	not decisive; and for $p=17$, where $f_1=8$ is even, it is empty.
+\end{example}
+
+\subsection{The trace obstruction: an unconditional replacement}
+\label{sec:traceobs}
+
+The hypothesis $\alpha\ne0$ of Theorem~\ref{thm:qr} can be removed
+entirely, at the cost of replacing the multiplicative power-residue symbol
+by an additive one.  Let $\bar f=\rho_2(p^{j})$, let $E=\F_{2^{\bar f}}$ be
+the residue field of the prime $\mathfrak q\mid2$ of $K_j^{+}$ --- so that
+$\bar\lambda_x\in E$ for every $x$ --- and put
+\[
+	\delta=
+	\begin{cases}
+		1,&-1\in\langle2\rangle\subseteq(\Z/p^{j}\Z)^{\times}
+		\quad(\text{equivalently }f=2\bar f),\\
+		0,&\text{otherwise},
+	\end{cases}
+	\qquad
+	\tau(x)=\Tr_{E/\F_2}\!\left(\bar\lambda_x\right).
+\]
+
+\begin{theorem}\label{thm:trace}
+	For every $x\not\equiv0\pmod{p^j}$ one has
+	$\Tr_{E/\F_2}\!\left(\bar\lambda_x^{-1}\right)=\delta$.
+	Consequently, if $\bar\lambda_x\bar\lambda_y=1$ then
+	\[
+		\tau(x)=\tau(y)=\delta .
+	\]
+\end{theorem}
+
+\begin{proof}
+	Put $u=\theta^{x}$ and $c=\bar\lambda_x$, so $u^{2}+cu+1=0$;
+	substituting $u=cS$ gives the Artin--Schreier equation
+	$S^{2}+S=c^{-2}$, whose roots are $u/c$ and $u^{-1}/c$.  It has a root
+	in $E$ if and only if $\Tr_{E/\F_2}(c^{-2})=\Tr_{E/\F_2}(c^{-1})=0$,
+	and also if and only if $u\in E$.  Now $u\in E$ exactly when
+	$2^{\bar f}\equiv1$, i.e.\ when $\delta=0$: for $\delta=1$ one has
+	$u^{2^{\bar f}}=u^{-1}\ne u$ because $u^{2}\ne1$.
+	For the consequence, $\bar\lambda_y=\bar\lambda_x^{-1}$, so
+	$\tau(x)=\Tr_{E/\F_2}(\bar\lambda_y^{-1})=\delta$ and symmetrically.
+\end{proof}
+
+\begin{theorem}\label{thm:twoorbit}
+	Suppose $\ord[p^{j}]{2}=\varphi(p^{j})/2$ is odd, i.e.\ that
+	$\langle2\rangle$ has index two in $(\Z/p^{j}\Z)^{\times}$ and
+	$-1\notin\langle2\rangle$.  Then $\delta=0$, $E=\F_{2^{f}}$, and
+	\[
+		\tau(x)=
+		\begin{cases}
+			1,& v_p(x)=j-1,\\
+			0,& v_p(x)\leq j-2 .
+		\end{cases}
+	\]
+	Hence every solution of \eqref{eq:main} has
+	$v_p(x),v_p(y)\leq j-2$ in product form; for $j=1$ there is none, so
+	$S_p=\emptyset$ and $d(p-1)=0$.
+\end{theorem}
+
+\begin{proof}
+	Oddness of $\varphi(p^j)/2=p^{\,j-1}(p-1)/2$ forces $p\equiv3\pmod4$,
+	so $-1$ is a non-square modulo every power of $p$; and
+	$\langle2\rangle$, being of index two in a cyclic group, is the group
+	of squares.  Hence $\delta=0$, $\bar f=f$ and $\theta\in E$.  Put
+	$t(x)=\Tr_{E/\F_2}(\theta^{x})$, so $\tau(x)=t(x)+t(-x)$ and
+	$t(2x)=t(x)$.
+
+	Fix $\beta\leq j-1$.  Reduction
+	$(\Z/p^{j}\Z)^{\times}\to(\Z/p^{\,j-\beta}\Z)^{\times}$ carries squares
+	onto squares, so the image of $\langle2\rangle$ again has index two and
+	misses $-1$; therefore the indices of level $\beta$ split into exactly
+	two $\langle2\rangle$-orbits, interchanged by $x\mapsto-x$, and $t$ is
+	constant on each, with values $t_\beta^{\pm}$.  Thus $\tau$ is constant
+	on level $\beta$, equal to $\tau_\beta=t_\beta^{+}+t_\beta^{-}$.
+
+	Summing $t$ over level $\beta$ and using that in characteristic two the
+	sum of all $p^{k}$-th roots of unity vanishes for $k\geq1$, so that the
+	sum of the primitive $p^{k}$-th roots of unity is $0$ for $k\geq2$ and
+	$1$ for $k=1$,
+	\[
+		\frac{\varphi(p^{\,j-\beta})}{2}\,\tau_\beta
+		=\sum_{v_p(x)=\beta}t(x)
+		=\begin{cases}
+			\Tr_{E/\F_2}(0)=0,&\beta\leq j-2,\\
+			\Tr_{E/\F_2}(1)=f\bmod 2=1,&\beta=j-1 .
+		\end{cases}
+	\]
+	Since $\varphi(p^{\,j-\beta})/2$ is odd, reduction modulo $2$ gives
+	$\tau_\beta=0$ for $\beta\leq j-2$ and $\tau_{j-1}=1$.
+	Now apply Theorem~\ref{thm:trace}: a collision needs
+	$\tau(x)=\tau(y)=\delta=0$.
+	Finally $d(p-1)=\abs{S_p}/2$ by Lemma~\ref{lem:d-count}.
+\end{proof}
+
+\begin{corollary}\label{cor:trace-family}
+	Let $p\equiv7\pmod 8$ with $\ord[p]{2}=(p-1)/2$.  Then
+	$S_p=\emptyset$ and $d(p-1)=0$ \emph{unconditionally}: no
+	power-residue nonvanishing hypothesis is needed.
+	In particular $d(3510)=0$ is a theorem, and the same holds for
+	$p=7,23,47,71,79,103,167,191,199,\ldots$
+\end{corollary}
+
+\begin{proof}
+	The hypothesis gives $\ord[p]{2}=\varphi(p)/2$, odd because
+	$p\equiv3\pmod4$.  Apply Theorem~\ref{thm:twoorbit} with $j=1$.
+\end{proof}
+
+\subsection{A global trace law}
+
+The Artin--Schreier obstruction uses the trace of
+$\bar\lambda_x$.  A different trace identity appears after rewriting the
+collision as a weight-five ``box plus centre'' relation.
+
+\begin{theorem}[Global trace law]\label{thm:global-trace}
+	Let
+	\[
+		T(x)=\Tr_{\F_{2^f}/\F_2}(\theta^x).
+	\]
+	If $\bar\lambda_x\bar\lambda_y=1$, then
+	\begin{equation}\label{eq:global-trace}
+		T(x)+T(y)=f\pmod2.
+	\end{equation}
+\end{theorem}
+
+\begin{proof}
+	Multiplying
+	$(\theta^x+\theta^{-x})(\theta^y+\theta^{-y})=1$
+	by $\theta^{x+y}$ gives
+	\[
+		1+\theta^{2x}+\theta^{2y}
+		+\theta^{2x+2y}+\theta^{x+y}=0.
+	\]
+	Apply the absolute trace.  Frobenius invariance gives
+	$\Tr(\theta^{2x})=T(x)$,
+	$\Tr(\theta^{2y})=T(y)$, and
+	$\Tr(\theta^{2x+2y})=T(x+y)$; the last term contributes another
+	$T(x+y)$ and cancels it.  Finally
+	$\Tr(1)=f\bmod2$.
+\end{proof}
+
+\begin{corollary}[Three exact new cases]\label{cor:global-trace-cases}
+	Exact trace enumeration gives
+	\[
+		d(72)=d(88)=d(232)=0,
+	\]
+	corresponding to $p=73,89,233$.
+\end{corollary}
+
+\begin{proof}
+	For each prime, enumerate the indices satisfying the necessary
+	Artin--Schreier condition of Theorem~\ref{thm:trace}, split them by
+	$T(x)$, and apply \eqref{eq:global-trace}.  In all three cases no
+	ordered pair survives both conditions.  The computation is exact
+	bit-vector arithmetic in
+	\path{code/ai_prototypes/plateau_endpoint.py}; direct evaluation of
+	$S_p$ independently confirms the empty set.
+\end{proof}
+
+Further applications of the box-plus-centre identity produce additional
+linear trace relations, for example
+\[
+	T(x-2y)+T(2x-y)+T(3x-3y)=0.
+\]
+They strengthen the filter in individual cases but have not yielded a
+uniform endpoint theorem.  The formal constructions following
+Corollary~\ref{cor:multiplicative-nogo} can be chosen to satisfy the
+additive distribution law, Theorem~\ref{thm:trace},
+Theorem~\ref{thm:global-trace}, and the known level sums while still
+containing a primitive collision at both known Wieferich plateaus.  Thus
+these trace laws are genuine progress, but any general proof must use the
+full nonlinear multiplication law rather than only the currently extracted
+linear consequences.
+
+\subsection{Exact Kloosterman formulas at the full-torus extremes}
+\label{sec:kloosterman}
+
+For $r\geq1$ define the binary Kloosterman sum
+\[
+	K_r=\sum_{z\in\F_{2^r}}
+	(-1)^{\Tr_{\F_{2^r}/\F_2}(z+z^{-1})},
+	\qquad 0^{-1}=0.
+\]
+
+\begin{theorem}[Mersenne and Fermat formulas]\label{thm:kloosterman}
+	\begin{enumerate}
+		\item If $p=2^r-1$ is a Mersenne prime, $r\geq3$, then
+		      \[
+			      d(p-1)=\frac{p-3+K_r}{2}.
+		      \]
+		\item If $p=2^m+1$ is a Fermat prime, $m\geq2$, then
+		      \[
+			      d(p-1)=\frac{p-1+K_m}{2}.
+		      \]
+	\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+	In the Mersenne case $\mu_p=\F_{2^r}^{\times}$; in the Fermat case
+	$\mu_p$ is the full norm-one torus in
+	$\F_{2^{2m}}/\F_{2^m}$.  Therefore the trace-value set
+	$\{\bar\lambda_x:x\neq0\}$ is the entire Artin--Schreier set described
+	by Theorem~\ref{thm:trace}, so its necessary condition is also
+	sufficient.
+
+	Expand the two trace indicators for a pair
+	$\alpha,\alpha+1$ and sum over $\alpha\neq0,1$.  The linear terms are
+	evaluated by orthogonality of the additive character.  For the
+	quadratic term use
+	\[
+		\alpha^{-1}+(\alpha+1)^{-1}
+		=(\alpha^2+\alpha)^{-1}
+	\]
+	and the two-to-one map
+	$\alpha\mapsto\alpha^2+\alpha$ onto the trace-zero subspace.
+	The remaining character sum is exactly $K_r$ or $K_m$.
+	Finally use Lemma~\ref{lem:d-count}.  This gives the two formulas.
+\end{proof}
+
+By the Weil bound, and more sharply by the congruences and recurrences for
+binary Kloosterman sums \cite{LachaudWolfmann1990,Carlitz1969},
+$d(p-1)>0$ for every Mersenne prime $p\geq31$ and every Fermat prime
+$p\geq5$.  This explains the level-one solutions for
+$p=17,31,127,257$.  When $\mu_{p^j}$ is a proper subgroup of the torus,
+the same expansion becomes an average of twisted Kloosterman sums.  The
+Weil error then exceeds the expected main term on the plateau, so the
+exact full-torus evaluation does not extend to the endpoint problem.
+
+\subsection{Why the method stops exactly at the plateau}
+
+\begin{proposition}\label{prop:plateau-degenerate}
+	Let $2\leq j\leq c_p$, so that $(p,j)$ lies on the plateau.  Then in
+	the notation of Theorem~\ref{thm:pstructure}, $v=1$ and $C=c_p$, so
+	$u_k=\langle2\rangle\equiv1\pmod{p^{C}}$ and the relation
+	$(\sigma_v-u_k)\Psi_k=0$ is the trivial relation $0=0$.
+	Beyond the eigenspace support of Theorem~\ref{thm:pstructure}(1) and
+	the norm relation of Lemma~\ref{lem:lam-relations}, no constraint on
+	$\Psi$ survives; the ambient eigenspace has $p^{\,j-1}-1$ free
+	parameters in $\Z/p^{C}\Z$ after fixing its augmentation.
+\end{proposition}
+
+\begin{proof}
+	On the plateau $\ord[p^j]{2}=\ord[p]{2}=f_1$ is prime to $p$, so the
+	$p$-part $v$ of $2\in G$ is trivial, and
+	$C=v_p(2^{f}-1)=c_p\geq j$.
+	By the computation in the proof of
+	Theorem~\ref{thm:pstructure}(3),
+	$v_p(u_k-1)=c_p=C$, i.e.\ $u_k=1$ in $\Z/p^{C}\Z$; so the relation
+	imposed by $\sigma_2$ is vacuous.  The eigencomponent $M_k$ is free of
+	rank $p^{\,j-1}$ over $\Z/p^{C}\Z$ and the relation of
+	Lemma~\ref{lem:lam-relations} fixes only its augmentation.
+\end{proof}
+
+\begin{heuristic}
+	If the remaining free values of $\Psi$ behave randomly, then the
+	necessary condition \eqref{eq:psi-collision} for $\ell=p$ should remove
+	a proportion about $1-p^{-c_p}$ of pairs, leaving on the order of
+	$\varphi(p^j)^2p^{-c_p}$ candidates. At $j=c_p$ this is on the order of
+	$p^j$. This explains why the $p$-primary condition is not expected to
+	decide Problem~\ref{prob:main}, but it is not a count of the actual
+	values of $\Psi$.
+\end{heuristic}
+
+\begin{example}[the plateau case $p=3511$, $j=2$]\label{ex:3511-plateau}
+	Here $f_1=1755$ is odd, $c_p=2$, $A=\{1756\}$, and
+	Theorem~\ref{thm:qr} proves the case $j=1$ outright.  At $j=2$ the
+	descent of Theorem~\ref{thm:pstructure}(3) says only that
+	$\Psi\bmod p$ depends on $x$ modulo $p^{2}$, which is no information,
+	and the $p$ values of $\Psi$ on $G_p$ are unconstrained.
+	The computation \path{code/ai_prototypes/plateau_ppart_3511.py}
+	evaluates $\Psi$ on $140$ elements of $G_p$ inside
+	$\F_{2^{1755}}$, confirms the eigenrelation
+	$\chi(\bar\lambda_{tx})=\chi(\bar\lambda_x)^{\tau(t)^{k_0}}$, and finds
+	$4$ sampled pairs $(u_1,u_2)$ satisfying the $p$-primary necessary
+	condition \eqref{eq:psi-collision} --- against $2.79$ expected at random.
+	This is heuristic evidence that the obstruction, decisive at level $1$,
+	does not decide level $2$; these are not five-term solutions.
+\end{example}
+
+\begin{remark}\label{rem:other-ell}
+	The same eigenspace analysis applies to $\ell\ne p$: $\Psi_\ell$ is
+	supported on those characters $\psi$ of $G$ with values in
+	$\bar\F_\ell$ that satisfy $\psi(2)=2$ and $\psi(-1)=1$.  Such
+	characters exist for many $\ell$ --- the constraint $\psi(2)=2$ alone
+	is always solvable, because $\ord[\ell]{2}$ divides $\ord_G(2)=f$ ---
+	so no analogue of Theorem~\ref{thm:pstructure}(2) is available in
+	general.  Moreover, if $2^{i}\equiv-1\pmod{\ell^{C_\ell}}$ for some
+	$i$, then every pair $(x,2^{i}x)$ satisfies \eqref{eq:psi-collision}
+	for that $\ell$, so the $\ell$-primary condition alone can never be
+	empty.  Those pairs are precisely the ones removed by
+	Theorem~\ref{thm:frobratio}; the two
+	obstructions of this section are therefore complementary, and neither
+	is subsumed by the other.
+	Individual $\ell\ne p$ can nevertheless be decisive: for $p=7$, $j=2$
+	each of $\ell=7,127,337$ already excludes every admissible pair, and
+	for $p=23$ both $\ell=23$ and $\ell=89$ do.
+	This is not a usable route on the plateau, since it presupposes the
+	factorization of $2^{364}-1$ or $2^{1755}-1$.
+\end{remark}
+
+\begin{remark}\label{rem:char-specific}
+	Theorem~\ref{thm:qr} is genuinely characteristic-two input, and is
+	therefore not in conflict with
+	Corollary~\ref{cor:no-structural-proof}.
+	Replacing $2$ by another prime $\ell$, the Frobenius relation becomes
+	$\bar\lambda_{\ell x}=\bar\lambda_x^{\,\ell}$ and the eigenspace
+	condition of Theorem~\ref{thm:pstructure} becomes
+	$k\equiv1\pmod{\ord[p]{\ell}}$, so the admissible set $A$ has
+	$(p-1)/(2\ord[p]{\ell})$ elements and the argument degrades as
+	$\ord[p]{\ell}$ shrinks.
+	For the counterexample $\ell=491$, $p=7$, $j=2$ of
+	Table~\ref{tab:counterexamples} one has $\ord[7]{491}=1$, so $A$
+	consists of all even $k$, the symbol is unconstrained, and no
+	contradiction arises --- exactly as it must be.
+\end{remark}
+
+\section{Modular vanishing sums: what the theorems give}\label{sec:modular}
+
+\subsection{Congruence modulo the rational prime $2$}
+
+\begin{theorem}[Dvornicich--Zannier \cite{DvornicichZannier2002}]\label{thm:DZ}
+	Let $\ell$ be a rational prime, let $\zeta_0=1,\zeta_1,\ldots,\zeta_{k-1}$
+	be pairwise distinct roots of unity, and let $a_i\in\Q^{\times}$
+	satisfy $\sum_{i}a_i\zeta_i\equiv0\pmod{\ell}$ while no proper subsum
+	is $\equiv0\pmod{\ell}$.
+	Then $Q=\operatorname{lcm}_i\ord{\zeta_i}$ is squarefree and
+	\[
+		\sum_{q\mid Q}(q-2)\leq k-2,
+	\]
+	the sum being over primes $q$ dividing $Q$.
+\end{theorem}
+
+We flag explicitly that the congruence in Theorem~\ref{thm:DZ} is modulo the
+\emph{rational} prime $\ell$, that is, in $\Z[\zeta]/\ell\Z[\zeta]$, and not
+modulo a prime ideal above $\ell$.
+This is not a technicality.
+
+\begin{proposition}\label{prop:DZ-fails-ideals}
+	The literal analogue of Theorem~\ref{thm:DZ} for congruences modulo a
+	prime ideal is false.
+	In $\F_8=\F_2[x]/(x^3+x+1)$ the element $\alpha=x$ has order $7$ and
+	$\alpha^{3}=\alpha+1$, so $1+\alpha+\alpha^{3}=0$.
+	Lifting, there is a prime $\mathfrak{p}\mid2$ of $\Z[\zeta_7]$ with
+	\[
+		1+\zeta_7+\zeta_7^{3}\equiv0\pmod{\mathfrak{p}},
+	\]
+	and no proper subsum is $\equiv0\pmod{\mathfrak{p}}$, because
+	$1+\zeta_7^{e}$ has norm $\Phi_7(-1)=1$ and is therefore a unit for
+	$e\not\equiv0$.
+	Here $k=3$ and $Q=7$, so the conclusion of Theorem~\ref{thm:DZ} would
+	read $5\leq1$.
+\end{proposition}
+
+Nevertheless the congruence modulo the rational prime does apply to our
+situation, and yields the following.
+We give an elementary self-contained proof, which is stronger in that it
+requires no hypothesis on subsums.
+
+\begin{theorem}\label{thm:all-factors}
+	Let $p>5$ be prime and $j\geq1$.
+	Then for all $a,b$,
+	\[
+		\Lambda_{a,b}\not\equiv0\pmod{2\Z[\zeta_{p^j}]} .
+	\]
+	Equivalently, $\Phi_{p^j}(x)$ does not divide
+	$1+x^{a}+x^{-a}+x^{b}+x^{-b}$ in $\F_2[x]/(x^{p^j}+1)$; that is,
+	\eqref{eq:main} can never hold simultaneously for all primitive
+	$p^j$-th roots of unity in $\overline{\F}_2$.
+\end{theorem}
+
+\begin{proof}
+	Work in $R=\F_2[x]/(x^{p^j}+1)$.
+	Since $x^{p^j}+1=\Phi_{p^j}(x)\cdot(x^{p^{j-1}}+1)$, every element of
+	the ideal $\Phi_{p^j}R$ has a unique representative
+	$\Phi_{p^j}(x)A(x)$ with $\deg A<p^{j-1}$.
+	Now $\Phi_{p^j}(x)=\Phi_p(x^{p^{j-1}})=\sum_{k=0}^{p-1}x^{kp^{j-1}}$, so
+	\[
+		\Phi_{p^j}(x)A(x)=\sum_{k=0}^{p-1}x^{kp^{j-1}}A(x),
+	\]
+	and the $p$ summands have pairwise disjoint supports, contained in the
+	intervals $[kp^{j-1},(k+1)p^{j-1})$.
+	Hence
+	\[
+		\wt\!\left(\Phi_{p^j}A\right)=p\cdot\wt(A),
+	\]
+	so every nonzero element of $\Phi_{p^j}R$ has weight a positive
+	multiple of $p$, in particular weight at least $p$.
+
+	The image of $1+x^{a}+x^{-a}+x^{b}+x^{-b}$ in $R$ has weight at most
+	$5$, and its coefficient at the exponent $0$ equals
+	$1+2[a\equiv0]+2[b\equiv0]=1$ in $\F_2$, so it is nonzero.
+	Since $5<p$, it is not in $\Phi_{p^j}R$.
+\end{proof}
+
+\begin{remark}
+	Theorem~\ref{thm:DZ} yields the same conclusion, at the cost of
+	verifying its hypotheses.
+	Assume $\Lambda_{a,b}\equiv0\pmod{2}$.
+	By Lemma~\ref{lem:degenerate} (whose proof applies verbatim modulo $2$,
+	using that $1+\zeta^{e}$ is a unit for $e\not\equiv0$) the five roots
+	are distinct.
+	No subsum of size~$1$ or~$2$ is $\equiv0\pmod2$, again because
+	$1+\zeta^{e}$ is a unit.
+	For a subsum of size $k\in\{3,4\}$ with no vanishing proper subsum,
+	Theorem~\ref{thm:DZ} forces its conductor $Q\mid p^j$ to be squarefree
+	with $\sum_{q\mid Q}(q-2)\leq k-2\leq2$, so $Q=1$ and all its roots
+	equal $1$, contradicting distinctness.
+	Applying Theorem~\ref{thm:DZ} to the full five-term sum gives $Q$
+	squarefree, hence $Q=p$, and $p-2\leq3$, i.e.\ $p\leq5$.
+	The elementary weight argument is preferable because it is
+	unconditional on the exact wording of the published theorem, which we
+	were unable to consult directly, and because it gives the sharper
+	statement that all weights in $\Phi_{p^j}R$ are multiples of $p$.
+\end{remark}
+
+\subsection{Why no such theorem can hold for a single prime ideal}
+
+\begin{proposition}\label{prop:ubiquity}
+	Let $\theta\in\F_{2^{f}}$ have exact order $N$, $f=\ord[N]{2}$, and let
+	$w_0$ be minimal with $\sum_{i=0}^{w_0}\binom{N}{i}>2^{f}$.
+	Then there are $w\leq2w_0$ pairwise distinct residues
+	$k_1,\ldots,k_w$ modulo $N$ with
+	$\theta^{k_1}+\cdots+\theta^{k_w}=0$.
+\end{proposition}
+
+\begin{proof}
+	The $\F_2$-linear map $\F_2^{\Z/N\Z}\to\F_{2^{f}}$ sending
+	$\delta\mapsto\sum_k\delta_k\theta^{k}$ is surjective.
+	By the pigeonhole principle two distinct vectors of weight at most
+	$w_0$ have the same image; their difference is a nonzero kernel vector
+	of weight at most $2w_0$.
+\end{proof}
+
+Proposition~\ref{prop:ubiquity} shows that modular vanishing sums of small
+weight are unavoidable as soon as $N$ is large compared with $2^{f}$; no
+Mann-type or Conway--Jones-type inequality can survive reduction modulo a
+single prime ideal.
+In coding-theoretic language \cite[Ch.~7]{MacWilliamsSloane}, the kernel in
+Proposition~\ref{prop:ubiquity} is the dual of the irreducible cyclic code
+of length $N$ and dimension $f$ generated by the sequence
+$\left(\Tr_{\F_{2^{f}}/\F_2}(\lambda\theta^{k})\right)_{k}$, and the
+statement is the Gilbert--Varshamov-type upper bound on its minimum
+distance; Proposition~\ref{prop:DZ-fails-ideals} is the observation that
+this distance can be as small as $3$.
+Lam and Leung reached the same conclusion from the opposite direction: they
+determined the weight sets $W_\ell(m)$ of vanishing sums of $m$-th roots of
+unity in $\overline{\F}_\ell$ and observed that the characteristic-zero
+answer fails, remarking that they are ``left with no viable conjecture on
+the structure of the weight set $W_p(m)$ in characteristic $p$''
+\cite[\S1]{LamLeung1996}.
+
+\subsection{The exact size of the gap}
+
+\begin{theorem}\label{thm:gap}
+	Let $p>5$ and $2\leq j\leq c_p$, so that $j$ lies on the plateau and
+	$f=\ord[p^j]{2}=\ord[p]{2}$ divides $p-1$.
+	Suppose $(a,b)$ is a counterexample to Problem~\ref{prob:main}, with
+	$\gcd(a,p)=1$ after possibly interchanging $a$ and $b$.
+	Then
+	\[
+		1\leq\abs{\Sigma_{a,b}}\leq g-1,
+		\qquad
+		g=\frac{\varphi(p^j)}{f}\geq p^{\,j-1}\geq p>5 ,
+	\]
+	and $\abs{\Sigma_{a,b}}\geq2$ whenever $-1\notin\langle2\rangle$ in
+	$(\Z/p^j\Z)^{\times}$.
+	Proposition~\ref{prop:sigma} cannot give a lower bound exceeding
+	$\abs{H}\leq4$.
+\end{theorem}
+
+\begin{proof}
+	The lower bounds are Proposition~\ref{prop:sigma} together with
+	$\Sigma_{a,b}\ne\emptyset$, which is
+	Proposition~\ref{prop:dictionary}(1).
+	For the upper bound, $\abs{\Sigma_{a,b}}=g$ would mean that every prime
+	above $2$ divides $\Lambda_{a,b}$, i.e.\ that
+	$\Lambda_{a,b}\equiv0\pmod{2\Z[\zeta_{p^j}]}$, contradicting
+	Theorem~\ref{thm:all-factors}.
+	Finally $g=\varphi(p^j)/f=p^{j-1}(p-1)/f\geq p^{j-1}$ because
+	$f\mid p-1$ on the plateau.
+\end{proof}
+
+This is the precise answer to the question in the title of this section.
+\emph{The reciprocal, product-one symmetry of the five-term relation supplies
+at most a factor of $4$, and generically a factor of $2$, toward the
+$g\geq p^{j-1}$ primes above $2$ that a Dvornicich--Zannier style argument
+needs.}
+The deficit is not a constant that could be absorbed by sharpening the
+inequality $\sum_{q\mid Q}(q-2)\leq k-2$; it grows like $p^{j-1}$.
+
+There is also an archimedean constraint, which we record because it shows
+how far the ``all primes above $2$'' case is from being tight.
+By Proposition~\ref{prop:dictionary}(3)--(4),
+a counterexample forces
+$2^{f\abs{\Sigma}}\ \big|\ \Res(\Phi_{p^j},G_r)$, while
+\[
+	\frac{1}{\varphi(p^j)}\log\abs{\Res\!\left(\Phi_{p^j},G_r\right)}
+	\longrightarrow
+	m(G_r),
+\]
+$m$ denoting the logarithmic Mahler measure, and by Lawton's theorem
+\cite{Lawton1983}
+\[
+	\lim_{r\to\infty}m(G_r)=m\!\left(1+x+x^{-1}+y+y^{-1}\right)=0.2513\ldots
+	=0.3626\ldots\times\log2 .
+\]
+(The numerical value was computed by midpoint quadrature on a
+$4096\times4096$ grid; the polynomial belongs to Boyd's family
+$x+x^{-1}+y+y^{-1}+k$ at $k=1$ \cite{Boyd1998}.)
+Therefore, asymptotically, $f\abs{\Sigma}\lesssim0.3626\,\varphi(p^j)$, i.e.
+\[
+	\abs{\Sigma_{a,b}}\ \lesssim\ 0.3626\,g .
+\]
+Here the roots-of-unity limit and the Lawton limit are coupled through the
+choice of the residue class $r\bmod p^j$, so this estimate is heuristic rather
+than uniform in $r$.
+Thus the archimedean size heuristic is consistent with
+Theorem~\ref{thm:all-factors}, while leaving the whole range
+$2\leq\abs{\Sigma}\lesssim0.36\,g$ open.
+
+\section{The cyclic-code and Zetterberg-code attack}\label{sec:coding}
+
+Fix an odd $n$ and an element $\theta$ of exact order $n$.  The local
+vanishing code is
+\[
+	\mathcal K_n
+	=\left\{(c_t)_{t\in\Z/n\Z}\in\F_2^n:
+		\sum_t c_t\theta^t=0\right\}.
+\]
+It is a binary cyclic code of dimension $n-\ord[n]{2}$.  A nondegenerate
+five-term relation is the codeword with support
+$\{0,\pm a,\pm b\}$.  This is a \emph{single-prime} code, unlike the ideal
+$\Phi_{p^j}R$ in Theorem~\ref{thm:all-factors}, which imposes vanishing at
+every prime above two.
+
+\begin{theorem}[Interleaving off the plateau]\label{thm:code-interleaving}
+	Let $n=p^j$ with $j>c_p$, let $\theta$ have order $p^j$, and put
+	$\eta=\theta^p$.  Every polynomial of degree less than $p^j$ has a
+	unique decomposition
+	\[
+		A(X)=\sum_{r=0}^{p-1}X^rA_r(X^p),
+		\qquad \deg A_r<p^{j-1}.
+	\]
+	Then
+	\[
+		A(\theta)=0
+		\quad\Longleftrightarrow\quad
+		A_r(\eta)=0\ \text{for every }r.
+	\]
+	Thus $\mathcal K_{p^j}$ is the interleaving of $p$ copies of
+	$\mathcal K_{p^{j-1}}$.  Every codeword of weight at most five is
+	supported in one residue class modulo $p$.
+\end{theorem}
+
+\begin{proof}
+	For $j>c_p$ one has
+	\[
+		[\F_2(\theta):\F_2(\eta)]
+		=\frac{\ord[p^j]{2}}{\ord[p^{j-1}]{2}}=p.
+	\]
+	Hence $1,\theta,\ldots,\theta^{p-1}$ are linearly independent over
+	$\F_2(\eta)$, and the equivalence follows.
+	A nonzero component $A_r(\eta)$ cannot have weight one or two:
+	$\eta^s\neq0$, and
+	$\eta^s+\eta^t=0$ forces $s\equiv t\pmod{p^{j-1}}$.
+	If two interleaved components were nonzero, the total weight would
+	therefore be at least six.
+\end{proof}
+
+\begin{corollary}
+	The interleaving theorem gives another proof of the five-term descent
+	for $j>c_p$: since the support contains the exponent $0$, all five
+	exponents lie in the zero residue class modulo $p$, so $p\mid a,b$.
+\end{corollary}
+
+On the plateau the extension degree in the proof is one, so the
+interleaving collapses.  In the nonsplit case, with
+$f=2\rho_2(p^j)$ and $q=2^{\rho_2(p^j)}$, the group $\mu_{p^j}$ lies in
+the norm-one circle of order $q+1$ in $\F_{q^2}$.  The code
+$\mathcal K_{p^j}$ is then a shortening of the binary Zetterberg code on
+that circle.  The standard minimum-distance result for the ambient code
+is five \cite{LachaudWolfmann1990}; shortening rules out weights below
+five, but the forbidden relation has weight exactly five.  Thus the
+general code bound reaches the boundary and stops.
+
+Weight enumerators or classifications of minimum Zetterberg words do not
+finish the problem either.  They classify words on the full norm-one
+circle, whereas the endpoint asks whether a minimum word has the special
+reciprocal support
+\[
+	\{1,\theta^{\pm a},\theta^{\pm b}\}
+\]
+inside one prescribed $p$-Sylow subgroup.  Retaining that support condition
+turns the classification back into the original intersection problem.
+In split cases the analogous irreducible cyclic-code bounds are weaker
+still.  Coding theory therefore gives a clean structural proof off the
+plateau and an exact explanation of why minimum-distance technology alone
+cannot cross it.
+
+\section{Counterexamples in other residue characteristics}\label{sec:counterexamples}
+
+Every structural ingredient used so far --- the cyclotomic field
+$\Q(\zeta_{p^j})$, its Galois group, the decomposition group
+$\langle\ell\rangle$ at a prime above $\ell$, the classification of exact
+vanishing sums, the Dvornicich--Zannier inequality, the reciprocal
+product-one symmetry, and the plateau condition $c_p\geq j$ --- makes sense
+verbatim with $2$ replaced by an arbitrary prime $\ell$.
+We now show that the resulting statement is false.
+
+For a prime $\ell\ne p$ define
+\[
+	f_1(\ell,p)=\ord[p]{\ell},
+	\qquad
+	c(\ell,p)=v_p\!\left(\ell^{f_1}-1\right),
+\]
+so that $c(\ell,p)\geq2$ says exactly that $p$ is a Wieferich prime to base
+$\ell$, and $\mu_{p^{j}}\subseteq\F_{\ell^{f_1}}$ for $j\leq c(\ell,p)$.
+
+\begin{theorem}\label{thm:counterexamples}
+	The analogue of Problem~\ref{prob:main} with $2$ replaced by $\ell$ has
+	a negative answer.
+	Each row of Table~\ref{tab:counterexamples} gives a prime $\ell$, a
+	prime $p>5$, an exponent $j\geq2$, an element $\theta$ of exact order
+	$p^{j}$ in $\F_{\ell}$, and integers $a,b$ prime to $p$ with
+	\[
+		1+\theta^{a}+\theta^{-a}+\theta^{b}+\theta^{-b}\equiv0\pmod{\ell},
+	\]
+	and with $1,\theta^{\pm a},\theta^{\pm b}$ pairwise distinct.
+	In every row $c(\ell,p)\geq j$, so the example lies on the base-$\ell$
+	plateau.
+\end{theorem}
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rrrrrrrr}
+		\toprule
+		$\ell$ & $p$ & $j$ & $p^j$ & $\theta$ & $a$ & $b$ & $c(\ell,p)$\\
+		\midrule
+		$491$   & $7$  & $2$ & $49$  & $42$   & $9$  & $15$  & $2$\\
+		$1373$  & $7$  & $3$ & $343$ & $16$   & $29$ & $152$ & $3$\\
+		$29009$ & $7$  & $2$ & $49$  & $7394$ & $4$  & $19$  & $2$\\
+		$727$   & $11$ & $2$ & $121$ & $358$  & $2$  & $30$  & $2$\\
+		$677$   & $13$ & $2$ & $169$ & $16$   & $28$ & $40$  & $2$\\
+		\bottomrule
+	\end{tabular}
+	\caption{Verified counterexamples over prime fields.
+	Each is checkable by five modular exponentiations.}
+	\label{tab:counterexamples}
+\end{table}
+
+\begin{proof}
+	Each row is a finite verification, carried out in
+	\path{code/ai_prototypes/plateau_scan.py} and independently rechecked
+	with plain modular arithmetic.
+	For instance, in $\F_{491}$ the element $\theta=42$ satisfies
+	$42^{49}\equiv1$ and $42^{7}\not\equiv1$, and
+	\[
+		1+42^{9}+42^{40}+42^{15}+42^{34}\equiv0\pmod{491},
+	\]
+	with $\gcd(9,7)=\gcd(15,7)=1$.
+	Here $491\equiv1\pmod{49}$, so $f_1=1$ and $c(491,7)=v_7(490)=2$.
+\end{proof}
+
+Further counterexamples occur over non-prime fields, for example
+$\ell=97$, $p=7$, $j=2$ in
+$\F_{97}[x]/(x^2+18x+1)$ with $(a,b)=(11,17)$;
+$\ell=241$, $p=11$, $j=2$ with $(a,b)=(17,18)$;
+$\ell=337$, $p=13$, $j=2$ with $(a,b)=(9,24)$;
+$\ell=577$, $p=17$, $j=2$ with $(a,b)=(21,38)$;
+and $\ell=41$, $p=29$, $j=2$ in a quartic extension with $(a,b)=(4,7)$.
+
+\begin{corollary}\label{cor:no-structural-proof}
+	No proof of Problem~\ref{prob:main} can use only the following inputs:
+	the arithmetic of $\Q(\zeta_{p^j})$ and its decomposition groups; the
+	classification of exact vanishing sums of roots of unity
+	(Mann~\cite{Mann1965}, Conway--Jones~\cite{ConwayJones1976},
+	Lenstra~\cite{Lenstra1979}, Lam--Leung~\cite{LamLeung2000});
+	congruence analogues of the Conway--Jones inequality
+	\cite{DvornicichZannier2002} and its number-field-coefficient companion
+	\cite{DvornicichZannier2000}; the
+	reciprocal product-one symmetry of the five terms; and the plateau
+	condition.
+	All of these hold verbatim in the configurations of
+	Table~\ref{tab:counterexamples}.
+\end{corollary}
+
+\begin{remark}[a characteristic-three accident]
+	The smallest plateau configuration of all, $\ell=3$ and $p=11$ (with
+	$3^{5}-1=242=2\cdot11^{2}$, so $c(3,11)=2$ and
+	$\mu_{121}\subseteq\F_{243}$), has \emph{no} solutions, even though the
+	naive count $p^{2j}/\ell^{f_1}=121^2/243\approx60$ predicts many.
+	The reason is special to characteristic three.
+	In $\F_{243}$ the group $\mu_{121}$ has index two, hence is the group of
+	squares, so every $u\in\mu_{121}$ is $w^{2}$ and
+	\[
+		u+u^{-1}=\left(w+w^{-1}\right)^{2}-2=s^{2}+1,
+		\qquad s=w+w^{-1}.
+	\]
+	Writing $v=z^{2}$ and $t=z+z^{-1}$ likewise, the equation
+	$1+u+u^{-1}+v+v^{-1}=0$ becomes $3+s^{2}+t^{2}=0$, that is
+	$s^{2}+t^{2}=0$.
+	If $t=0$ then $v+v^{-1}=1$, so $v^{2}-v+1=(v+1)^{2}=0$ in
+	characteristic three and $v=-1$, which does not lie in the odd-order
+	group $\mu_{121}$; so $t\ne0$ and $(s/t)^{2}=-1$.
+	But $-1$ has order two in $\F_{243}^{\times}$, a group of order
+	$242=2\cdot11^{2}$, whereas every square has odd order; so $-1$ is not a
+	square and there is no solution.
+	This is precisely the kind of characteristic-specific accident that a
+	proof for $\ell=2$ would have to exhibit, and it has no analogue at
+	$\ell=2$.
+\end{remark}
+
+\section{The quantitative criterion}\label{sec:quantitative}
+
+Table~\ref{tab:counterexamples} and the scan of
+\path{code/ai_prototypes/plateau_scan.py} are explained by a single
+heuristic.
+
+\begin{heuristic}\label{heur}
+	Let $n=p^j$ and
+	\[
+		\rho_\ell(n)=\min\{r>0:\ell^r\equiv\pm1\pmod n\},
+		\qquad Q=\ell^{\rho_\ell(n)}.
+	\]
+	The number of pairs $(u,v)\in\mu_n^2$ with
+	$1+u+u^{-1}+v+v^{-1}=0$ is about $n^{2}/Q$.
+	Solutions are therefore expected exactly when
+	\begin{equation}\label{eq:window}
+		p^{\,j}\ \gtrsim\ \ell^{\,\rho_\ell(p^j)/2}.
+	\end{equation}
+	Equivalently, the $p$-power subgroup must be at least the square root
+	of the split or norm-one torus containing it.
+\end{heuristic}
+
+The heuristic is simply that $\Gamma=\{v+v^{-1}:v\in\mu_n\}$, a set of
+$(n+1)/2$ elements contained in $\F_Q$, should meet the translate
+$-1-\Gamma$ in about $\abs{\Gamma}^2/Q$ points.  Each nondegenerate trace
+intersection lifts to four ordered pairs $(u,v)$, producing the estimate
+$n^2/Q$.  By Lemma~\ref{lem:dickson}, $\Gamma$ is the root set of
+$sF_n(s)$.
+It matches the data: over $\F_{491}$ the ratio $49^{2}/491\approx4.9$
+predicts a handful of solutions and there are $8$.
+Over $\F_{9409}=\F_{97^2}$ the group $\mu_{49}$ is nonsplit and its trace
+values lie in $\F_{97}$, so the relevant ratio is
+$49^2/97\approx24.8$, consistent with the observed $32$ solutions.
+Over $\F_{2^{21}}$
+(the case $p=7$, $j=2$, $\ell=2$) the ratio is $49^{2}/2^{21}\approx0.001$
+and there are none.
+
+On the base-$2$ plateau, put $\rho=\rho_2(p)$.
+The group $\mu_{p^c}$ lies in a torus of size $2^\rho-1$ or
+$2^\rho+1$, while \eqref{eq:window} requires $p^c\gtrsim2^{\rho/2}$.
+This isolates the approximate window
+\begin{equation}\label{eq:2window}
+	c\log_2 p+O(p^{-c})\ \leq\ \rho_2(p)\
+	\lesssim\ 2c\log_2 p .
+\end{equation}
+Equivalently, $2^\rho-1$ in the split case or $2^\rho+1$ in the nonsplit
+case would need a plateau prime-power divisor at least as large as its
+square root.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{rrrrrr}
+		\toprule
+		$p$ & $c_p$ & $\rho_2(p)$ & window \eqref{eq:2window} & $p^{2c}/2^{\rho_2(p)}$ & margin\\
+		\midrule
+		$1093$ & $2$ & $182$  & $(20.2,\,40.4]$ & $10^{-42.6}$  & $4.5\times$\\
+		$3511$ & $2$ & $1755$ & $(23.6,\,47.1]$ & $10^{-514.1}$ & $37.3\times$\\
+		\bottomrule
+	\end{tabular}
+	\caption{The two known base-$2$ Wieferich primes miss the counterexample
+	window \eqref{eq:2window} by the stated factor.}
+	\label{tab:window}
+\end{table}
+
+\begin{remark}
+	A prime $p$ is Wieferich if and only if
+	$p^2\mid2^{\ord[p]{2}}-1$.
+	Hence the conjecture that every Mersenne number $2^{n}-1$ is squarefree
+	would imply $c_p=1$ for all $p$ and, by
+	Corollary~\ref{cor:nonwieferich}, would settle
+	Problem~\ref{prob:main} outright.
+	That conjecture is false, since $1093^2\mid2^{364}-1$.
+	The heuristic asks for a different, still inaccessible statement:
+	no plateau prime power $p^c$ dividing the relevant factor
+	$2^{\rho_2(p)}\pm1$ should be as large as its square root.
+	We are not aware of a technique that proves such a bound.
+\end{remark}
+
+\begin{remark}[why character sums cannot help]
+	Writing $\psi$ for the canonical additive character of $\F_q$ and
+	$S(t)=\sum_{u\in\mu_n}\psi(t(u+u^{-1}))$, the solution count is
+	$N=q^{-1}\sum_{t}\psi(t)S(t)^{2}$.
+	Each $S(t)$ with $t\ne0$ is an average of $(q-1)/n$ twisted
+	Kloosterman sums, so $\abs{S(t)}\leq2\sqrt q$ and
+	$\sum_{t}\abs{S(t)}^{2}=q(2n-1)$.
+	These give only $N\leq2n-1$, which is the trivial bound.
+	Even an optimal square-root cancellation estimate has error term
+	$\gg\sqrt q$, which exceeds the main term $n^2/q$ whenever
+	$n^{2}<q^{3/2}$.
+	For $p=1093$ and $j=2$ this reads $1093^{4}\approx10^{12}$ against
+	$2^{546}\approx10^{164}$.
+	No equidistribution statement can therefore prove $N=0$; only an exact
+	algebraic identity can.
+\end{remark}
+
+\section{Computations}\label{sec:computations}
+
+All computations are exact except for two clearly marked places: the
+numerical Mahler measure quoted in Section~\ref{sec:modular}, and the
+complex-arithmetic sweep used to corroborate Theorem~\ref{thm:charzero}.
+Every assertion about a finite field, a resultant, or a certificate is exact
+integer arithmetic.
+
+\begin{description}
+	\item[\path{code/ai_prototypes/five_term_relations.py}]
+	      Characteristic-agnostic solver.
+	      Builds $\F_{\ell^{f}}$ from a Rabin-tested irreducible
+	      polynomial, locates an element of exact order $p^j$, tabulates
+	      $\Gamma=\{\theta^{b}+\theta^{-b}\}$ and intersects it with
+	      $-1-\Gamma$.
+	      Validated on $(\ell,p,j)=(2,5,1)$, where it recovers the eight
+	      solutions coming from $\mathcal{R}_5$.
+	\item[\path{code/ai_prototypes/plateau_scan.py}]
+	      Enumerates all triples $(\ell,p,j)$ with $p>5$, $j\geq2$,
+	      $c(\ell,p)\geq j$ and $\ell^{f_1}$ below a bound, runs the
+	      solver on each, and emits and rechecks a certificate consisting
+	      of the minimal polynomial of $\theta$ over $\F_\ell$ together
+	      with $(a,b)$.
+	      The scan over all bases $\ell\leq1000$ with
+	      $\ell^{f_1}\leq2\times10^{7}$ produced the counterexamples cited
+	      in Section~\ref{sec:counterexamples}.
+	\item[\path{code/ai_prototypes/five_term_char2.py}]
+	      Dedicated characteristic-two solver.
+	      Elements of $\F_{2^{f}}$ are Python integers used as
+	      $\F_2$-coefficient bit vectors; the field is re-coordinatized so
+	      that $\theta=x$, making each successive power a shift and a
+	      conditional \textsc{xor}.
+	      Membership is decided on $64$-bit fingerprints --- legitimate
+	      because addition is \textsc{xor}, so the fingerprint of a sum is
+	      the \textsc{xor} of fingerprints --- and every fingerprint
+	      collision is re-verified exactly.
+	      For the Wieferich prime $p=1093$ and $j=2$, with
+	      $n=1\,194\,649$ and $f=\ord[1093^2]{2}=364$, the search completes
+	      in under two seconds and finds \emph{no} fingerprint candidates
+	      at all, hence no solutions.
+	      For $p=3511$ and $j=2$, with $n=12\,327\,121$ and
+	      $f=\ord[3511^2]{2}=1755$, the search completes in under four
+	      minutes and again finds no candidates.
+	      Since $c_{1093}=c_{3511}=2$, these are the only plateau exponents
+	      for the two known Wieferich primes, so together with
+	      Theorem~\ref{thm:A} they settle Problem~\ref{prob:main} for both.
+	      This is also an independent confirmation, by a method that never
+	      forms a Fibonacci polynomial, of
+	      $d(1093^2-1)=d(3511^2-1)=0$.
+	\item[\path{code/ai_prototypes/five_term_resultants.py}]
+	      Computes, for a given $p^j$, the complete table of relative norms
+	      $\Nm_{K^{+}/\Q}(\Lambda_{1,r})$ over all classes of nonzero
+	      ratios $r$, together with their factorizations, and reports
+	      whether $2$ occurs.
+	      This is the exact criterion of
+	      Proposition~\ref{prop:dictionary}; running it on $(7,2)$
+	      reproduces Table~\ref{tab:res49}.
+	\item[\path{code/ai_prototypes/verify_p7_characteristics.py}]
+	      Checks the prediction of Table~\ref{tab:res49}: for each prime
+	      $\ell$ dividing one of the fourteen relative norms, the five-term
+	      relation does have a solution over $\overline{\F}_\ell$ with $u$
+	      or $v$ of exact order $49$.
+	      All eight predicted characteristics were confirmed.
+	\item[\path{code/ai_prototypes/sine_unit_obstruction.py}]
+	      The computations of Section~\ref{sec:power}.
+	      It tabulates the sine residues $\bar\lambda_x$, verifies the
+	      fibre structure of Lemma~\ref{lem:fibre}, enumerates all
+	      product-form collisions and their ratio classes (confirming
+	      Theorem~\ref{thm:frobratio} for every $p\leq257$ with
+	      $\ord[p]{2}\leq60$), and computes the power-residue symbols
+	      $\Psi_\ell$ of Definition~\ref{def:psiell}.
+	      For the $p$-primary symbol it checks
+	      Theorem~\ref{thm:pstructure} by comparing the Fourier support of
+	      $\Psi$ against the admissible eigencharacters $A$; over all
+	      primes $7\leq p\leq199$ with $\ord[p]{2}\leq200$ the support was
+	      contained in $A$ in every case, $\Psi$ vanished identically
+	      exactly when $\ord[p]{2}$ was even, and the ratio classes
+	      admitted by \eqref{eq:psi-collision} with $\ell=p$ always
+	      contained the ratio classes of the actual solutions.
+	      The obstruction was empty --- hence a proof of $d(p-1)=0$ ---
+	      for $p=7,23,47,71,79,89,103,167,191,199$, and exactly sharp for
+	      $p=31$ and $p=127$.
+	      The same script verifies the eigenrelation of
+	      Theorem~\ref{thm:pstructure}(1) and the descent of
+	      Theorem~\ref{thm:pstructure}(3) at levels $j=2,3$, verifies
+	      Corollary~\ref{cor:1093-ppart} for $p=1093$, $j=2$ inside
+	      $\F_{2^{364}}$, and runs the test over all primes
+	      $\ell\mid2^{f}-1$ of Lemma~\ref{lem:psi-rules}: for $p=17$ and
+	      $p=31$, where solutions exist, every $\ell$ admits pairs, while
+	      for $p=23$ and for $(p,j)=(7,2)$ every $\ell$ excludes them.
+	\item[\path{code/ai_prototypes/plateau_ppart_3511.py}]
+	      The plateau test of Example~\ref{ex:3511-plateau}.
+	      It splits $\Phi_{3511}$ over $\F_2$ by a trace map to obtain
+	      $\F_{2^{1755}}$, locates $\theta$ of exact order $3511^{2}$,
+	      confirms the eigenrelation, and computes $\Psi$ on a sample of
+	      the group $G_p$ of principal units by baby-step giant-step in
+	      $\mu_{p^{2}}$.
+	      With $140$ samples it exhibits $4$ pairs satisfying the
+	      $p$-primary necessary condition, against $2.79$ expected at
+	      random: the obstruction that settles $j=1$ does not settle
+	      $j=2$.
+	\item[\path{code/cn_experiments/verify_all.py}]
+	      Verifies the shifted-Dickson recurrence and power-sum formula,
+	      the Hasse-derivative generating function, the
+	      Multiplicity-Two identity $C_n^{[2]}(Y)=Y^{-2}$, and the bridge
+	      \eqref{eq:Cn-bridge}.  The supporting scripts
+	      \path{code/cn_experiments/integer_verify.py} and
+	      \path{code/cn_experiments/factorization_norms.py}
+	      verify the integer lift, telescoping identity, real-cyclotomic
+	      factorization, and discriminant/resultant certificates.
+	\item[\path{code/cn_experiments/collision_parity.py}]
+	      Checks the collision involution, the internal and mixed
+	      resultant formulas, and the plateau inversion criterion.
+	      \path{code/cn_experiments/relative_norm_identity.py} verifies
+	      \eqref{eq:relative-collision-norm} and its resultant descent,
+	      while \path{code/cn_experiments/dynatomic_orbits.py} verifies the covering-degree
+	      bound and the doubling-orbit factorization of
+	      Theorem~\ref{thm:dynamics-orbits}.
+	\item[\path{code/ai_prototypes/circular_module.py}]
+	      The computations of Sections~\ref{sec:module},
+	      \ref{sec:traceobs}, and~\ref{sec:kloosterman}.
+	      It verifies Theorem~\ref{thm:trace} for every index and every
+	      $p\leq257$ with $\ord[p]{2}\leq40$ and for
+	      $(p,j)=(7,2),(23,2)$; verifies the level pattern of
+	      Theorem~\ref{thm:twoorbit} and its two proof ingredients for
+	      $p=7,23,47,71,79,103,167,191,199$; confirms the group-ring
+	      structure of the semi-local residue module by Smith normal form;
+	      checks the freeness of the admissible-system parameter space
+	      against the true system; constructs explicit injective phantom
+	      systems with primitive collisions for $(1093,2)$ and
+	      $(3511,2)$; and verifies the Kloosterman nullity formulas
+	      against direct enumeration for all Mersenne primes up to
+	      $131071$ and all Fermat primes up to $65537$.
+	\item[\path{code/ai_prototypes/plateau_endpoint.py}]
+	      Verifies the endpoint Sylow reduction, the box-plus-centre form,
+	      the global trace law \eqref{eq:global-trace}, the cases
+	      $p=73,89,233$, the elliptic model of
+	      Proposition~\ref{prop:elliptic-translation}, the additive
+	      distribution law, and the strengthened phantom systems at
+	      $(1093,2)$ and $(3511,2)$.
+	\item[\path{code/ai_prototypes/sp4_explicit.py}]
+	      Checks the symplectic form, characteristic polynomial, and
+	      element order in the explicit level-one $\Sp_4$ examples used to
+	      test the torus classification.
+\end{description}
+
+\subsection{The complete resultant table for $p^j=49$}
+
+By Proposition~\ref{prop:dictionary} the whole of Problem~\ref{prob:main}
+for a given $(p,j)$ is the assertion that finitely many explicit integers
+are odd.
+For $p^j=49$ the ratio $r=b/a$ ranges over the nonzero residues modulo
+$49$, and the relative norm $\Nm_{K^{+}/\Q}(\Lambda_{1,r})$ depends only on
+the class $\{\pm r^{\pm1}\}$ (only $\{\pm r\}$ when $r$ is not a unit).
+There are eleven unit classes and three non-unit classes.
+Table~\ref{tab:res49} lists them all.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{lrl}
+		\toprule
+		class & $\Nm_{K^{+}/\Q}(\Lambda_{1,r})$ & factorization\\
+		\midrule
+		$\{1,48\}$              & $13555459$ & $97\cdot139747$\\
+		$\{2,24,25,47\}$        & $1$        & unit (Corollary~\ref{cor:units})\\
+		$\{3,16,33,46\}$        & $1$        & unit (Corollary~\ref{cor:units})\\
+		$\{4,12,37,45\}$        & $3527$     & prime\\
+		$\{5,10,39,44\}$        & $1373$     & prime\\
+		$\{6,8,41,43\}$         & $97$       & prime\\
+		$\{9,11,38,40\}$        & $881$      & prime\\
+		$\{13,15,34,36\}$       & $1$        & unit (sporadic)\\
+		$\{17,23,26,32\}$       & $29009$    & prime\\
+		$\{18,19,30,31\}$       & $491$      & prime\\
+		$\{20,22,27,29\}$       & $97$       & prime\\
+		\midrule
+		$\{7,42\}$              & $97$       & prime\\
+		$\{14,35\}$             & $1$        & unit\\
+		$\{21,28\}$             & $197$      & prime\\
+		\bottomrule
+	\end{tabular}
+	\caption{The fourteen relative norms for $p^j=49$; the last three rows
+	are the classes with $7\mid r$, i.e.\ with $\theta^{b}$ of order
+	dividing $7$.
+	Every entry is odd, which is exactly the assertion of
+	Problem~\ref{prob:main} for $p=7$, $j=2$.}
+	\label{tab:res49}
+\end{table}
+
+\begin{corollary}\label{cor:p7-complete}
+	For $p=7$ and $j=2$, the residue characteristics $\ell$ in which
+	\eqref{eq:main} has a solution with $\theta^{a}$ or $\theta^{b}$ of
+	exact order $49$ are exactly
+	\[
+		97,\quad 197,\quad 491,\quad 881,\quad 1373,\quad 3527,\quad 29009,\quad 139747 ,
+	\]
+	and $2$ is not among them.
+\end{corollary}
+
+\begin{proof}
+	By Proposition~\ref{prop:dictionary}(1) and (4), a prime $\ell$ admits
+	a solution with ratio $r$ if and only if $\ell$ divides
+	$\Res(\Phi_{49},G_r)$.
+	Table~\ref{tab:res49} lists the complete factorizations.
+	The verification that each of these primes really does admit a solution
+	is the content of
+	\path{code/ai_prototypes/verify_p7_characteristics.py} and of the scan
+	in \path{code/ai_prototypes/plateau_scan.py}.
+	The characteristics $\ell=139747$ and $\ell=197$ are degenerate: the
+	first arises only from the class $r=\pm1$, where $v=u^{\pm1}$, and the
+	second only from the class $r=\pm21$, where $7\mid b$.
+\end{proof}
+
+Corollary~\ref{cor:p7-complete} is the sharpest available description of the
+situation.
+For $p=7$, $j=2$ the truth of Problem~\ref{prob:main} is not a structural
+fact; it is the statement that seven specific primes, produced by the
+factorizations of eleven cyclotomic resultants, happen not to include $2$.
+
+\section{Summary}\label{sec:summary}
+
+\begin{enumerate}
+	\item The shifted-Dickson sequence $C_n$ is the Newton power-sum
+	      sequence of $Q_S$.  Its repeated roots are exactly the dividing
+	      reciprocal quartics, every such root has multiplicity two, and
+	      $d(n-1)=4\deg B_n$ (Theorems~\ref{thm:Cn-mult2}
+	      and~\ref{thm:Cn-bridge}).  This removes all ambiguity about
+	      multiplicities in the polynomial formulation.
+	\item The degree argument proves
+	      $\ord{\theta^a},\ord{\theta^b}\leq p^{c_p}$.
+	      The universal theorem is therefore equivalent to the one
+	      endpoint statement
+	      \[
+		      B_{p^{c_p}}=B_p,
+	      \]
+	      or equivalently to the gcd in \eqref{eq:endpoint-gcd} being one
+	      (Theorem~\ref{thm:endpoint-equivalence}).  All primes below
+	      $2^{64}$ satisfy the theorem.
+	\item The integer lift turns one stabilization step into the oddness
+	      of a discriminant and a resultant.  Real-cyclotomic
+	      factorization shows that these are two independent obstructions:
+	      an internal primitive collision norm and a primitive--lower
+	      mixed norm (Theorem~\ref{thm:two-collision-norms}).  The mixed
+	      norm is automatically odd off the plateau, but neither parity is
+	      forced by cyclotomic algebra on the plateau.
+	\item Arithmetic dynamics makes $D_p$ a critically fixed map
+	      semiconjugate to $u\mapsto u^p$ through
+	      $u\mapsto u+u^{-1}$.  It reproves mixed descent from the covering
+	      degree and factors $B_{p^j}$ by doubling orbits
+	      (Theorems~\ref{thm:dynamics-covering}
+	      and~\ref{thm:dynamics-orbits}).  On the plateau the degree does
+	      not grow, so the bound is vacuous and monodromy leaves the same
+	      finite collision-orbit problem.
+	\item The elliptic model identifies a relation with a point $P$ on
+	      $Y^2+XY=X^3+X$ such that both $X(P)$ and $X(P+T)$ lie in
+	      $\mu_{p^j}$, where $T$ has order four
+	      (Proposition~\ref{prop:elliptic-translation}).  The condition is
+	      on coordinates, not on a subgroup of the elliptic curve, so
+	      isogenies and point counts do not imply endpoint avoidance.
+	\item The $\Sp_4$ model identifies a counterexample with a regular
+	      semisimple element of order $p^j$ and trace one.  Maximal-torus
+	      theory restricts it to two like $\SL_2$ factors or a cyclic torus
+	      of order $q^2\pm1$, but $p^j$-torsion is abundant on the plateau
+	      and the trace-one condition is exactly the original incidence
+	      (Theorems~\ref{thm:sp4-equivalence} and~\ref{thm:sp4-tori}).
+	\item Characteristic zero has only the order patterns
+	      $(5,5),(3,4),(2,6)$, so for $p>5$ the relevant algebraic integer
+	      is nonzero.  Cyclotomic units eliminate exactly the structural
+	      ratio classes $\{\pm2^{\pm1},\pm3^{\pm1}\}$ and no general
+	      additional class (Theorem~\ref{thm:units}).
+	\item Reduction modulo the rational ideal $(2)$ is impossible by the
+	      Dvornicich--Zannier theorem or the elementary weight argument,
+	      but the problem concerns one prime above two.  Reciprocal
+	      symmetry reaches at most four of the
+	      $g\geq p^{j-1}$ primes that an all-primes theorem needs
+	      (Theorem~\ref{thm:gap}).
+	\item The sharp local statement is the Hilbert--90 congruence
+	      $s_{j,a}s_{j,b}\equiv1$ at one prime above two.  The semi-local
+	      target is
+	      $\Z[\bar G]/(\sigma_2-2)$, while the Frobenius, sign,
+	      distribution, and norm axioms leave a free parameter space
+	      $(E^\times)^{g^+}$ (Theorems~\ref{thm:semilocal-module}
+	      and~\ref{thm:admissible-freeness}).  Explicit phantom systems
+	      prove that those axioms do not imply collision avoidance.
+	\item Power-residue symbols and Stickelberger eigenspaces give strong
+	      necessary conditions and settle several level-one families.
+	      Their descent becomes the identity $0=0$ on a Wieferich plateau
+	      (Proposition~\ref{prop:plateau-degenerate}); this failure is
+	      structural, not a defect of the calculation.
+	\item Additive trace identities go farther.  The Artin--Schreier law
+	      proves the index-two family, including $d(3510)=0$, and the
+	      global trace law proves
+	      $d(72)=d(88)=d(232)=0$
+	      (Theorems~\ref{thm:trace}, \ref{thm:twoorbit},
+	      and~\ref{thm:global-trace}).  At the full-torus extremes the
+	      count is an exact binary Kloosterman sum
+	      (Theorem~\ref{thm:kloosterman}).  The known linear trace
+	      constraints still admit formal plateau collisions, so a general
+	      proof must use more of the nonlinear addition law.
+	\item Coding theory is decisive off the plateau: the local cyclic code
+	      is an interleaving of lower-level codes, forcing every word of
+	      weight at most five to descend
+	      (Theorem~\ref{thm:code-interleaving}).  On a nonsplit plateau it
+	      is a shortened Zetterberg code, whose general minimum-distance
+	      theory stops at weight five, exactly the forbidden weight.
+	\item The theorem is false after replacing characteristic two by other
+	      residue characteristics (Theorem~\ref{thm:counterexamples}).
+	      Hence characteristic-zero classification, cyclotomic Galois
+	      structure, torus classification, and base-independent monodromy
+	      cannot suffice.  A proof must exploit a special additive feature
+	      of characteristic two.
+	\item The size heuristic predicts a counterexample only when
+	      $\rho_2(p)$ lies in the narrow window \eqref{eq:2window}.
+	      The known Wieferich primes
+	      $1093$ and $3511$ lie far outside it, and exact searches verify
+	      their endpoints.  The complete $p^j=49$ resultant table likewise
+	      contains no factor two.
+\end{enumerate}
+
+The minimal unresolved assertion is therefore precise:
+\[
+	\boxed{\text{For every }p>5\text{ with }c_p\geq2,\quad B_{p^{c_p}}=B_p.}
+\]
+Equivalently, every endpoint collision in $\mu_{p^{c_p}}$ must already lie
+in $\mu_p$, or the gcd in \eqref{eq:endpoint-gcd} must be one.  Proving
+this single statement proves $d(p^k-1)=d(p-1)$ for every prime $p$ and
+every $k$.  The accumulated attacks show that the missing input must be
+both characteristic-two and subgroup-sensitive; none of the currently
+isolated degree, norm, trace, code, dynamics, or group-theoretic invariants
+alone has that strength.
+
+\bibliographystyle{amsalpha}
+\bibliography{refs.bib}
+
+\end{document}
