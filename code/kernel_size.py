@@ -144,32 +144,83 @@ def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1 << 1, (f2 << 1) + f2
 
 
-def _adjacent_fibonacci_pair(n: int, shifted: bool = False) -> tuple[GF2Polynomial, GF2Polynomial]:
-    """Returns F_n and F_{n+1}, optionally evaluated at x+1."""
+def _adjacent_fibonacci_invariant_pair(n: int) -> tuple[
+    tuple[GF2Polynomial, GF2Polynomial],
+    tuple[GF2Polynomial, GF2Polynomial],
+]:
+    """Returns F_n and F_(n+1) as pairs (A, B) representing A(y) + xB(y).
+
+    Here y = x**2 + x; the returned polynomials are in y.
+    """
 
     if n < 0:
         raise ValueError("n must be non-negative")
 
     if n == 0:
-        return GF2Polynomial(), GF2Polynomial.from_number(1)
+        zero = GF2Polynomial()
+        return (zero, zero), (GF2Polynomial.from_number(1), zero)
 
-    # F_{2r} = xF_{r}^2; F_{2r+2} = xF_{r+1}^2
-    # F_{2r+1} = F_{r}^2 + F_{r+1}^2
-    current, following = _adjacent_fibonacci_pair(n >> 1, shifted)
-    current_square, following_square = current.square(), following.square()
-    middle = current_square + following_square
+    """F_{n//2} = A(y) + xB(y)
+    F_{n//2 + 1} = C(y) + xD(y)
+    a_square = A(y)^2 + yB(y)^2
+    b_square = B(y)^2
+    c_square = C(y)^2 + yD(y)^2
+    d_square = D(y)^2
+    middle[0] = (A(y) + C(y))^2 + y(B(y) + D(y))^2
+    middle[1] = (B(y) + D(y))^2
 
-    if shifted:
-        current_double = (current_square << 1) + current_square
-        following_double = (following_square << 1) + following_square
-    else:
-        current_double = current_square << 1
-        following_double = following_square << 1
+    In characteristic two, x^2 = y + x.
+    A pair (P, Q) represents P(y) + xQ(y); << 1 multiplies by y.
+    """
+    (a, b), (c, d) = _adjacent_fibonacci_invariant_pair(n >> 1)
+    b_square, d_square = b.square(), d.square()
+    a_square = a.square() + (b_square << 1)
+    c_square = c.square() + (d_square << 1)
+    middle = (a_square + c_square, b_square + d_square)
 
     if n & 1:
-        return middle, following_double
+        """If n is odd, n = 2*(n//2) + 1 and m = n//2.
+        So F_{n} = (F_m + F_{m+1})^2
+        = (A(y) + xB(y) + C(y) + xD(y))^2
+        = (A(y) + C(y))^2 + (xB(y) + xD(y))^2
+        = (A(y) + C(y))^2 + x^2(B(y) + D(y))^2
+        = (A(y) + C(y))^2 + (y + x)(B(y) + D(y))^2
+        = (A(y) + C(y))^2 + y(B(y) + D(y))^2 + x(B(y) + D(y))^2
+        = middle[0] + x * middle[1]
+        Represented by (middle[0], middle[1]).
+
+        And F_{n+1} = xF_{m+1}^2
+        = x(C(y) + xD(y))^2
+        = x(C(y)^2 + x^2 D(y)^2)
+        = x(C(y)^2 + yD(y)^2 + xD(y)^2)
+        = x(c_square + x * d_square)
+        = x^2 * d_square + x * c_square
+        = y * d_square + x(c_square + d_square)
+        Represented by (d_square << 1, c_square + d_square).
+        """
+        return middle, (d_square << 1, c_square + d_square)
     else:
-        return current_double, middle
+        """If n is even, n = 2*(n//2) and m = n//2.
+        So F_n = F_{2m} = xF_{m}^2
+        = x(A(y) + xB(y))^2
+        = x(A(y)^2 + x^2 B(y)^2)
+        = x(A(y)^2 + yB(y)^2 + xB(y)^2)
+        = x(a_square + x*b_square)
+        = x*a_square + x^2*b_square
+        = y*b_square + x(a_square + b_square)
+        Represented by (b_square << 1, a_square + b_square).
+
+        And F_{n+1} = F_{2m+1}
+        = (F_m + F_{m+1})^2
+        = (A(y) + xB(y) + C(y) + xD(y))^2
+        = (A(y) + C(y))^2 + (xB(y) + xD(y))^2
+        = (A(y) + C(y))^2 + x^2(B(y) + D(y))^2
+        = (A(y) + C(y))^2 + (y + x)(B(y) + D(y))^2
+        = (A(y) + C(y))^2 + y(B(y) + D(y))^2 + x(B(y) + D(y))^2
+        = middle[0] + x * middle[1]
+        Represented by (middle[0], middle[1]).
+        """
+        return (b_square << 1, a_square + b_square), middle
 
 
 def _is_wieferich(p: int) -> bool:
@@ -243,12 +294,12 @@ def grid_nullity(n: int) -> int:
     We use several proven reductions before falling back to the polynomial GCD.
     """
 
-    # d(0) = 0
     if n == 0:
         return 0
 
-    # d(2^k - 1) = 0
-    # Cite:[Hunziker, Machivelo, and Park][Sutner]
+    """Hunziker, Machivelo, and Park and Sutner both showed
+    d(2^k - 1) = 0
+    """
     b, k = two_adic_decomposition(n + 1)
     if b == 1:
         return 0
@@ -283,7 +334,7 @@ def grid_nullity(n: int) -> int:
     d(n) = d(p-1).
     We also showed d(n) = d(p-1) when p is 1093 or 3511, the known Wieferich primes.
 
-    Conjecture: d(p^l - 1) = d(p-1) is also true for Wieferich primes p.
+    Conjecture: d(p^l - 1) = d(p-1) is true for all primes p.
     """
     p, l = prime_power(b)
     if l > 1 and (not _is_wieferich(p) or p in SAFE_WIEFERICH_PRIMES): # b is a prime power
@@ -296,16 +347,16 @@ def grid_nullity(n: int) -> int:
         return 0
 
     """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2.
-    Let R_m(x) = F_m(x) + F_{m+1}(x).
-    Then d(b-1) = 2 * deg(gcd(R_m(x), R_m(x+1))).
+    Write F_m + F_{m+1} = A(y) + xB(y), where y = x**2 + x.
+    Its translate is A(y) + (x+1)B(y), so d(b-1) = 4 * deg(gcd(A, B)).
+    The GCD operands have degrees at most (b-1)//4.
     """
     m = b >> 1
-    current, following = _adjacent_fibonacci_pair(m, shifted=False)
-    root = current + following
-    shifted_current, shifted_following = _adjacent_fibonacci_pair(m, shifted=True)
-    translated_root = shifted_current + shifted_following
-    g = GF2Polynomial.gcd(root, translated_root)
-    return 2 * g.degree
+    current, following = _adjacent_fibonacci_invariant_pair(m)
+    root_a = current[0] + following[0]
+    root_b = current[1] + following[1]
+    g = GF2Polynomial.gcd(root_a, root_b)
+    return 4 * g.degree
 
 
 @cache

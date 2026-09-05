@@ -4,12 +4,13 @@ For odd m = 2*r + 1, the Fibonacci-polynomial fast-doubling identities give
 
     F_m(x) = (F_r(x) + F_(r+1)(x))^2.
 
-If tau_m = F_r + F_(r+1), then
+Writing F_r + F_(r+1) = A(y) + xB(y), where y = x^2 + x, gives
 
-    d(m - 1) = 2 * deg(gcd(tau_m(x), tau_m(x + 1))).
+    d(m - 1) = 4 * deg(gcd(A(y), B(y))).
 
-This script constructs tau_m and its translate with the main Fibonacci
-implementation and computes their exact GCD with NTL.
+This script constructs A and B with the main invariant-basis Fibonacci
+helper and computes their exact GCD with NTL. It does not apply grid_nullity's
+arithmetic shortcuts.
 
 The script expects ntl_gf2x_gcd.exe beside this file. Compile
 ntl_gf2x_gcd.cpp against NTL, or specify its location with --ntl-executable.
@@ -24,7 +25,7 @@ import struct
 import subprocess
 from time import perf_counter
 
-from kernel_size import SAFE_WIEFERICH_PRIMES, _adjacent_fibonacci_pair
+from kernel_size import SAFE_WIEFERICH_PRIMES, _adjacent_fibonacci_invariant_pair
 
 DEFAULT_NTL_EXECUTABLE = Path(__file__).with_name("ntl_gf2x_gcd.exe")
 
@@ -67,21 +68,17 @@ def wieferich_depth(p: int) -> int:
     return depth
 
 
-def _square_free_roots(m: int) -> tuple[int, int]:
-    """Return tau_m(x) and tau_m(x+1) as packed coefficient bits."""
+def _invariant_gcd_operands(m: int) -> tuple[int, int]:
+    """Return A(y) and B(y) as packed bits, where sqrt(F_m) = A(y) + xB(y)."""
 
     if m <= 0 or m % 2 == 0:
         raise ValueError("m must be a positive odd integer")
 
     half = (m - 1) // 2
-    current, following = _adjacent_fibonacci_pair(half)
-    shifted_current, shifted_following = _adjacent_fibonacci_pair(
-        half,
-        shifted=True,
-    )
+    current, following = _adjacent_fibonacci_invariant_pair(half)
     return (
-        (current + following)._value,
-        (shifted_current + shifted_following)._value,
+        (current[0] + following[0])._value,
+        (current[1] + following[1])._value,
     )
 
 
@@ -123,19 +120,19 @@ def benchmark_grid_nullity_at_m_minus_one(
     """Compute d(m-1) with NTL's packed GF2X implementation."""
 
     roots_started = perf_counter()
-    root, shifted_root = _square_free_roots(m)
+    root_a, root_b = _invariant_gcd_operands(m)
     roots_finished = perf_counter()
     backend_started = perf_counter()
     statistics = packed_ntl_gcd(
-        root,
-        shifted_root,
+        root_a,
+        root_b,
         executable,
         threads,
     )
     backend_finished = perf_counter()
     statistics["root_seconds"] = roots_finished - roots_started
     statistics["backend_wall_seconds"] = backend_finished - backend_started
-    return 2 * int(statistics["degree"]), statistics
+    return 4 * int(statistics["degree"]), statistics
 
 
 def grid_nullity_at_m_minus_one(

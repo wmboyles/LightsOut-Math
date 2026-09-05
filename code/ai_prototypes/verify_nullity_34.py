@@ -11,7 +11,7 @@ from time import perf_counter
 
 from ai_prototypes.wieferich_check import (
     DEFAULT_NTL_EXECUTABLE,
-    _square_free_roots,
+    _invariant_gcd_operands,
     grid_nullity_at_m_minus_one,
 )
 from polynomials import GF2Polynomial
@@ -49,12 +49,12 @@ def _check_ntl_chunk(
 
 def _check_with_python(item: tuple[int, int]) -> tuple[int, int, int]:
     b, expected = item
-    root, shifted_root = _square_free_roots(b)
+    root_a, root_b = _invariant_gcd_operands(b)
     gcd = GF2Polynomial.gcd(
-        GF2Polynomial.from_number(root),
-        GF2Polynomial.from_number(shifted_root),
+        GF2Polynomial.from_number(root_a),
+        GF2Polynomial.from_number(root_b),
     )
-    return b, expected, 2 * gcd.degree
+    return b, expected, 4 * gcd.degree
 
 
 def _verify_serialized_prefix() -> int:
