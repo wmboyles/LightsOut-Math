@@ -1,0 +1,677 @@
+\documentclass[a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Unresolved assertion}
+
+\newcommand{\F}{\mathbb F}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\ord}{\operatorname{ord}}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Nm}{N}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+
+\title{Two Trace--Norm Theorems for Prime-Power\\
+Lights Out Stabilization}
+\author{}
+\date{September 5, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+For every prime $p>5$, we prove $d(p^k-1)=0$ for all $k\geq1$
+whenever either $3\mid\ord_p(2)$ or $v_2(\ord_p(2))=2$.
+These results use trace--norm identities in cubic norm-one groups and
+in the two coprime factors of $2^{2r}+1$ for odd $r$.
+They apply to arbitrary Wieferich depth and give analytic proofs for
+both known Wieferich primes, $1093$ and $3511$, without their endpoint
+searches.  We also derive an exact nullity-increment formula which
+separates new--new from new--old root collisions.
+
+The identity $d(p^k-1)=d(p-1)$ for \emph{every} prime is not proved
+here, and no counterexample is found.  The remaining case is an
+arbitrary Wieferich prime with
+$3\nmid\ord_p(2)$ and $v_2(\ord_p(2))\ne2$.
+\end{abstract}
+
+\section{Definitions and relation to the existing work}
+
+All polynomial calculations, unless otherwise specified, take place in
+$\F_2[X]$.  Let
+\[
+ F_0=0,\qquad F_1=1,\qquad F_{n+1}=XF_n+F_{n-1}.
+\]
+For the bounded $n\times n$ Lights Out grid, the existing writeups use
+Sutner's formula
+\begin{equation}\label{eq:nullity}
+ d(n)=\deg\gcd(F_{n+1}(X),F_{n+1}(X+1)).
+\end{equation}
+In particular $d(0)=0$.  Throughout, the exponent $k$ in the proposed
+identity is positive.
+We write $\mu_N=\{z\in\overline{\F}_2:z^N=1\}$,
+$\ord_m(2)$ for the multiplicative order of $2$ modulo an odd integer
+$m>1$, and $v_\ell$ for the usual $\ell$-adic valuation.
+
+The principal sources within this repository are
+\cite{finite-fields,plateau}.  They already prove stabilization above
+$c_p=v_p(2^{\ord_p(2)}-1)$, give the endpoint equivalence, and analyze
+many unsuccessful approaches to the plateau.
+Section~\ref{sec:norms} supplies two additional analytic families,
+including both known Wieferich primes.
+Section~\ref{sec:increment} gives a quantitative refinement of the
+endpoint gcd criterion.  Section~\ref{sec:descent} includes the known
+descent argument to make the precise remaining gap independently
+checkable.
+
+For odd $N\geq1$, define
+\[
+ H_N=F_{(N-1)/2}+F_{(N+1)/2},\qquad
+ G_N=\gcd(H_N(X),H_N(X+1)).
+\]
+The Fibonacci identities give $F_N=H_N^2$, and consequently
+\begin{equation}\label{eq:half-nullity}
+ d(N-1)=2\deg G_N.
+\end{equation}
+Here $H_1=G_1=1$.
+
+\begin{lemma}\label{lem:roots}
+For odd $N$, the polynomial $H_N$ is monic and square-free, with root set
+\[
+ T_N=\{u+u^{-1}:u^N=1,\ u\ne1\}\subset\overline{\F}_2.
+\]
+If $M\mid N$ is odd, then $H_M\mid H_N$.
+\end{lemma}
+
+\begin{proof}
+The identity
+\[
+ (u+u^{-1})F_N(u+u^{-1})=u^N+u^{-N}
+\]
+shows that every displayed value is a root.  For $u\ne1$ of odd order,
+$u+u^{-1}\ne0$.  Two distinct nonzero elements give the same value precisely
+when they are mutual inverses: they are the roots of
+$Z^2+(u+u^{-1})Z+1$.
+Thus there are $(N-1)/2$ distinct displayed roots, exactly the degree
+of the monic polynomial $H_N$.  This proves square-freeness and the
+description of its roots.  The inclusion $T_M\subseteq T_N$ proves
+divisibility.
+\end{proof}
+
+\section{Two trace--norm exclusions}\label{sec:norms}
+
+By Lemma~\ref{lem:roots}, a common root is equivalent to the existence
+of $u,v\ne1$ in $\mu_N$ satisfying
+\begin{equation}\label{eq:relation}
+ 1+u+u^{-1}+v+v^{-1}=0.
+\end{equation}
+The exclusions below treat all pairs, including pairs of different
+orders and different Frobenius orbits.
+
+\subsection{The cubic norm-one group}
+
+\begin{theorem}[Cubic exclusion]\label{thm:cubic}
+Let $q$ be a power of two.  Suppose $u,v\in\F_{q^3}^{\times}$ have
+norm one to $\F_q$ and satisfy \eqref{eq:relation}.
+Then either $u=1$ and $v$ has order $3$, or $v=1$ and $u$ has
+order $3$.  In particular,
+\begin{equation}\label{eq:cubic-nullity}
+ d(q^2+q)=0.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Write $\Tr$ and $\Nm$ for the trace and norm from $\F_{q^3}$ to
+$\F_q$, and set $a=u+u^{-1}$.  Since $\Nm(u)=1$,
+\[
+ a=\frac{(u+1)^2}{u},\qquad
+ \Nm(a)=\Nm(u+1)^2.
+\]
+Expanding the product defining $\Nm(u+1)$, the constant and
+$\Nm(u)$ terms cancel.  The sum of the pairwise products of
+$u,u^q,u^{q^2}$ equals $\Tr(u^{-1})$.  Consequently
+\[
+ \Nm(u+1)=\Tr(u)+\Tr(u^{-1})=\Tr(a),
+\]
+and hence
+\begin{equation}\label{eq:cubic-law}
+ \boxed{\ \Nm(a)=\Tr(a)^2.\ }
+\end{equation}
+
+Put $b=v+v^{-1}=a+1$ and $T=\Tr(a)$, and let
+\[
+ E_2=aa^q+aa^{q^2}+a^qa^{q^2}.
+\]
+The same identity for $b$, together with $\Tr(1)=1$, gives
+$\Nm(b)=(T+1)^2=T^2+1$.  On the other hand,
+\[
+ \Nm(a+1)=\Nm(a)+E_2+T+1.
+\]
+Using \eqref{eq:cubic-law} therefore gives $E_2=T$.
+The polynomial having $a,a^q,a^{q^2}$ as its roots is thus
+\[
+ Z^3+TZ^2+TZ+T^2=(Z+T)(Z^2+T).
+\]
+Every root of the right side belongs to $\F_q$, because squaring is a
+bijection on $\F_q$.  In particular $a\in\F_q$.
+Now $T=a$ and $\Nm(a)=a^3$, so \eqref{eq:cubic-law} becomes
+$a^3=a^2$.  Thus $a=0$ or $a=1$.
+The equation $u+u^{-1}=0$ forces $u=1$, and
+$u+u^{-1}=1$ forces $u$ to have order $3$.
+This proves the classification.
+
+The norm-one group is $\mu_{q^2+q+1}$.  A common root for the bounded
+grid would require both $u,v\ne1$, which the classification excludes.
+Apply Lemma~\ref{lem:roots} and \eqref{eq:half-nullity}.
+\end{proof}
+
+\begin{corollary}\label{cor:cubic-primes}
+If $p>3$ is prime and $3\mid\ord_p(2)$, then
+\[
+ d(p^k-1)=0\qquad\text{for every }k\geq1,
+\]
+whether or not $p$ is Wieferich.
+\end{corollary}
+
+\begin{proof}
+Fix $k$ and write $f_k=\ord_{p^k}(2)=f_1p^e$, where
+$f_1=\ord_p(2)$ and $e\geq0$.
+Set $q=2^{f_k/3}$.
+Then $q^3\equiv1\pmod{p^k}$.
+Since $p\ne3$ and $p\nmid f_1$, the order of $q$ modulo $p$ is
+exactly $3$: equivalently,
+$\gcd(f_1,f_k/3)=f_1/3$.
+Thus $q-1$ is a unit modulo $p^k$, and
+\[
+ p^k\mid q^2+q+1.
+\]
+Every $p^k$th root of unity lies in the cubic norm-one group.
+The group $\mu_{p^k}$ contains no element of order $3$, so
+Theorem~\ref{thm:cubic} excludes every relation
+\eqref{eq:relation}.  The nullity is zero.
+\end{proof}
+
+\subsection{A quadratic trace--norm law from integer factorization}
+
+\begin{theorem}[Two-factor exclusion]\label{thm:two-factors}
+Let $r\geq1$ be odd, and put
+\[
+ q=2^r,\qquad s=2^{(r+1)/2},\qquad M_\pm=q+1\pm s.
+\]
+Suppose each of $u,v$ belongs to
+$\mu_{M_-}\cup\mu_{M_+}$; the two coordinates need not belong to
+the same subgroup.
+Then \eqref{eq:relation} holds if and only if $u$ has order $5$
+and $v=u^2$ or $u^{-2}$.
+\end{theorem}
+
+\begin{proof}
+The integer identities
+\begin{equation}\label{eq:aurifeuillian}
+ M_-M_+=q^2+1,\qquad \gcd(M_-,M_+)=1
+\end{equation}
+follow from $s^2=2q$: the factors are odd and their difference $2s$
+is a power of two.
+In particular, $u^{q^2}=u^{-1}$, so $a=u+u^{-1}$ belongs to
+$\F_{q^2}$.  Write
+\[
+ T(a)=a+a^q,\qquad N(a)=aa^q.
+\]
+Membership in either subgroup gives $u^{q+1}=u^s$ or $u^{-s}$.
+Since $s$ is a power of two,
+\[
+ u^{q+1}+u^{-(q+1)}=a^s.
+\]
+Taking $q$th powers and using $u^{q^2}=u^{-1}$ gives
+\[
+ u^{q-1}+u^{-(q-1)}=(a^q)^s.
+\]
+Expanding $aa^q$ and adding these two identities proves
+\begin{equation}\label{eq:quadratic-law}
+ \boxed{\ N(a)=T(a)^s.\ }
+\end{equation}
+This proof works for either sign in $M_\pm$.
+
+The element $b=v+v^{-1}$ satisfies the same law.  If $b=a+1$, then
+$T(b)=T(a)$, so $N(b)=N(a)$.  But
+\[
+ N(a+1)=N(a)+T(a)+1.
+\]
+Hence $T(a)=1$ and \eqref{eq:quadratic-law} gives $N(a)=1$.
+It follows that
+\[
+ a^q=a+1,\qquad a(a+1)=1,\qquad a^2+a+1=0.
+\]
+Substitute $a=u+u^{-1}$ and multiply by $u^2$ to obtain
+\[
+ u^4+u^3+u^2+u+1=0.
+\]
+Thus $u$ has exact order $5$.  Moreover $b=a+1=a^2$, so the
+two roots of $Z^2+bZ+1$ are $u^2,u^{-2}$, giving the asserted
+possibilities for $v$.
+Conversely, a primitive fifth root and either of these choices satisfy
+\eqref{eq:relation}.
+\end{proof}
+
+\begin{corollary}\label{cor:quadratic-primes}
+Let $p$ be an odd prime with $v_2(\ord_p(2))=2$.
+Then, for every $k\geq1$,
+\[
+ d(p^k-1)=
+ \begin{cases}
+  4,&p=5,\\
+  0,&p\ne5.
+ \end{cases}
+\]
+In particular, every prime $p\equiv5\pmod8$, other than $5$,
+has zero nullity at all these levels, including any Wieferich primes
+in that congruence class.
+\end{corollary}
+
+\begin{proof}
+The quotient $\ord_{p^k}(2)/\ord_p(2)$ is a power of the odd
+prime $p$.  Thus $\ord_{p^k}(2)=4r$ with $r$ odd.
+The unique element of order two in $(\Z/p^k\Z)^\times$ is $-1$, so
+\[
+ 2^{2r}\equiv-1\pmod{p^k}.
+\]
+With the notation of Theorem~\ref{thm:two-factors},
+$p^k\mid M_-M_+$.  Since the two factors are coprime and $p^k$ is a
+prime power, it divides one factor.
+The theorem therefore applies to every pair in $\mu_{p^k}^2$.
+For $p\ne5$ there are no solutions.
+For $p=5$, only fifth roots occur, whose two trace values are the
+roots of $X^2+X+1$; the nullity is $2\cdot2=4$.
+
+Finally, if $p\equiv5\pmod8$, then $v_2(p-1)=2$ and Euler's
+criterion gives $2^{(p-1)/2}\equiv-1\pmod p$.
+Since $\ord_p(2)\mid p-1$, its two-adic valuation must be $2$.
+\end{proof}
+
+\subsection{Analytic proofs for both known Wieferich primes}
+
+\begin{corollary}\label{cor:known-analytic}
+Without either endpoint search,
+\[
+ \boxed{\ d(1093^k-1)=d(3511^k-1)=0
+            \quad\text{for all }k\geq1.\ }
+\]
+\end{corollary}
+
+\begin{proof}
+For $1093$, use $1093\equiv5\pmod8$ and
+Corollary~\ref{cor:quadratic-primes}.
+For $3511$, use $\ord_{3511}(2)=1755$, which is divisible by $3$,
+and Corollary~\ref{cor:cubic-primes}.
+A compact certificate of the latter order is
+\[
+ 2^{1755}\equiv1,\quad
+ 2^{585}\equiv756,\quad
+ 2^{351}\equiv1578,\quad
+ 2^{135}\equiv88\pmod{3511}.
+\]
+Since the prime divisors of $1755$ are $3,5,13$, these congruences
+prove that the order is exactly $1755$.
+\end{proof}
+
+These are not arguments that presume $c_p=2$: both corollaries hold
+at every level for any value of the Wieferich depth.
+The factorization step in Corollary~\ref{cor:quadratic-primes} is also
+where prime-power order matters.  One cannot put an arbitrary divisor
+of $M_-M_+$ into one factor if it uses primes from both.
+
+\section{An exact formula for the increment}\label{sec:increment}
+
+The endpoint condition is usually expressed as the triviality of a gcd.
+The following identity also measures the increase when that condition
+fails, without omitting mixed collisions.
+
+\begin{theorem}[Increment factorization]\label{thm:increment}
+Let $M\mid N$ be positive odd integers.  Put
+\[
+ K(X)=\gcd\!\left(\frac{H_N(X)}{H_M(X)},H_N(X+1)\right),
+ \qquad J(X)=\gcd(K(X),K(X+1)).
+\]
+All gcds are monic.  Then
+\begin{equation}\label{eq:factor}
+ G_N(X)=G_M(X)\frac{K(X)K(X+1)}{J(X)}
+\end{equation}
+and
+\begin{equation}\label{eq:increment}
+ \boxed{\ d(N-1)-d(M-1)=4\deg K-2\deg J.\ }
+\end{equation}
+In particular, $d(N-1)=d(M-1)$ if and only if $K=1$.
+\end{theorem}
+
+\begin{proof}
+Write $A=T_N\setminus T_M$ and
+\[
+ C_N=T_N\cap(1+T_N),\qquad C_M=T_M\cap(1+T_M).
+\]
+By Lemma~\ref{lem:roots}, these are the root sets of $G_N$ and $G_M$.
+The root set of $K$ is
+\[
+ S=\{\alpha\in A:\alpha+1\in T_N\}.
+\]
+A point of $C_N$ fails to belong to $C_M$ exactly when at least one
+of $\alpha,\alpha+1$ is in $A$.  Therefore
+\[
+ C_N\setminus C_M=S\cup(1+S).
+\]
+The two sets on the right intersect in the root set of $J$.  All the
+polynomials involved are square-free, so their union is represented by
+$\operatorname{lcm}(K(X),K(X+1))=K(X)K(X+1)/J(X)$.
+This union is disjoint from $C_M$, proving \eqref{eq:factor}.
+Taking degrees and using \eqref{eq:half-nullity} proves
+\eqref{eq:increment}.
+Finally $\deg J\leq\deg K$, so a nonconstant $K$ gives a strictly
+positive increment.
+\end{proof}
+
+More explicitly, put
+\[
+ a=\deg J,\qquad b=\deg K-\deg J.
+\]
+There are $a$ common roots for which both coordinates
+$\alpha,\alpha+1$ are new, and $b$ common roots with the first
+coordinate new and the second old.  Translation supplies another $b$
+roots with the opposite orientation.  Hence the increment is
+\[
+ 2a+4b.
+\]
+For a prime-power endpoint, ``new'' means order above $p$, not
+necessarily one particular order when $c_p>2$.
+Checking only new--new collisions cannot establish stabilization.
+
+\begin{remark}[A genuine mixed example, not a prime-power counterexample]
+Direct polynomial arithmetic for $M=17$ and $N=255$ gives
+\[
+ d(16)=8,\quad d(254)=140,\quad \deg K=62,\quad \deg J=58.
+\]
+Thus $a=58$, $b=4$, and the increment is
+$2\cdot58+4\cdot4=132$.
+An internal-collision calculation alone would miss the contribution
+$16$ from the mixed pairs.  Since $255=3\cdot5\cdot17$, this example
+does not contradict the prime-power conjecture.
+
+One explicit mixed pair can be checked in
+$\F_2[t]/(t^8+t^4+t^3+t^2+1)$, where $t$ has order $255$:
+\[
+ u=t^{17},\quad v=t^{120},\quad \ord(u)=15,\quad\ord(v)=17,
+\]
+\[
+ u+u^{-1}=t^7+t^4+t+1,\qquad v+v^{-1}=t^7+t^4+t.
+\]
+Thus the two traces differ by one, even though only the second
+coordinate has order dividing $17$.
+\end{remark}
+
+\section{Exactly what is already proved}\label{sec:descent}
+
+For an odd prime $p$, write
+\[
+ f=\ord_p(2),\qquad c=v_p(2^f-1),\qquad
+ \rho_i=\min\{r\geq1:2^r\equiv1\text{ or }-1\pmod{p^i}\}.
+\]
+The order-lifting formula and cyclicity of
+$(\Z/p^i\Z)^\times$ give
+\begin{equation}\label{eq:orders}
+ \ord_{p^i}(2)=f p^{\max(0,i-c)},\qquad
+ \rho_i=\rho_1p^{\max(0,i-c)}.
+\end{equation}
+Indeed, a multiple $ft$ of $f$ satisfies
+$v_p(2^{ft}-1)=c+v_p(t)$.
+The signed order is the ordinary order divided by two when the
+ordinary order is even, and is the ordinary order otherwise.
+
+If $u$ has exact order $p^i$, then
+\begin{equation}\label{eq:trace-degree}
+ [\F_2(u+u^{-1}):\F_2]=\rho_i.
+\end{equation}
+To see this, Frobenius to the power $r$ fixes $u+u^{-1}$ exactly when
+$u^{2^r}$ is $u$ or $u^{-1}$.
+
+\begin{theorem}[Known descent above the plateau]\label{thm:descent}
+Every common root of $F_{p^k}(X)$ and $F_{p^k}(X+1)$ already belongs
+to $T_{p^{\min(k,c)}}$.  In particular,
+\[
+ d(p^k-1)=d(p^c-1)\qquad(k\geq c).
+\]
+\end{theorem}
+
+\begin{proof}
+Write a common root and its translate as
+\[
+ \alpha=u+u^{-1},\qquad \alpha+1=v+v^{-1},
+\]
+where $u,v\ne1$ have exact orders $p^i,p^\ell$, respectively.
+Since $\F_2(\alpha)=\F_2(\alpha+1)$,
+\eqref{eq:orders}--\eqref{eq:trace-degree} imply either
+$i,\ell\leq c$, or $i=\ell>c$.
+
+Suppose $i=\ell>c$.  Set $L=p^i$ and $m=p^{i-c}$.
+Taking $u$ as a primitive $L$th root, write $v=u^s$ with $p\nmid s$
+and $1\leq s<L$.  Then $u$ is a zero of
+\[
+ P(X)=1+X+X^{L-1}+X^s+X^{L-s}.
+\]
+Let $h$ be the minimal polynomial of $u^m$ over $\F_2$.
+Its degree is $f$, while the degree of $u$ is $fm$.
+Therefore $h(X^m)$ is the minimal polynomial of $u$, and divides $P$.
+
+Decompose polynomials uniquely by their exponent classes modulo $m$:
+\[
+ P(X)=\sum_{r=0}^{m-1}X^rP_r(X^m).
+\]
+Divisibility by $h(X^m)$ implies $h\mid P_r$ for every $r$.
+But none of $1,-1,s,-s$ is zero modulo $m$, so $P_0=1$.
+This is impossible for the nonconstant polynomial $h$.
+Thus both orders are at most $p^c$.
+The root sets are nested and every root of $F_{p^k}$ has multiplicity
+two, proving the stated equality of nullities.
+\end{proof}
+
+\begin{corollary}
+The desired identity holds for every non-Wieferich odd prime.
+It also holds for $p=2$.
+\end{corollary}
+
+\begin{proof}
+For a non-Wieferich odd prime, $c=1$, so apply
+Theorem~\ref{thm:descent}.
+For $p=2$, $F_{2^k}(X)=X^{2^k-1}$ is coprime to its translate.
+Thus $d(2^k-1)=d(1)=0$.
+\end{proof}
+
+\section{The remaining assertion, with both types of collision}
+
+\begin{problem}[Wieferich endpoint]\label{prob:endpoint}
+For every Wieferich prime $p$, with $c=v_p(2^{\ord_p(2)}-1)$, prove
+\begin{equation}\label{eq:missing}
+ K_p(X):=\gcd\!\left(
+       \frac{H_{p^c}(X)}{H_p(X)},H_{p^c}(X+1)
+       \right)=1.
+\end{equation}
+\end{problem}
+
+By Theorems~\ref{thm:increment} and~\ref{thm:descent}, this assertion
+is equivalent to the original all-prime identity.
+It is not a consequence of those theorems.
+In fact, they give the exact possible discrepancy
+\[
+ d(p^c-1)-d(p-1)
+ =4\deg K_p-2\deg\gcd(K_p(X),K_p(X+1)).
+\]
+By Corollaries~\ref{cor:cubic-primes} and
+\ref{cor:quadratic-primes}, the unresolved primes can now be
+restricted further to
+\begin{equation}\label{eq:remaining-primes}
+ c_p\geq2,\qquad 3\nmid\ord_p(2),\qquad
+ v_2(\ord_p(2))\ne2.
+\end{equation}
+No claim that this set is empty is made.
+
+For $p>3$, an equivalent finite-field formulation is
+\begin{equation}\label{eq:endpoint}
+ u,v\in\mu_{p^c},\quad
+ 1+u+u^{-1}+v+v^{-1}=0
+ \quad\Longrightarrow\quad u,v\in\mu_p.
+\end{equation}
+Neither coordinate can equal $1$: that would force the other to have
+order $3$.
+Thus \eqref{eq:endpoint} is precisely the common-root condition of
+Lemma~\ref{lem:roots}.
+Notice that the hypothesis allows different orders for $u$ and $v$.
+
+\subsection{Why the established proof does not extend through the plateau}
+
+For $1\leq i\leq c$, all groups $\mu_{p^i}$ lie in the same field
+$\F_{2^f}$, and their primitive traces all have degree $\rho_1$.
+Equal degrees no longer imply equal levels.
+In the residue-class proof, the proposed substitution has $m=1$,
+so its decisive class $P_0$ is the whole polynomial, not the constant
+$1$.
+
+There is also no field-theoretic descent obtained simply by taking
+$p$th powers.  On $\mu_{p^i}$ this operation has a kernel of order $p$;
+it is not a field automorphism.  The fact that $u^p,v^p$ have smaller
+orders does not imply that they satisfy the same additive equation.
+Likewise, a norm identity does not make all conjugates of an element
+vanish at a chosen prime above two.  On the plateau the cyclotomic
+extension splits at two, rather than supplying the nontrivial residue
+field extension used by the off-plateau proof.
+
+\subsection{What a counterexample certificate must contain}
+
+A counterexample can be presented without constructing a large grid.
+Choose a prime $p>3$, an integer $2\leq j\leq c_p$, an irreducible
+$h\in\F_2[T]$, and an integer $b$ with $1\leq b<p^j$.  In
+$\F_2[T]/(h)$, let $t$ be the residue of $T$ and verify
+\[
+ t^{p^j}=1,\qquad t^{p^{j-1}}\ne1,\qquad
+ 1+t+t^{p^j-1}+t^b+t^{p^j-b}=0.
+\]
+These equalities exhibit a new common root and imply
+$d(p^j-1)>d(p-1)$.
+Conversely, from any counterexample choose a coordinate of largest
+order as $t$; this produces such a certificate.
+One must not require $p\nmid b$, since a mixed-order counterexample
+could have $p\mid b$.
+
+\section{Exact computations and their scope}\label{sec:computations}
+
+The existing search in \cite{code} uses characteristic-two field
+arithmetic, not the conjectured prime-power reduction.
+Its 64-bit fingerprint is an additive projection: an exact equality
+necessarily survives projection.  Thus an empty fingerprint-candidate
+set is a rigorous absence certificate, not a probabilistic conclusion.
+Any surviving candidates are checked in the full field.
+
+Both known Wieferich endpoint searches were rerun in this investigation:
+\[
+\begin{array}{c|rrrr}
+ p&c_p&\ord_p(2)&\text{fingerprint candidates}&
+       d(p^2-1)=d(p-1)\\ \hline
+ 1093&2&364&0&0\\
+ 3511&2&1755&0&0
+\end{array}
+\]
+The depth $c_p=2$ is verified by
+$2^{\ord_p(2)}\equiv1\pmod{p^2}$ but not modulo $p^3$.
+The zero endpoint nullities imply zero base nullities by root-set
+inclusion.  Reproducible commands from the repository root are
+\begin{verbatim}
+python code\ai_prototypes\five_term_char2.py 1093 2
+python code\ai_prototypes\five_term_char2.py 3511 2
+\end{verbatim}
+These are now independent checks of Corollary~\ref{cor:known-analytic},
+not prerequisites for it.
+
+The trace--norm laws were also checked directly in finite fields.
+For the cubic law, $q=2,4,8,16,32$ gives only the classified degenerate
+relations: respectively $0,4,0,4,0$ ordered pairs.
+For the two-factor law, $r=1,3,5,7$ gives
+$(M_-,M_+)=(1,5),(5,13),(25,41),(113,145)$.
+In each union of the two subgroups there are exactly eight ordered
+relations, all from the fifth roots as proved above.
+
+For small examples, direct Fibonacci gcd calculations give
+\[
+\begin{array}{c|rrr}
+ p&d(p-1)&d(p^2-1)&d(p^3-1)\\ \hline
+ 3&0&0&0\\
+ 5&4&4&4\\
+ 7&0&0&0\\
+ 11&0&0&0\\
+ 17&8&8&8\\
+ 31&20&20&20
+\end{array}
+\]
+These calculations use \texttt{\_adjacent\_fibonacci\_pair} and
+\texttt{GF2Polynomial.gcd}, not the optimized
+\texttt{grid\_nullity} shortcut for proven prime-power cases.
+The factorization in Theorem~\ref{thm:increment} was also checked
+directly for every proper odd divisor pair $M\mid N$, $3\leq N\leq301$:
+398 pairs, including 13 with a nonzero mixed contribution.
+The proof of the theorem is the root-set argument, not this finite
+check.
+
+\section{Conclusion}\label{sec:conclusion}
+
+Two arithmetic classes are now covered without a
+non-Wieferich hypothesis:
+$3\mid\ord_p(2)$ and $v_2(\ord_p(2))=2$.
+In particular, both known Wieferich primes have analytic all-level
+proofs, rather than only computational endpoint proofs.
+The increment factorization additionally measures both kinds of
+possible new collision.
+
+The all-prime question nevertheless remains unresolved by this
+investigation.  The missing step is \eqref{eq:missing}, equivalently
+\eqref{eq:endpoint}, for a Wieferich prime satisfying
+\eqref{eq:remaining-primes}.
+Neither trace--norm theorem addresses all of those primes, and no
+counterexample certificate of the required kind has been found.
+
+Further attempts at conductor descent, rather than additional
+zero-nullity families, are recorded in
+\path|tex\prime_power_endpoint\conductor_descent.tex|.
+That addendum gives an obstruction to direct powering in the
+regular-map formulation and a single-candidate-phase criterion for
+mixed collisions when $H_p$ is irreducible; it does not claim a
+general proof.
+
+\begin{thebibliography}{9}
+
+\bibitem{finite-fields}
+W.~Boyles, \emph{Fibonacci Polynomials \& Lights Out}.
+Repository manuscript:
+\path|tex\finite_fields\finite_fields.tex|.
+See ``Orders of Prime Powers'' and ``Applications to $d(n)$''.
+
+\bibitem{plateau}
+W.~Boyles, \emph{Reciprocal Five-Term Relations among $p^j$-th Roots
+of Unity in Characteristic Two: Reductions, Obstructions, and the
+Wieferich Plateau}.
+Repository manuscript:
+\path|tex\five_term_plateau\five_term_plateau.tex|.
+See ``The single endpoint statement'', ``Two collision norms'',
+and ``Computations''.
+
+\bibitem{code}
+Repository implementations:
+\path|code\kernel_size.py|,
+\path|code\polynomials.py|,
+\path|code\ai_prototypes\five_term_char2.py|,
+and \path|code\ai_prototypes\wieferich_check.py|.
+
+\end{thebibliography}
+\end{document}

@@ -100,7 +100,6 @@ def fibonacci_polynomial(n: int) -> GF2Polynomial:
     return fibonacci_polynomial(m)**2 + fibonacci_polynomial(m + 1)**2
 
 
-@cache
 def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     """Returns F_{n+1}(x) and F_{n+1}(x+1),
     where F_n is the nth Fibonacci polynomial.
@@ -119,7 +118,6 @@ def f_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     return f1, f2
 
 
-@cache
 def g_pair(n: int) -> tuple[GF2Polynomial, GF2Polynomial]:
     """Recursively define the following polynomials over Z_2[x]:
         g(0,x) = 0, g(1,x) = x
@@ -330,21 +328,31 @@ def grid_nullity(n: int) -> int:
         base_nullity = grid_nullity(b - 1)
         return _scale_grid_nullity(base_nullity, b, k)
 
+    p, l = prime_power(b)
     """We proved that if n+1 = p**l for a non-Wieferich prime p, then
     d(n) = d(p-1).
     We also showed d(n) = d(p-1) when p is 1093 or 3511, the known Wieferich primes.
 
     Conjecture: d(p^l - 1) = d(p-1) is true for all primes p.
     """
-    p, l = prime_power(b)
-    if l > 1 and (not _is_wieferich(p) or p in SAFE_WIEFERICH_PRIMES): # b is a prime power
+    if l > 1 and (not _is_wieferich(p) or p in SAFE_WIEFERICH_PRIMES):
         return grid_nullity(p - 1)
+    
+    if l > 0:
+        rho = signed_order_2(p)
 
-    """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
-    odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
-    """
-    if l == 1 and signed_order_2(p)**2 > p:
-        return 0
+        """We proved for p > 5 that if
+        3 divides ord_p(2) or v_2(ord_p(2)) = 2, then
+        d(p^l - 1) = 0
+        """
+        if p > 5 and (rho % 4 == 2 or rho % 3 == 0):
+            return 0
+
+        """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
+        odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
+        """
+        if l == 1 and rho * rho > p:
+            return 0
 
     """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2.
     Write F_m + F_{m+1} = A(y) + xB(y), where y = x**2 + x.
