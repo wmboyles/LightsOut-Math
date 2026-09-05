@@ -407,11 +407,12 @@ class GF2Polynomial:
         degree = dividend.bit_length() - 1
         divisor_degree = divisor.bit_length() - 1
 
-        while degree >= divisor_degree:
+        while degree > divisor_degree:
             dividend ^= divisor << (degree - divisor_degree)
             degree = dividend.bit_length() - 1
 
-        return dividend
+        # Equal leading degrees cancel in one XOR, leaving a valid remainder.
+        return dividend ^ divisor if degree == divisor_degree else dividend
 
     def __pow__(self, exp: int, mod: GF2Polynomial | None = None) -> GF2Polynomial:
         """Compute polynomial to some non-negative integer power, possibly modulo some polynomial.
