@@ -1,0 +1,455 @@
+\documentclass[a4paper]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{fullpage}
+\usepackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\ord}{ord}
+\DeclareMathOperator{\Nm}{N}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\Z}{\mathbb Z}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.7em}
+
+\title{Conductor Descent for Prime-Power Lights Out:\\
+Further Attempts and Their Exact Limitations}
+\author{}
+\date{September 5, 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This addendum investigates the general identity
+$d(p^k-1)=d(p-1)$ rather than additional prime-specific
+zero-nullity families.  It does not prove the general identity or
+give a counterexample.
+We prove a precise obstruction to descent by powering in the regular-map
+operations, an exclusion of one projected mixed-collision phase, and an
+exact cyclotomic norm congruence.  Each result is separated from the
+stronger, still unproved assertion that would be needed for conductor
+descent.
+\end{abstract}
+
+\section{The target}
+
+Let $\mu_N\subset\overline{\F}_2^\times$ denote the $N$th roots of unity.
+For $p>5$, the outstanding assertion is that
+\begin{equation}\label{eq:sum}
+ 1+u+u^{-1}+v+v^{-1}=0,\qquad u,v\in\mu_{p^j},
+\end{equation}
+forces both coordinate orders to divide $p$.
+The known proof reduces the problem to
+$j\leq c_p=v_p(2^{\ord_p(2)}-1)$.
+The companion note \cite{endpoint} covers the additional order classes
+$3\mid\ord_p(2)$ and $v_2(\ord_p(2))=2$.
+Neither reduction disposes of all possible Wieferich primes.
+
+The substitution
+\[
+ u=xy,\qquad v=x/y
+\]
+is invertible on $\mu_{p^j}^2$, because its exponent matrix has
+determinant $-2$.  It converts \eqref{eq:sum} into
+\begin{equation}\label{eq:product}
+ (x+x^{-1})(y+y^{-1})=1.
+\end{equation}
+It preserves the maximum coordinate order, but need not preserve the
+individual orders.  In particular, ``mixed'' in the additive coordinates
+and ``mixed'' in the product coordinates are not interchangeable
+notions.
+
+\section{The group-theoretic route}
+
+\begin{proposition}[Exact group formulation]\label{prop:group}
+For $p>5$, a higher-level solution is equivalent to a configuration in
+some $\mathrm{SL}_2(\F_{2^h})=\mathrm{PSL}_2(\F_{2^h})$ with
+\[
+ |B|=2,\qquad |A^2B|=3,\qquad
+ |A|,\ |AB|\text{ powers of }p,
+ \qquad \max(|A|,|AB|)\geq p^2.
+\]
+\end{proposition}
+
+\begin{proof}
+Given \eqref{eq:product}, put $a=x+x^{-1}$.  Then
+$a\ne0,1$: the exceptional values would give $x$ order $1$ or $3$.
+Set
+\[
+ A=\begin{pmatrix}a&1\\1&0\end{pmatrix},
+ \qquad B=\begin{pmatrix}1&a+a^{-1}\\0&1\end{pmatrix}.
+\]
+Both determinants are one, $B$ is a nonidentity involution, and
+\[
+ \tr(A)=a,\qquad \tr(AB)=a^{-1}.
+\]
+The eigenvalues of $A$ are $x,x^{-1}$ and those of $AB$ are
+$y,y^{-1}$, so their orders are exactly the coordinate orders.
+Cayley--Hamilton gives
+\[
+ A^2=aA+I,\qquad
+ \tr(A^2B)=a\tr(AB)+\tr(B)=1.
+\]
+A determinant-one matrix of trace one in characteristic two has
+characteristic polynomial $T^2+T+1$ and exact order three.
+
+Conversely, the prescribed orders give $\tr(B)=0$ and
+$\tr(A^2B)=1$.  Cayley--Hamilton therefore implies
+$\tr(A)\tr(AB)=1$.
+The eigenvalues of the two odd-order matrices recover
+\eqref{eq:product}, with the required maximum coordinate order.
+\end{proof}
+
+Thus the trace-product formulation is not irrelevant to the original
+trace-sum problem.  The coordinate change must be taken into account
+when interpreting the discussion in \cite{plateau}.
+
+The generating pair describes an orientably regular map with face
+length $|AB|$ and vertex valency $|A|$.
+For $\gcd(j,|A|)=1$, Wilson's hole operation $H_j$ replaces
+$(A,B)$ by $(A^j,B)$; its face length is $|A^jB|$ \cite{holes}.
+The next proposition tests the most direct proposed descent.
+It also allows noninvertible exponents, which are not the usual
+Wilson operations but could otherwise have reduced the vertex order.
+
+\begin{proposition}[No locus-preserving powering descent]\label{prop:holing}
+Let $n=|A|$ be odd and let $A,B$ be as in the preceding construction.
+For every positive integer $j$,
+\[
+ |A^{2j}B|=3\quad\Longleftrightarrow\quad j\equiv\pm1\pmod n.
+\]
+Consequently a powering step that retains the defining order-three
+condition preserves both the vertex and face orders.
+\end{proposition}
+
+\begin{proof}
+Let $D_0(X)=0$, $D_1(X)=X$ and
+$D_{j+1}(X)=XD_j(X)+D_{j-1}(X)$ over $\F_2$.
+The trace recurrence and its initial values give
+\[
+ \tr(A^jB)=\frac{D_j(a)}{a^2}.
+\]
+Since $D_{2j}(a)=D_j(a)^2$,
+\[
+ |A^{2j}B|=3
+ \quad\Longleftrightarrow\quad D_j(a)^2=a^2
+ \quad\Longleftrightarrow\quad D_j(a)=a.
+\]
+Writing the eigenvalues of $A$ as $x,x^{-1}$, the last equality is
+$x^j+x^{-j}=x+x^{-1}$.
+The quadratic $T^2+aT+1$ has exactly the roots $x,x^{-1}$.
+It follows that $x^j=x$ or $x^{-1}$, equivalently
+$j\equiv1$ or $-1\pmod n$.
+In this case $\tr(A^jB)=a^{-1}$ as well, so the face order is unchanged.
+\end{proof}
+
+Replacing $(A,B)$ by $(AB,B)$ swaps the two odd orders and retains
+the trace-product condition.  Group automorphisms preserve orders.
+Therefore a sequence of these operations whose intermediate
+configurations all retain the order-three condition cannot perform
+conductor descent.  This does not rule out a sequence which leaves
+that locus and returns using an additional argument.
+
+There is also an entirely group-theoretic explanation for a tempting
+but unhelpful observation.  Put $R=A^2B$.  From $B^2=R^3=1$,
+\[
+ A^4B=R A^{-2}R^{-1}.
+\]
+Indeed, with $U=A^2=RB$,
+$RU^{-1}R^{-1}=RBR=UR=U^2B$.
+Thus $|A^4B|=|A|$ for every odd-order $A$.
+The equal-order map obtained after two $H_2$ operations is automatic;
+it does not impose a restriction on prime-power exponents.
+
+\section{A lower-algebra test for mixed collisions}
+
+Write $F_0=0$, $F_1=1$, $F_{n+1}=XF_n+F_{n-1}$, and, for odd $n$,
+\[
+ H_n=F_{(n-1)/2}+F_{(n+1)/2}.
+\]
+Then $D_n=XH_n^2$, and $H_n$ is square-free with roots the nonzero
+traces of nonidentity $n$th roots of unity.
+Fix $p>3$, put $m=(p-1)/2$, and write
+\[
+ H=H_p,\qquad H^*(X)=X^mH(1/X),\qquad R(X)=D_p(1/X).
+\]
+Denominators in the following statements are invertible modulo $H$,
+because $H(0)=1$.
+
+\begin{lemma}[Exact reciprocal mixed criterion]\label{lem:mixed}
+For $\beta$ a root of $H$, the reciprocal $\beta^{-1}$ is the
+trace of a primitive $p^2$th root if and only if
+\[
+ H(R(\beta))=0.
+\]
+\end{lemma}
+
+\begin{proof}
+Choose $u$ satisfying $u+u^{-1}=\beta^{-1}$.
+Then $u^p+u^{-p}=R(\beta)$.
+If the latter is a root of $H$, the two solutions of its reciprocal
+quadratic are primitive $p$th roots, so $u^p$ has exact order $p$.
+Hence $u$ has exact order $p^2$.
+The converse follows from the same trace identity.
+In particular $R(\beta)=0$ is an old collision, not a mixed one:
+$H(0)=1$ already excludes it from this criterion.
+\end{proof}
+
+\begin{proposition}[Exclusion of the fixed projected phase]
+\label{prop:fixed-phase}
+Define
+\[
+ Q_p(X)=H^*(X)+X^{m+1}+XH(X).
+\]
+Then
+\[
+ \gcd(H,R-X)=\gcd(H,Q_p),\qquad
+ \deg Q_p<m,\qquad Q_p(0)=1.
+\]
+In particular, if $H_p$ is irreducible, then
+$D_p(\beta^{-1})=\beta$ is impossible for a root $\beta$ of $H_p$.
+\end{proposition}
+
+\begin{proof}
+The Dickson identity gives
+\[
+ R(X)-X=X^{-p}\bigl(H^*(X)+X^{m+1}\bigr)^2.
+\]
+Clearing the invertible denominator and removing the square does not
+change the gcd with the square-free polynomial $H$.
+Adding $XH$ does not change it either.
+
+The two highest coefficients of $H$ are $1,1$, and $H(0)=1$.
+Thus the degree-$m+1$ and degree-$m$ terms of $Q_p$ cancel, while its
+constant term is one.
+An irreducible degree-$m$ polynomial cannot share a root with this
+nonzero lower-degree polynomial.
+\end{proof}
+
+This is an exclusion of one branch, not of all mixed collisions.
+If $H$ is irreducible and one mixed collision exists, Frobenius
+equivariance and transitivity imply
+\[
+ R(\beta)=\beta^{2^k}
+\]
+for a fixed phase $k$ on the entire root orbit.
+Proposition~\ref{prop:fixed-phase} excludes $k=0$ only.
+For every odd $a$,
+\[
+ \gcd(H,R-D_a)=
+ \gcd\!\left(H,H^*+X^{m+1}H_a\right),
+\]
+by the same squared-numerator argument.
+Choosing an odd representative $a\equiv\pm2^k\pmod p$ reduces
+the other phases to explicit polynomials, but does not prove their
+coprimality.  If $H$ is reducible, even the same-orbit phase
+assumption is unjustified: one lower orbit may map to another.
+
+\begin{proposition}[Only one candidate phase when $H_p$ is irreducible]
+\label{prop:one-phase}
+Assume $H=H_p$ is irreducible.  Define
+\[
+ \mathcal Q=\frac{H^*}{H}\pmod{X^{m+1}},\qquad
+ t=\deg\mathcal Q,\qquad
+ \mathcal B=\frac{H^*+\mathcal QH}{X^{m+1}},
+\]
+where the representative $\mathcal Q$ has degree at most $m$.
+Then a reciprocal mixed collision of orders $p^2,p$ exists if and only if
+\[
+ t\geq1\quad\text{and}\quad
+ \mathcal B=H_{2t-1}.
+\]
+\end{proposition}
+
+\begin{proof}
+The truncated inverse exists because $H(0)=1$, and the defining
+congruence makes $\mathcal B$ a polynomial.
+Since $H$ is irreducible, its roots form one Frobenius orbit of size
+$m$.  The signed powers of two therefore exhaust the nonzero residue
+classes modulo $p$ up to sign.
+By Lemma~\ref{lem:mixed}, a mixed collision is equivalent to
+$R(\beta)=D_a(\beta)$ for some odd $a$ with $1\leq a\leq p-2$.
+The preceding squared-numerator identity makes this equivalent to
+\[
+ H^*+X^{m+1}H_a=CH
+\]
+for a polynomial $C$.
+Comparing leading degrees gives $\deg C=(a+1)/2\leq m$.
+Reducing modulo $X^{m+1}$ then gives $C=\mathcal Q$.
+It follows that $a=2t-1$ and $\mathcal B=H_a$.
+
+Conversely, the displayed equality with $t\geq1$ supplies such an odd
+$a=2t-1\leq p-2$, so $R$ maps a root of $H$ to a root of $H$.
+Lemma~\ref{lem:mixed} supplies the mixed collision.
+If $t=0$, no quotient $C$ of the required positive degree exists.
+\end{proof}
+
+This reduces the possible phases to one explicit identity in the lower
+polynomial algebra.  It is not a proof that the identity always fails.
+For example, at $p=11$,
+\[
+ H=X^5+X^4+X^2+X+1,\qquad
+ \mathcal Q=X^5+X^4+X^2+1,\qquad
+ \mathcal B=X^4+X^2+1\ne H_9.
+\]
+Simple coefficient tests do not uniformly decide the identity:
+at $p=1931$, one gets $t=964$, and $\mathcal B$ agrees with
+$H_{1927}$ in degrees zero through eight before differing in degree
+nine.  No argument excluding the equality for arbitrary $p$ was found.
+
+\begin{remark}[A countermodel to dropping prime support]
+Reciprocal mixed descent is false for general odd periods.
+The polynomial $H_7=X^3+X^2+1$ has reciprocal
+$X^3+X+1$, and
+\[
+ H_9=(X+1)(X^3+X+1).
+\]
+Thus the reciprocal of a primitive $7$-trace is a primitive $9$-trace.
+Both orders divide $21^2$, while $9$ does not divide $21$.
+This is not a prime-power counterexample; it shows that an argument
+using only oddness and $M\mid M^2$ cannot suffice.
+\end{remark}
+
+\begin{remark}[A failed auxiliary cubic obstruction]
+For the remaining irreducible cases with
+$\ord_p(2)=p-1$, $m=(p-1)/2$ odd and $3\nmid m$, one might hope that
+every reciprocal lift of a $p$-trace has order divisible by three.
+That would exclude a $p$-primary lift, but the auxiliary assertion is
+false.
+
+Take $p=107$ and
+\[
+ K=\F_2[z]/(1+z+\cdots+z^{106}),\qquad \beta=z+z^{-1}.
+\]
+Encode an element by placing its coefficient of $z^i$ in bit $i$.
+The element
+\[
+ u=\texttt{0x21500a7574a334aa348c8366ce2}
+\]
+then satisfies, by exact polynomial reduction,
+\[
+ (u+u^{-1})\beta=1,\qquad
+ \ord(u)=3002399751580331
+       =107\cdot28059810762433.
+\]
+This order is not divisible by three.
+It is also not a power of $107$, so this example refutes only the
+auxiliary assertion, not the Lights Out conjecture.
+\end{remark}
+
+\section{Exact local valuations do not force global descent}
+
+\begin{lemma}[Simple two-adic intersection]\label{lem:carry}
+Let $u,v$ satisfy \eqref{eq:sum}, and let $U,V$ be their Teichmuller
+lifts in an unramified extension of $\Q_2$.
+Put
+\[
+ S=1+U+U^{-1}+V+V^{-1}.
+\]
+If the coordinate orders are powers of $p>5$, then $v_2(S)=1$.
+\end{lemma}
+
+\begin{proof}
+Let $\sigma$ be the unramified Frobenius, and put
+$A=U+U^{-1}$, $B=V+V^{-1}$.
+Direct expansion gives
+\[
+ S^2-\sigma(S)=2(S+1+AB).
+\]
+Write $S=2W$, as its reduction vanishes.
+Dividing by two and reducing modulo two yields
+\[
+ \overline W^{\,2}=1+\alpha\beta
+ =1+\alpha+\alpha^2,\qquad
+ \alpha=u+u^{-1},\quad\beta=\alpha+1.
+\]
+If the right side vanished, multiplying by $u^2$ would give
+$u^4+u^3+u^2+u+1=0$, so $u$ would have order $5$.
+Thus $\overline W\ne0$ and $v_2(S)=1$.
+\end{proof}
+
+\begin{proposition}[Norm congruence]\label{prop:norm}
+Let $N=p^j$, $p>5$, $L=\Q(\zeta_N+\zeta_N^{-1})$, and
+\[
+ S=1+\zeta_N^a+\zeta_N^{-a}+\zeta_N^b+\zeta_N^{-b},
+ \qquad M=\Nm_{L/\Q}(S).
+\]
+Then
+\begin{equation}\label{eq:norm-congruence}
+ M\equiv\left(\frac5p\right)\pmod{p^j}.
+\end{equation}
+If $h=\min\{r>0:2^r\equiv\pm1\pmod{p^j}\}$ and exactly $t$ primes
+of $L$ above two divide $S$, then
+\[
+ v_2(M)=ht.
+\]
+\end{proposition}
+
+\begin{proof}
+At the unique prime above $p$, every conjugate of $S$ is congruent
+to $5$, so $p\nmid M$ and
+\[
+ M\equiv5^{[L:\Q]}\equiv(5/p)\pmod p.
+\]
+For every rational prime $\ell\ne p$, the residue degree $e$ of a
+prime of $L$ above $\ell$ is the least positive integer with
+$\ell^e\equiv\pm1\pmod N$.
+Hence the norm of each prime-ideal factor of $(S)$ is $\pm1$
+modulo $N$.  Their product gives $M\equiv\pm1\pmod N$, with its sign
+uniquely selected by the congruence modulo $p$.
+This proves \eqref{eq:norm-congruence}.
+The second assertion follows from Lemma~\ref{lem:carry} at every
+prime above two and the prime-ideal norm formula.
+\end{proof}
+
+On a Wieferich plateau, $2^h\equiv1$ or $-1\pmod{p^j}$.
+Therefore the exact two-part $2^{ht}$ is already compatible with
+the norm congruence.  The odd part and the sign of $M$ are not
+controlled by these statements.
+
+Nor do arbitrary global congruences repair this issue.
+For any prescribed subset of the primes above two, the Chinese
+remainder theorem produces an algebraic integer divisible simply at
+exactly those primes, while agreeing with $S$ to any prescribed
+finite $p$-adic precision.
+Such an integer need not have the special five-term shape or its
+small height.  Thus this observation is not a counterexample; it
+pinpoints the information missing from an argument using only local
+valuation and norm congruences.
+
+\section{What this investigation has and has not established}
+
+The direct locus-preserving powering descent cannot work.
+The global norm calculation is exact but consistent with a higher
+conductor.  Under an irreducibility hypothesis, the mixed-collision argument
+eliminates the fixed projected phase and reduces all remaining phases
+to one explicit polynomial identity.  It does not prove that the
+identity fails, or handle collisions between distinct lower orbits.
+
+Consequently none of these three attempts proves the all-prime
+identity, and no prime-power counterexample has been obtained.
+In particular, the equivalent group formulation must not be promoted
+to a group-theoretic exponent bound without an additional argument.
+
+\begin{thebibliography}{9}
+\bibitem{endpoint}
+\emph{Two Trace--Norm Theorems for Prime-Power Lights Out Stabilization},
+\path|tex\prime_power_endpoint\prime_power_endpoint.tex|.
+
+\bibitem{plateau}
+W.~Boyles, \emph{Reciprocal Five-Term Relations among $p^j$-th Roots
+of Unity in Characteristic Two: Reductions, Obstructions, and the
+Wieferich Plateau},
+\path|tex\five_term_plateau\five_term_plateau.tex|.
+
+\bibitem{holes}
+G.~G\'evay and G.~A.~Jones,
+\emph{Hole operations on Hurwitz maps}, Sections 2 and 6,
+\url{https://arxiv.org/abs/2111.05566}.
+\end{thebibliography}
+\end{document}
