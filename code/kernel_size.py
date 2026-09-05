@@ -250,8 +250,8 @@ def signed_order_2(p: int) -> int:
     """Returns the least r > 0 such that 2**r is congruent to 1 or -1 modulo p.
 
     This function first calculates the multiplicative order H = ord_p(2).
-    Lemma 4.3 of our finite-fields paper proves that for an odd prime p,
-    the signed order is H/2 when H is even and H when H is odd.
+    We proved that for an odd prime p, the signed order is
+    H/2 when H is even and H when H is odd.
     """
 
     n = p - 1
@@ -284,12 +284,87 @@ def prime_power(q: int) -> tuple[int, int]:
 
     return p, (k if q == 1 else -k)
 
+
+def _truncate_odd_base(b: int) -> int:
+    """Apply finite-support truncation to a positive odd Fibonacci index.
+
+    For prime support S, cap each exponent at
+    v_p(2**ord_p(2) - 1) + max(v_p(ord_q(2)) for q in S).
+    Signed orders have the same odd-prime valuations as ordinary orders.
+    """
+
+    if b <= 0 or b % 2 == 0:
+        raise ValueError("b must be a positive odd integer")
+
+    # Factor b
+    factors = dict[int, int]()
+    remaining = b
+    while remaining > 1:
+        p = _smallest_prime_factor(remaining)
+        exponent = 0
+        while remaining % p == 0:
+            remaining //= p
+            exponent += 1
+        factors[p] = exponent
+
+    # No reductions possible for square-free b
+    if all(exponent == 1 for exponent in factors.values()):
+        return b
+
+    # Include primes occurring only once: their orders can raise another prime's cap.
+    orders = {p: signed_order_2(p) for p in factors}
+    reduced = b
+    for p, exponent in factors.items():
+        # Every cap is at least one, so the first power of each prime is retained.
+        if exponent == 1:
+            continue
+
+        rho = orders[p]
+        # sign records whether 2**rho is +1 or -1 modulo p.
+        # If sign = +1, the ordinary order is rho; the depth is v_p(2**rho - 1).
+        # If sign = -1, the ordinary order is 2*rho, and
+        # 2**(2*rho) - 1 = (2**rho - 1) * (2**rho + 1).
+        # In this second case, p divides 2**rho + 1 but not 2**rho - 1,
+        # since the latter is -2 modulo the odd prime p.
+        # Thus in both cases the plateau depth is v_p(2**rho - sign).
+        sign = 1 if pow(2, rho, p) == 1 else -1
+        depth = 1
+        modulus = p * p
+        # Depth is at least 1 because 2**rho == sign modulo p.
+        # Test the same congruence modulo p**2, p**3, ... without constructing 2**rho.
+        # Stop at the input exponent: a deeper plateau cannot reduce this factor.
+        while depth < exponent and pow(2, rho, modulus) == sign % modulus:
+            depth += 1
+            modulus *= p
+
+        # cross_valuation = max(v_p(ord_q(2)) for q in support)
+        # Example: p = 3, support = {3,7}
+        #   v_3(ord_3(2)) = v_3(2) = 0
+        #   v_3(ord_7(2)) = v_3(3) = 1
+        #   cross_valuation = max(0,1) = 1
+        # We can use signed_order_2 here because dividing the order by 2
+        # leaves v_p unchanged for the odd prime p.
+        cross_valuation = 0
+        for order in orders.values():
+            valuation = 0
+            while order % p == 0:
+                order //= p
+                valuation += 1
+            cross_valuation = max(cross_valuation, valuation)
+
+        # If exponent exceeds this cap, depth is exact (not stopped early).
+        # The finite-support theorem says the excess powers add no new common roots.
+        cap = depth + cross_valuation
+        if exponent > cap:
+            # Remove only excess powers, preserving the original prime support.
+            reduced //= p ** (exponent - cap)
+
+    return reduced
+
+
 @cache
 def grid_nullity(n: int) -> int:
     """Returns the nullity of an n x n grid.
-
-    Does so by calculating the degree of the GCD of F_(n+1)(x) and F_(n+1)(x+1).
-    We use several proven reductions before falling back to the polynomial GCD.
     """
 
     if n == 0:
@@ -329,7 +404,8 @@ def grid_nullity(n: int) -> int:
         return _scale_grid_nullity(base_nullity, b, k)
 
     p, l = prime_power(b)
-    """We proved that if n+1 = p**l for a non-Wieferich prime p, then
+    """We proved
+    If n+1 = p**l for a non-Wieferich prime p, then
     d(n) = d(p-1).
     We also showed d(n) = d(p-1) when p is 1093 or 3511, the known Wieferich primes.
 
@@ -338,21 +414,20 @@ def grid_nullity(n: int) -> int:
     if l > 1 and (not _is_wieferich(p) or p in SAFE_WIEFERICH_PRIMES):
         return grid_nullity(p - 1)
     
-    if l > 0:
-        rho = signed_order_2(p)
+    """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
+    odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
+    """
+    if l == 1 and signed_order_2(p)**2 > p:
+        return 0
 
-        """We proved for p > 5 that if
-        3 divides ord_p(2) or v_2(ord_p(2)) = 2, then
-        d(p^l - 1) = 0
-        """
-        if p > 5 and (rho % 4 == 2 or rho % 3 == 0):
-            return 0
-
-        """Blokhuis proved in Theorem 4.2 of "Button Madness" that if p is an
-        odd prime and d(p-1) > 0, then signed_order_2(p) <= sqrt(p).
-        """
-        if l == 1 and rho * rho > p:
-            return 0
+    """We proved that by factoring b into p1^e1 * p2^e2 ... pn^en,
+    the distinct set of primes in the factorization (aka support) S = {p1, p2, ..., pn}
+    gives us maximum values of each ei after which the result of d will not change.
+    """
+    if l != 1:
+        reduced = _truncate_odd_base(b)
+        if reduced < b:
+            return grid_nullity(reduced - 1)
 
     """For odd b = 2m+1, F_b = (F_m + F_{m+1})**2.
     Write F_m + F_{m+1} = A(y) + xB(y), where y = x**2 + x.
