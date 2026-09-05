@@ -184,19 +184,6 @@ class GF2Polynomial:
 
         return value
 
-    @staticmethod
-    def _divmod_values(dividend: int, divisor: int) -> tuple[int, int]:
-        """Computes packed quotient and remainder values."""
-
-        divisor_degree = divisor.bit_length() - 1
-        quotient = 0
-        while dividend and dividend.bit_length() - 1 >= divisor_degree:
-            degree_difference = dividend.bit_length() - 1 - divisor_degree
-            quotient ^= 1 << degree_difference
-            dividend ^= divisor << degree_difference
-
-        return quotient, dividend
-
     def iter_degrees(self) -> Iterator[int]:
         """Iterates over nonzero term degrees in ascending order."""
 
@@ -380,6 +367,19 @@ class GF2Polynomial:
             GF2Polynomial.from_number(remainder),
         )
 
+    @staticmethod
+    def _divmod_values(dividend: int, divisor: int) -> tuple[int, int]:
+        """Computes packed quotient and remainder values."""
+
+        divisor_degree = divisor.bit_length() - 1
+        quotient = 0
+        while dividend and dividend.bit_length() - 1 >= divisor_degree:
+            degree_difference = dividend.bit_length() - 1 - divisor_degree
+            quotient ^= 1 << degree_difference
+            dividend ^= divisor << degree_difference
+
+        return quotient, dividend
+
     def __floordiv__(self, div: GF2Polynomial) -> GF2Polynomial:
         """Computes the polynomial quotient."""
 
@@ -395,8 +395,23 @@ class GF2Polynomial:
         if mod.is_zero:
             raise ZeroDivisionError("Cannot divide by zero")
 
-        _, remainder = self._divmod_values(self._value, mod._value)
-        return GF2Polynomial.from_number(remainder)
+        return GF2Polynomial.from_number(self._remainder_value(self._value, mod._value))
+
+    @staticmethod
+    def _remainder_value(dividend: int, divisor: int) -> int:
+        """Remainder when dividing the polynomial's values.
+
+        Precondition: divisor != 0
+        """
+
+        degree = dividend.bit_length() - 1
+        divisor_degree = divisor.bit_length() - 1
+
+        while degree >= divisor_degree:
+            dividend ^= divisor << (degree - divisor_degree)
+            degree = dividend.bit_length() - 1
+
+        return dividend
 
     def __pow__(self, exp: int, mod: GF2Polynomial | None = None) -> GF2Polynomial:
         """Compute polynomial to some non-negative integer power, possibly modulo some polynomial.
@@ -506,11 +521,9 @@ class GF2Polynomial:
         Uses the Euclidean algorithm.
         """
 
-        left = f._value
-        right = g._value
+        left, right = f._value, g._value
         while right:
-            _, remainder = GF2Polynomial._divmod_values(left, right)
-            left, right = right, remainder
+            left, right = right, GF2Polynomial._remainder_value(left, right)
 
         return GF2Polynomial.from_number(left)
 
