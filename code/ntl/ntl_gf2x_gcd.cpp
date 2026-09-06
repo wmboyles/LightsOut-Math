@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -84,21 +85,27 @@ int main(int argc, char** argv)
         const auto right_bytes = read_polynomial();
 
         const auto conversion_started = std::chrono::steady_clock::now();
-        NTL::GF2X left;
-        NTL::GF2X right;
-        NTL::GF2XFromBytes(
-            left,
+        const auto left = NTL::GF2XFromBytes(
             left_bytes.data(),
             static_cast<long>(left_bytes.size()));
-        NTL::GF2XFromBytes(
-            right,
+        const auto right = NTL::GF2XFromBytes(
             right_bytes.data(),
             static_cast<long>(right_bytes.size()));
         const auto conversion_finished = std::chrono::steady_clock::now();
 
-        NTL::GF2X result;
-        NTL::GCD(result, left, right);
+        const auto result = NTL::GCD(left, right);
         const auto gcd_finished = std::chrono::steady_clock::now();
+
+        const long byte_count = NTL::NumBytes(result);
+        std::vector<unsigned char> result_bytes(static_cast<std::size_t>(byte_count));
+        if (byte_count > 0) {
+            NTL::BytesFromGF2X(result_bytes.data(), result, byte_count);
+        }
+        std::ostringstream encoded;
+        encoded << std::hex << std::setfill('0');
+        for (const auto byte : result_bytes) {
+            encoded << std::setw(2) << static_cast<unsigned int>(byte);
+        }
 
         const std::chrono::duration<double> conversion_time =
             conversion_finished - conversion_started;
@@ -107,6 +114,7 @@ int main(int argc, char** argv)
 
         std::cout << std::setprecision(9)
                   << "{\"degree\":" << NTL::deg(result)
+                  << ",\"gcd_bytes_hex\":\"" << encoded.str() << "\""
                   << ",\"conversion_seconds\":" << conversion_time.count()
                   << ",\"gcd_seconds\":" << gcd_time.count()
                   << ",\"peak_working_set_bytes\":" << peak_working_set()

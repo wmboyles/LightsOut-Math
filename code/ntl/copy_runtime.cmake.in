@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.20)
+if(POLICY CMP0207)
+    cmake_policy(SET CMP0207 NEW)
+endif()
+
+set(CMAKE_GET_RUNTIME_DEPENDENCIES_PLATFORM "windows+pe")
+set(CMAKE_GET_RUNTIME_DEPENDENCIES_TOOL "@_runtime_tool@")
+set(CMAKE_GET_RUNTIME_DEPENDENCIES_COMMAND "@NTL_RUNTIME_SCANNER@")
+set(search_directories "@_runtime_directories@")
+
+if(NOT EXISTS "${NTL_EXECUTABLE}")
+    message(FATAL_ERROR "NTL executable not found: ${NTL_EXECUTABLE}")
+endif()
+
+get_filename_component(destination "${NTL_EXECUTABLE}" DIRECTORY)
+get_filename_component(executable_name "${NTL_EXECUTABLE}" NAME)
+set(scan_directory "@CMAKE_CURRENT_BINARY_DIR@/runtime-scan")
+file(MAKE_DIRECTORY "${scan_directory}")
+
+# Scan away from bundled DLLs so a rebuild picks up updated toolchain libraries.
+set(scan_executable "${scan_directory}/${executable_name}")
+configure_file("${NTL_EXECUTABLE}" "${scan_executable}" COPYONLY)
+file(GET_RUNTIME_DEPENDENCIES
+    EXECUTABLES "${scan_executable}"
+    DIRECTORIES ${search_directories}
+    RESOLVED_DEPENDENCIES_VAR dependencies
+    UNRESOLVED_DEPENDENCIES_VAR unresolved
+    PRE_EXCLUDE_REGEXES "^[Aa][Pp][Ii]-[Mm][Ss]-" "^[Ee][Xx][Tt]-[Mm][Ss]-"
+    POST_EXCLUDE_REGEXES
+        "[/\\\\][Ss][Yy][Ss][Tt][Ee][Mm]32[/\\\\]"
+        "[/\\\\][Ss][Yy][Ss][Ww][Oo][Ww]64[/\\\\]"
+)
+file(REMOVE "${scan_executable}")
+
+if(unresolved)
+    message(FATAL_ERROR
+        "Missing runtime DLLs: ${unresolved}. "
+        "Set NTL_RUNTIME_DIRECTORIES to their installation directories.")
+endif()
+
+foreach(dependency IN LISTS dependencies)
+    file(COPY "${dependency}" DESTINATION "${destination}")
+endforeach()
+list(LENGTH dependencies dependency_count)
+message(STATUS "Staged ${dependency_count} runtime DLLs beside ${executable_name}")

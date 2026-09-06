@@ -1,6 +1,6 @@
 """Exact checks for the finite-support stabilization examples.
 
-Build ai_prototypes/ntl_gf2x_gcd.cpp against NTL before running this script.
+Build the shared native helper using code\\ntl\\README.md before running this script.
 """
 
 from __future__ import annotations

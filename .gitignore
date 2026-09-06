@@ -1,6 +1,9 @@
 # Python
 __pycache__/
 
+# Native NTL helper
+ntl_gf2x_gcd.exe
+
 # TeX intermediate build files
 *.aux
 *.out

@@ -1,6 +1,9 @@
 # AI prototypes
 
-Exploratory and exact verification code for the mathematical writeups.
+Exploratory and verification code for the mathematical writeups.
+AI-generated, not verified by humans.
+Code outside `ai_prototypes` must not depend on files inside it.
+Prototypes may depend on shared production code.
 Run scripts from the repository root, for example:
 
 ```powershell
@@ -28,5 +31,7 @@ python code\ai_prototypes\cn_experiments\verify_all.py
 
 The remaining scripts support the nullity bounds, multiprime stabilization,
 explicit symplectic examples, and known Wieferich-prime computations.
-`ntl_gf2x_gcd.exe` and Python bytecode are generated artifacts and are ignored;
-compile `ntl_gf2x_gcd.cpp` when the NTL-backed checks are needed.
+The production NTL bridge, C++ helper, and CMake build live in `code\ntl`.
+See `code\ntl\README.md` for build instructions before running NTL-backed checks.
+The default executable is `code\ntl\build\bin\ntl_gf2x_gcd.exe`.
+The build directory and Python bytecode are generated artifacts and are ignored.

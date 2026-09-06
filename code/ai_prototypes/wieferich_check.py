@@ -12,8 +12,8 @@ This script constructs A and B with the main invariant-basis Fibonacci
 helper and computes their exact GCD with NTL. It does not apply grid_nullity's
 arithmetic shortcuts.
 
-The script expects ntl_gf2x_gcd.exe beside this file. Compile
-ntl_gf2x_gcd.cpp against NTL, or specify its location with --ntl-executable.
+Build the shared helper using code\\ntl\\README.md. The default executable is
+code\\ntl\\build\\bin\\ntl_gf2x_gcd.exe; override it with --ntl-executable.
 """
 
 from __future__ import annotations
@@ -21,13 +21,10 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-import struct
-import subprocess
 from time import perf_counter
 
 from kernel_size import SAFE_WIEFERICH_PRIMES, _adjacent_fibonacci_invariant_pair
-
-DEFAULT_NTL_EXECUTABLE = Path(__file__).with_name("ntl_gf2x_gcd.exe")
+from ntl import DEFAULT_NTL_EXECUTABLE, packed_ntl_gcd
 
 
 def prime_factors(n: int) -> set[int]:
@@ -80,36 +77,6 @@ def _invariant_gcd_operands(m: int) -> tuple[int, int]:
         (current[0] + following[0])._value,
         (current[1] + following[1])._value,
     )
-
-
-def packed_ntl_gcd(
-    left: int,
-    right: int,
-    executable: Path = DEFAULT_NTL_EXECUTABLE,
-    threads: int = 1,
-) -> dict[str, int | float | bool]:
-    """Compute a packed GF(2) polynomial GCD with the NTL helper."""
-
-    if threads < 1:
-        raise ValueError("threads must be positive")
-    if not executable.is_file():
-        raise FileNotFoundError(f"NTL helper not found: {executable}")
-
-    left_bytes = left.to_bytes((left.bit_length() + 7) // 8, "little")
-    right_bytes = right.to_bytes((right.bit_length() + 7) // 8, "little")
-    payload = b"".join((
-        struct.pack("<Q", len(left_bytes)),
-        left_bytes,
-        struct.pack("<Q", len(right_bytes)),
-        right_bytes,
-    ))
-    completed = subprocess.run(
-        [executable, str(threads)],
-        input=payload,
-        capture_output=True,
-        check=True,
-    )
-    return json.loads(completed.stdout)
 
 
 def benchmark_grid_nullity_at_m_minus_one(

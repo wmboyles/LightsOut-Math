@@ -7,6 +7,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import ClassVar, Iterable, Iterator
 
+from ntl import ntl_gcd
+
 
 @dataclass(repr=False, frozen=True, init=False)
 class GF2Polynomial:
@@ -34,6 +36,11 @@ class GF2Polynomial:
     _SQUARE_TERM_THRESHOLD: ClassVar[int] = 64
     """Minimum term count for squaring packed coefficient bits."""
 
+    _NTL_GCD_DEGREE_THRESHOLD: ClassVar[int] = 100_000
+    """Polynomial degree at or beyond which GCD calculations will be done in NTL
+    rather than in Python.
+    """
+
     _value: int
 
     def __init__(self):
@@ -52,6 +59,20 @@ class GF2Polynomial:
         polynomial = object.__new__(cls)
         object.__setattr__(polynomial, "_value", n)
         return polynomial
+
+    @classmethod
+    def from_ntl(cls, coefficients: bytes) -> GF2Polynomial:
+        """Convert NTL's little-endian GF2X coefficient bytes to a polynomial."""
+
+        return cls.from_number(int.from_bytes(coefficients, "little"))
+
+    def to_ntl(self) -> bytes:
+        """Return coefficient bytes accepted by NTL's GF2XFromBytes.
+
+        Bit i is the coefficient of x^i. The zero polynomial is b"".
+        """
+
+        return self._value.to_bytes((self._value.bit_length() + 7) // 8, "little")
 
     @classmethod
     def from_degrees(cls, degrees: Iterable[int]) -> GF2Polynomial:
@@ -518,9 +539,15 @@ class GF2Polynomial:
     @staticmethod
     def gcd(f: GF2Polynomial, g: GF2Polynomial) -> GF2Polynomial:
         """Compute the greatest common divisor of two polynomials.
-
-        Uses the Euclidean algorithm.
         """
+
+        if f.is_zero:
+            return g
+        if g.is_zero or f == g:
+            return f
+
+        if max(f.degree, g.degree) >= GF2Polynomial._NTL_GCD_DEGREE_THRESHOLD:
+            return GF2Polynomial.from_ntl(ntl_gcd(f.to_ntl(), g.to_ntl()))
 
         left, right = f._value, g._value
         while right:

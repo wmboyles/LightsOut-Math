@@ -420,7 +420,7 @@ def grid_nullity(n: int) -> int:
     if l == 1 and signed_order_2(p)**2 > p:
         return 0
 
-    """We proved that by factoring b into p1^e1 * p2^e2 ... pn^en,
+    """We proved that by factoring odd b into p1^e1 * p2^e2 ... pn^en,
     the distinct set of primes in the factorization (aka support) S = {p1, p2, ..., pn}
     gives us maximum values of each ei after which the result of d will not change.
     """
