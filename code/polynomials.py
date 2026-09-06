@@ -36,7 +36,7 @@ class GF2Polynomial:
     _SQUARE_TERM_THRESHOLD: ClassVar[int] = 64
     """Minimum term count for squaring packed coefficient bits."""
 
-    _NTL_GCD_DEGREE_THRESHOLD: ClassVar[int] = 100_000
+    _NTL_GCD_DEGREE_THRESHOLD: ClassVar[int] = 50_000
     """Polynomial degree at or beyond which GCD calculations will be done in NTL
     rather than in Python.
     """
