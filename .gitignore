@@ -13,3 +13,6 @@ ntl_gf2x_gcd.exe
 *blx.bib
 *.blg
 *.bbl
+
+# Lean libraries
+.lake
