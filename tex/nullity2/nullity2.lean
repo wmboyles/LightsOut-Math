@@ -169,7 +169,8 @@ lemma changedValue_symmDiff
     -/
     abel
 
-/-- Adjaency vector on G at V in 𝔽₂.
+/-- Adjaency operator of G, which maps each vector to the vector
+whose values at each vertex is the same of the values at its neighbors.
 It is a linear transformation.
 -/
 def adjVec
@@ -177,6 +178,7 @@ def adjVec
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2) where
   toFun x := fun v => ∑ u, if G.Adj v u then x u else 0
+  -- adjVec (x + y) = adjVec x + adjVec y
   map_add' x y := by
     ext v
     simp only [Pi.add_apply]
@@ -185,6 +187,7 @@ def adjVec
     intro u hu
     by_cases huv : G.Adj v u <;>
       simp [huv]
+  -- adjVec (a*x) = a * adjVec x
   map_smul' a x := by
     ext v
     simp only [Pi.smul_apply]
@@ -206,7 +209,7 @@ def phiVec
   : V → ZMod 2
   := x + adjVec G x
 
-/- Φ G tells us, for a simple graph G, if some vertices are pressed
+/-- Φ G tells us, for a simple graph G, if some vertices are pressed
 which vertices will change state.
 Φ G is linear because id and adjVec are linear.
 -/
@@ -215,6 +218,13 @@ def Φ
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)
   := LinearMap.id + adjVec G
+
+/-- Φ and id + adjVec are the same function. -/
+theorem phi_eq_id_add_adjVec
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  : Φ G = LinearMap.id + adjVec G
+  := by rfl
 
 /-- Φ and changedValue represent the same concept:
 Which vertices change state when some are pressed. -/
@@ -268,9 +278,9 @@ theorem phi_pressedValue_eq_phiSet
     funext v
     rw [phi_pressedValue_eq_changedValue]
     simp only [phiSet, pressedValue, Finset.mem_filter]
-    rcases zmod2_cases (changedValue G S v) with h | h
-    · simp [h]
-    · simp [h]
+    rcases zmod2_cases (changedValue G S v) with h1 | h2
+    · simp [h1]
+    · simp [h2]
 
 /-- Pressing a single vertex changes everything in the closed neighborhood -/
 lemma phiSet_singleton
@@ -340,23 +350,23 @@ theorem pressSequence_eq_phiSet_pressedSet
       simp only [pressSequence, pressedSet]
       rw [ih (press G S v), press, phiSet_symmDiff, phiSet_singleton, symmDiff_assoc]
 
-/- With our theorems so far, we proved the following diagram commutes
+/-- With our theorems so far, we proved the following diagram commutes.
 
-    *--------> State V -----pressedValue-----> V → ZMod 2
-    |            |                                  |
-    |            |                                  |
-    |         phiSet G                             Φ G
-pressedSet       |                                  |
-    |            |                                  |
-    |            V                                  V
-    |          State V -----pressedValue-----> V → ZMod 2
-    |            ^
-    |            |
-    |            |
-    |       pressSequence G ∅
-    |            |
-    |            |
-    *--------- List V
+        *--------> State V -----pressedValue-----> V → ZMod 2
+        |            |                                  |
+        |            |                                  |
+        |         phiSet G                             Φ G
+    pressedSet       |                                  |
+        |            |                                  |
+        |            V                                  V
+        |          State V -----pressedValue-----> V → ZMod 2
+        |            ^
+        |            |
+        |            |
+        |       pressSequence G ∅
+        |            |
+        |            |
+        *--------- List V
 
 * Starting from an empty initial state, pressSequence and phiSet both tell us
   which verticies changed state, given the vertices pressed.
@@ -368,20 +378,17 @@ pressedSet       |                                  |
 Now that we have linear transformations over vectors, we can introduce linear algebra concepts.
 Most importantly, we can look at the kernel and its dimension.
 -/
-
-theorem phi_eq_id_add_adjVec
-  {V : Type*} [Fintype V] [DecidableEq V]
-  (G : SimpleGraph V) [DecidableRel G.Adj]
-  : Φ G = LinearMap.id + adjVec G
-  := by
-    ext x v
-    rfl
-
--- nullity(G) = rank ker Φ G
 noncomputable def nullity
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : ℕ
   := Module.finrank (ZMod 2) (Φ G).ker
+
+/-- Another way to think about the nullity is as the kernel of I + Adj_G. -/
+theorem nullity_eq_finrank_ker_id_add_adjVec
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  : nullity G = Module.finrank (ZMod 2) (LinearMap.id + adjVec G).ker
+  := by rfl
 
 -- TODO: Even parity cover is ker Φ G
