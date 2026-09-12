@@ -3,10 +3,10 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
--- State of a graph: Which verticies are pressed or on, depending on context
+/-- State of a graph: Which verticies are pressed or on, depending on context -/
 abbrev State (V : Type*) := Finset V
 
--- A vertex v and all its neighbors
+/-- A vertex v and all its neighbors -/
 def closedNeighborhood
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -14,7 +14,7 @@ def closedNeighborhood
   : State V
   := Finset.univ.filter (fun u => u = v ∨ G.Adj v u)
 
--- Given an initial state and one pressed vertex, give the final state
+/-- Given an initial state and one pressed vertex, give the final state -/
 def press
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -23,7 +23,7 @@ def press
   : State V
   := symmDiff S (closedNeighborhood G v)
 
--- Pressing a vertex twice in a row does nothing
+/-- Pressing a vertex twice in a row does nothing -/
 theorem press_press
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -32,7 +32,7 @@ theorem press_press
   : press G (press G S v) v = S
   := by simp only [press, symmDiff_symmDiff_cancel_right]
 
--- The order of presses is irrelevant
+/-- The order of presses is irrelevant -/
 theorem press_comm
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -53,7 +53,7 @@ theorem press_comm
       symmDiff_comm (closedNeighborhood G u) (closedNeighborhood G v)
     ]
 
--- A sequence of presses from a starting state gives a resulting state
+/-- A sequence of presses from a starting state gives a resulting state -/
 def pressSequence
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -62,14 +62,14 @@ def pressSequence
   | [] => S
   | v :: vs => pressSequence G (press G S v) vs
 
--- The unique set of vertices (with cancellation of repeats) pressed
+/-- The unique set of vertices (with cancellation of repeats) pressed -/
 def pressedSet
   {V : Type*} [DecidableEq V] :
   List V → State V
   | []      => ∅
   | v :: vs => symmDiff {v} (pressedSet vs)
 
--- Whether a vertex v was pressed, given a set of pressed vertices
+/-- Whether a vertex v was pressed, given a set of pressed vertices -/
 def pressedValue
   {V : Type*} [DecidableEq V]
   (S : State V)
@@ -77,7 +77,7 @@ def pressedValue
   : ZMod 2
   := if v ∈ S then 1 else 0
 
--- Helper lemma that in 𝔽₂, a value is either 0 or 1
+/-- In 𝔽₂, a value is either 0 or 1 -/
 lemma zmod2_cases
   (x : ZMod 2)
   : x = 0 ∨ x = 1
@@ -86,7 +86,7 @@ lemma zmod2_cases
     · exact Or.inl rfl
     · exact Or.inr rfl
 
-/- pressedValue is linear with respect to symmetric difference
+/-- pressedValue is linear with respect to symmetric difference
 pressedValue (S1 ∆ S2) v = (pressedValue S1 v) ∆ (pressedValue S2 v)
 -/
 lemma pressedValue_symmDiff
@@ -101,7 +101,7 @@ lemma pressedValue_symmDiff
       by_cases h2 : v ∈ S2 <;>
         simp [pressedValue, Finset.symmDiff_def, h1, h2, h]
 
-/- Whether a vertex v changes state after the vertices in S are pressed.
+/-- Whether a vertex v changes state after the vertices in S are pressed.
 Vertex v changes state exactly when and odd number of vertices
 in its closed neighborhood are pressed.
 -/
@@ -112,7 +112,7 @@ def changedValue
   : ZMod 2
   := pressedValue S v + ∑ u, if G.Adj v u then pressedValue S u else 0
 
-/- changedValue is linear with respect to symmetric difference
+/-- changedValue is linear with respect to symmetric difference
 changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
 -/
 lemma changedValue_symmDiff
@@ -169,7 +169,32 @@ lemma changedValue_symmDiff
     -/
     abel
 
-/- phiVec G x gives a vector representing the state of the graph after applying the
+/-- Adjaency vector on G at V in 𝔽₂.
+It is a linear transformation.
+-/
+def adjVec
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2) where
+  toFun x := fun v => ∑ u, if G.Adj v u then x u else 0
+  map_add' x y := by
+    ext v
+    simp only [Pi.add_apply]
+    rw [←Finset.sum_add_distrib]
+    apply Finset.sum_congr rfl
+    intro u hu
+    by_cases huv : G.Adj v u <;>
+      simp [huv]
+  map_smul' a x := by
+    ext v
+    simp only [Pi.smul_apply]
+    rw [Finset.smul_sum]
+    apply Finset.sum_congr rfl
+    intro u hu
+    by_cases huv : G.Adj v u <;>
+      simp [huv]
+
+/-- phiVec G x gives a vector representing the state of the graph after applying the
 Lights Out operation on state vector x.
 For each vertex v, its value is the sum in 𝔽₂ of x at v
 and the values of x at all verticies adjacent to v
@@ -179,91 +204,20 @@ def phiVec
   (G : SimpleGraph V) [DecidableRel G.Adj]
   (x : V → ZMod 2)
   : V → ZMod 2
-  := fun v => x v + ∑ u : V, if G.Adj v u then x u else 0
+  := x + adjVec G x
 
 /- Φ G tells us, for a simple graph G, if some vertices are pressed
 which vertices will change state.
-The definition also proves that Φ G is linear.
+Φ G is linear because id and adjVec are linear.
 -/
 def Φ
   {V : Type*} [Fintype V] [DecidableEq V]
-  (G : SimpleGraph V) [DecidableRel G.Adj] :
-  (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)
-  := {
-    -- Define Φ = phiVec G
-    toFun := phiVec G
-    -- Φ is linear in addition: Φ (x + y) = (Φ x) + (Φ y)
-    map_add' := by
-      -- Let x and y configurations (functions V → 𝔽₂)
-      intro x y
-      -- It suffices to show that these functions agree at every vertex v ∈ V
-      funext v
-      -- Φ (x + y) (v)
-      -- = phiVec G (x + y) (v)
-      -- = (x+y)(v) + ∑ u : V, if u~v then (x+y)(u) else 0
-      -- = x(v) + y(v) + ∑ u : V, if u~v then x(u) + y(u) else 0
-      simp only [phiVec, Pi.add_apply]
-      -- We need to prove that we can break up the sum and simplify to
-      -- = x(v) + y(v) + (∑ u : V, if u~v then x(u) else 0) + (∑ u : V, if then y(u) u~v else 0)
-      have h :
-        (∑ u : V, if G.Adj v u then (x u + y u) else 0) =
-          (∑ u : V, if G.Adj v u then x u else 0) +
-          (∑ u : V, if G.Adj v u then y u else 0) := by
-        -- We want rewrite the left side
-        -- ∑ u : V, if u~v then (x(u) + y(u)) else 0
-        -- into ∑ u : V (if u~v then x(u) else 0) + (if u~v then y(u) else 0)
-        calc
-          (∑ u : V, if G.Adj v u then (x u + y u) else 0) =
-          ∑ u : V, ((if G.Adj v u then x u else 0) + (if G.Adj v u then y u else 0))
-          := by
-            -- We show the above rewrite is true by showing the sums are equal at each term
-            apply Finset.sum_congr rfl
-            -- Let u ∈ V
-            intro u hu
-            -- If u~v, then x(u) + y(u) = x(u) + y(u), a tautolgy
-            -- Otherwise, 0 + 0 = 0, which is also true
-            by_cases huv : G.Adj v u <;> simp [huv]
-          -- Now we want to split ∑ u : V (if u~v x(u) else 0) + (if u~v y(u) else 0) into two sums
-          _ = (∑ u : V, if G.Adj v u then x u else 0) + (∑ u : V, if G.Adj v u then y u else 0)
-              := by
-                -- This is true by distributivity of finite sums over addition
-                rw [Finset.sum_add_distrib]
-      rw [h]
-      -- = x(v) + y(v) + (∑ u : V (if u~v x(u) else 0)) + (∑ u : V (if u~v y(u) else 0))
-      -- = Φ(x)(v) + Φ(y)(v) by associativity and commutativity of addition
-      abel
-    -- phiVec G is commutative under scalar multiplication:
-    -- phiVec G (a • x) = a • (phiVec G x)
-    map_smul' := by
-      -- Let a ∈ 𝔽₂ and x be a configuration (function V → 𝔽₂)
-      intro a x
-      -- It suffices to show that these functions agree at every vertex v ∈ V
-      funext v
-      -- Φ (a • x) (v)
-      -- = phiVec G (a • x) (v)
-      -- = (a • x)(v) + ∑ u : V, if u~v then (a • x)(u) else 0
-      -- = a • x(v) + ∑ u : V, if u~v a • x(u) else 0
-      simp only [phiVec, Pi.smul_apply, RingHom.id_apply]
-      -- We need to prove that we pull the scalar a through the sum to get
-      -- = a • x(v) + a • ∑ u : V, if u~v then x(u) else 0
-      have h :
-          (∑ u : V, if G.Adj v u then a • x u else 0) =
-            a • (∑ u : V, if G.Adj v u then x u else 0) := by
-        rw [Finset.smul_sum]
-        -- We show the above rewrite is true by showing the sums are equal at each term
-        apply Finset.sum_congr rfl
-        -- Let u ∈ V
-        intro u hu
-        -- If u~v, then a • x(u) = a • x(u), a tautology
-        -- Otherwise, a • 0 = a • 0, also a tautology
-        by_cases huv : G.Adj v u <;> simp [huv]
-      -- = a • x(v) + a • ∑ u : V, if u~v then x(u) else 0
-      -- = a • (x(v) + ∑ u : V, if u~v then x(u) else 0)
-      -- = a • Φ(x)(v)
-      rw [h, smul_add]
-  }
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)
+  := LinearMap.id + adjVec G
 
--- Φ and changedValue represent the same concept: which vertices change state when some are pressed
+/-- Φ and changedValue represent the same concept:
+Which vertices change state when some are pressed. -/
 theorem phi_pressedValue_eq_changedValue
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -271,7 +225,7 @@ theorem phi_pressedValue_eq_changedValue
   : Φ G (pressedValue S) = changedValue G S
   := by rfl
 
--- Φ and phiVec are the same function
+/-- Φ and phiVec are the same function -/
 theorem phi_phiVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -279,7 +233,7 @@ theorem phi_phiVec
   : Φ G x = phiVec G x
   := by rfl
 
-/- Given a simple graph G and set of pressed vertices S,
+/-- Given a simple graph G and set of pressed vertices S,
 Give back the set of vertices that change state.
 -/
 def phiSet
@@ -289,7 +243,7 @@ def phiSet
   : State V
   := Finset.univ.filter (fun v => changedValue G S v = 1)
 
--- phiSet is linear with respect to symmetric difference
+/-- phiSet is linear with respect to symmetric difference -/
 lemma phiSet_symmDiff
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -303,7 +257,8 @@ lemma phiSet_symmDiff
     rcases zmod2_cases (changedValue G S2 v) with h2 | h2 <;>
     simp [h1, h2]
 
--- Φ and phiSet represent the same concept: which verticies change when some are pressed
+/-- Φ and phiSet represent the same concept:
+Which verticies change when some are pressed -/
 theorem phi_pressedValue_eq_phiSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -317,7 +272,7 @@ theorem phi_pressedValue_eq_phiSet
     · simp [h]
     · simp [h]
 
--- Pressing a single vertex changes everything in the closed neighborhood
+/-- Pressing a single vertex changes everything in the closed neighborhood -/
 lemma phiSet_singleton
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -360,7 +315,7 @@ lemma phiSet_singleton
         Decidable.not_not, zero_add, false_or, ite_false, ite_eq_left_iff, zero_ne_one, imp_false]
       exact G.adj_comm u v
 
-/- Pressing a sequence of verticies is the same as just
+/-- Pressing a sequence of verticies is the same as just
 pressing the ones pressed an odd number of times.
 The order of presses also doesn't matter.
 -/
@@ -413,6 +368,14 @@ pressedSet       |                                  |
 Now that we have linear transformations over vectors, we can introduce linear algebra concepts.
 Most importantly, we can look at the kernel and its dimension.
 -/
+
+theorem phi_eq_id_add_adjVec
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  : Φ G = LinearMap.id + adjVec G
+  := by
+    ext x v
+    rfl
 
 -- nullity(G) = rank ker Φ G
 noncomputable def nullity
