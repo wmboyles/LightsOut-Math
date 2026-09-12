@@ -112,7 +112,6 @@ def changedValue
   : ZMod 2
   := clickedValue S v + ∑ u, if G.Adj v u then clickedValue S u else 0
 
-
 /- changedValue is linear with respect to symmetric difference
 changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
 -/
@@ -329,7 +328,7 @@ State V -----clickedValue-----> V → ZMod 2
 
 
 -- Clicking a single vertex changes everything in the closed neighborhood
-theorem phiSet_singleton
+lemma phiSet_singleton
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   (v : V)
@@ -366,10 +365,15 @@ theorem phiSet_singleton
       simp only [huv, SimpleGraph.irrefl] at hadj
     by_cases huv : u = v
     · have hnotadj : ¬ G.Adj v u := fun hadj => hdisj ⟨huv, hadj⟩
-      simp only [huv, SimpleGraph.irrefl, add_zero, or_false, ite_false, ite_true]
-    · simp only [huv, Decidable.not_not, zero_add, false_or, ite_false, ite_eq_left_iff, zero_ne_one, imp_false]
+      simp [huv]
+    · simp only [huv,
+        Decidable.not_not, zero_add, false_or, ite_false, ite_eq_left_iff, zero_ne_one, imp_false]
       exact G.adj_comm u v
 
+/- Clicking a sequence of verticies is the same as just
+pressing the ones clicked an odd number of times.
+The order of clicks also doesn't matter.
+-/
 theorem pressSequence_eq_pressedSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -378,17 +382,18 @@ theorem pressSequence_eq_pressedSet
   : pressSequence G S xs = symmDiff S (phiSet G (pressedSet xs))
   := by
     induction xs generalizing S with
+    -- For an empty list, we have an empty set, and nothing changes
     | nil =>
-      have hphi :
-          phiSet G (∅ : State V) = ∅ := by
+      have hphi : phiSet G (∅ : State V) = ∅ := by
         ext u
         simp [phiSet, changedValue, clickedValue]
       simp [pressSequence, pressedSet, hphi, Finset.symmDiff_def]
+    -- Assume that pressing list vs satisfies our goal (ih).
+    -- If we press v and then vs, our goal is also satisfied
+    -- phiSet_singleton shows what happens for one vertex
     | cons v vs ih =>
       simp only [pressSequence, pressedSet]
-      rw [ih (press G S v)]
-      simp only [press]
-      rw [phiSet_symmDiff, phiSet_singleton, symmDiff_assoc]
+      rw [ih (press G S v), press, phiSet_symmDiff, phiSet_singleton, symmDiff_assoc]
 
 #exit
 
