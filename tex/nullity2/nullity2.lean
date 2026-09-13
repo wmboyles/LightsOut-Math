@@ -171,8 +171,7 @@ lemma changedValue_eq_closedNeighborhood_card
       intro x hx
       exact hpoint x
     rw [hsplit]
-    rw [Finset.sum_boole]
-    simp
+    simp only [Finset.sum_boole]
     have hvcard :
         (({x | x = v ∧ x ∈ S} : Finset V).card : ZMod 2)
           = if v ∈ S then 1 else 0 := by
