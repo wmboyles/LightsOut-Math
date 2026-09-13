@@ -108,9 +108,128 @@ in its closed neighborhood are pressed.
 def changedValue
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
-  (S : State V) (v : V)
+  (S : State V)
+  (v : V)
   : ZMod 2
   := pressedValue S v + ∑ u, if G.Adj v u then pressedValue S u else 0
+
+/-- changedValue is really a sum of indicators of the closed neighborhood
+-/
+-- TODO: Please simplify this
+lemma changedValue_eq_closedNeighborhood_card
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  (S : State V)
+  (v : V)
+  : changedValue G S v = ((closedNeighborhood G v ∩ S).card : ZMod 2)
+  := by
+    simp only [closedNeighborhood, changedValue, pressedValue]
+    rw [Finset.card_eq_sum_ones]
+    -- rw [Finset.sum_filter]
+    have hfinset :
+      ({u | u = v ∨ G.Adj v u} : Finset V) ∩ S
+        =
+      ({x | (x = v ∨ G.Adj v x) ∧ x ∈ S} : Finset V) := by
+        ext x
+        simp
+    have hsum
+      : (∑ x ∈ ({u | u = v ∨ G.Adj v u} : Finset V) ∩ S, (1 : ZMod 2))
+      = ∑ x, if (x = v ∨ G.Adj v x) ∧ x ∈ S then (1 : ZMod 2) else 0
+      := by
+        simp only [Finset.sum_const, nsmul_eq_mul, mul_one, Finset.sum_boole]
+        rw [hfinset]
+    simp only [Nat.cast_sum, Nat.cast_one]
+    rw [hsum]
+    have hpoint :
+        ∀ x,
+          (if (x = v ∨ G.Adj v x) ∧ x ∈ S
+            then (1 : ZMod 2) else 0)
+          =
+          (if x = v ∧ x ∈ S
+            then (1 : ZMod 2) else 0)
+          +
+          (if G.Adj v x ∧ x ∈ S
+            then (1 : ZMod 2) else 0) := by
+      intro x
+      by_cases hx : x = v
+      · subst x
+        simp [SimpleGraph.irrefl]
+      · by_cases ha : G.Adj v x
+        · simp [hx, ha]
+        · simp [hx, ha]
+    have hsplit :
+        (∑ x, if (x = v ∨ G.Adj v x) ∧ x ∈ S
+          then (1 : ZMod 2) else 0)
+        =
+        (∑ x, if x = v ∧ x ∈ S
+          then (1 : ZMod 2) else 0)
+        +
+        ∑ x, if G.Adj v x ∧ x ∈ S
+          then (1 : ZMod 2) else 0 := by
+      rw [← Finset.sum_add_distrib]
+      apply Finset.sum_congr rfl
+      intro x hx
+      exact hpoint x
+    rw [hsplit]
+    rw [Finset.sum_boole]
+    simp
+    have hvcard :
+        (({x | x = v ∧ x ∈ S} : Finset V).card : ZMod 2)
+          = if v ∈ S then 1 else 0 := by
+      by_cases h : v ∈ S
+      · have hset :
+          ({x | x = v ∧ x ∈ S} : Finset V) = {v} := by
+          apply Finset.ext
+          intro x
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and,
+            Finset.mem_singleton]
+          constructor
+          · intro hx
+            exact hx.1
+          · intro hx
+            subst x
+            exact ⟨rfl, h⟩
+        rw [hset]
+        simp [h]
+      · have hset :
+          ({x | x = v ∧ x ∈ S} : Finset V) = ∅ := by
+          apply Finset.ext
+          intro x
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and,
+            Finset.notMem_empty]
+          constructor
+          · intro hx
+            exact h (hx.1 ▸ hx.2)
+          · intro hx
+            exact False.elim hx
+        rw [hset]
+        simp [h]
+    have hneigh :
+        (∑ u, if G.Adj v u then
+          if u ∈ S then (1 : ZMod 2) else 0
+        else 0)
+          =
+        (({x | G.Adj v x ∧ x ∈ S} : Finset V).card : ZMod 2) := by
+      have hpoint :
+          ∀ u : V,
+            (if G.Adj v u then
+              if u ∈ S then (1 : ZMod 2) else 0
+            else 0)
+            =
+            (if G.Adj v u ∧ u ∈ S then (1 : ZMod 2) else 0) := by
+        intro u
+        by_cases h₁ : G.Adj v u <;> by_cases h₂ : u ∈ S <;> simp [h₁, h₂]
+      rw [show
+        (∑ u, if G.Adj v u then
+          if u ∈ S then (1 : ZMod 2) else 0
+        else 0)
+          =
+        ∑ u, if G.Adj v u ∧ u ∈ S then (1 : ZMod 2) else 0 by
+            apply Finset.sum_congr rfl
+            intro u hu
+            exact hpoint u]
+      rw [Finset.sum_boole]
+    rw [hvcard, hneigh]
 
 /-- changedValue is linear with respect to symmetric difference
 changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
@@ -391,4 +510,43 @@ theorem nullity_eq_finrank_ker_id_add_adjVec
   : nullity G = Module.finrank (ZMod 2) (LinearMap.id + adjVec G).ker
   := by rfl
 
--- TODO: Even parity cover is ker Φ G
+/-- An even parity cover of a graph G is a subset of verticies S
+such that the closed neighborhood of every vertex in G contains
+an even number of vertices in S.
+-/
+def evenParityCover
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  (S : State V)
+  : Prop
+  := ∀ v : V, Even (closedNeighborhood G v ∩ S).card
+
+/-- Elements of ker Φ G correspond exactly to even parity covers of G -/
+-- TODO: Clean this up if possible
+theorem mem_ker_iff_evenParityCover
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  (S : State V)
+  : pressedValue S ∈ (Φ G).ker ↔ evenParityCover G S
+  := by
+  constructor
+  · intro hker v
+    have hzero : Φ G (pressedValue S) = 0 := by
+      exact hker
+    have hzero' : changedValue G S = 0 := by
+      rw [← phi_pressedValue_eq_changedValue]
+      exact hzero
+    have hv : changedValue G S v = 0 := by
+      exact congrFun hzero' v
+    rw [changedValue_eq_closedNeighborhood_card] at hv
+    exact (ZMod.natCast_eq_zero_iff_even).mp hv
+  · intro hcover
+    change Φ G (pressedValue S) = 0
+    rw [phi_pressedValue_eq_changedValue]
+    funext v
+    rw [changedValue_eq_closedNeighborhood_card]
+    simp only [Pi.zero_apply]
+    -- The even-parity-cover condition gives exactly the required
+    -- zero modulo 2 condition.
+    rw [ZMod.natCast_eq_zero_iff_even]
+    exact hcover v
