@@ -416,11 +416,8 @@ def tiledSize (n k : ℕ)
   := n*k + k - 1
 
 /-- Dimension of the kernel of the Lights Out operator on an `n` by `m` grid. -/
-noncomputable def nullityGrid (n m : ℕ)
-  : ℕ
-  := by
-    classical
-    exact nullity (gridGraph n m)
+noncomputable def nullityGrid (n m : ℕ) : ℕ :=
+  Module.finrank (ZMod 2) (gridPhi n m).ker
 
 /-- An injective linear transfer between vector spaces that intertwines two
 operators. For Lights Out operators, distinct quiet patterns remain quiet and distinct. -/
@@ -436,26 +433,36 @@ structure PressLift
     /-- Distinct source patterns remain distinct after transfer. -/
     injective : Function.Injective map
 
+/-- Restrict a press lift to quiet patterns in the source and target. -/
+def PressLift.kerMap
+  {V W : Type*}
+  {A : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)}
+  {B : (W → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2)}
+  (L : PressLift A B) : A.ker →ₗ[ZMod 2] B.ker :=
+  (L.map.domRestrict A.ker).codRestrict B.ker (by
+    intro x
+    change B (L.map x.1) = 0
+    simpa only [LinearMap.comp_apply, (LinearMap.mem_ker.mp x.2), map_zero]
+      using congrArg (fun f => f x.1) L.commutes)
+
+/-- The kernel map preserves distinct quiet patterns. -/
+lemma PressLift.kerMap_injective
+  {V W : Type*}
+  {A : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)}
+  {B : (W → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2)}
+  (L : PressLift A B) : Function.Injective L.kerMap := by
+  intro x y h
+  apply Subtype.ext
+  exact L.injective (congrArg Subtype.val h)
+
 /-- A press lift embeds the kernel of the smaller operator into the larger kernel. -/
 lemma PressLift.exists_injective_kerMap
   {V W : Type*}
   {A : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)}
   {B : (W → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2)}
   (L : PressLift A B)
-  : ∃ f : A.ker →ₗ[ZMod 2] B.ker, Function.Injective f
-  := by
-    let f : A.ker →ₗ[ZMod 2] B.ker :=
-      (L.map.domRestrict A.ker).codRestrict B.ker (by
-        intro x
-        change B (L.map x.1) = 0
-        have hx : A x.1 = 0 := x.2
-        have hc := congrArg (fun f => f x.1) L.commutes
-        simpa only [LinearMap.comp_apply, hx, map_zero] using hc)
-    refine ⟨f, ?_⟩
-    intro x y h
-    apply Subtype.ext
-    apply L.injective
-    exact congrArg Subtype.val h
+  : ∃ f : A.ker →ₗ[ZMod 2] B.ker, Function.Injective f :=
+  ⟨L.kerMap, L.kerMap_injective⟩
 
 /-- A press lift cannot decrease the nullity of a finite target. -/
 lemma PressLift.finrank_ker_le
@@ -464,9 +471,7 @@ lemma PressLift.finrank_ker_le
   {B : (W → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2)}
   (L : PressLift A B)
   : Module.finrank (ZMod 2) A.ker ≤ Module.finrank (ZMod 2) B.ker
-  := by
-    rcases L.exists_injective_kerMap with ⟨f, hf⟩
-    exact LinearMap.finrank_le_finrank_of_injective hf
+  := LinearMap.finrank_le_finrank_of_injective L.kerMap_injective
 
 /-- The adjacency sum in a Cartesian product is the sum along its two coordinates. -/
 private lemma boxProd_adj_sum
@@ -507,14 +512,15 @@ private def gridPress
   x p + (∑ a, if G.Adj p.1 a then x (a, p.2) else 0) +
     ∑ b, if H.Adj p.2 b then x (p.1, b) else 0
 
-/-- Applying `Φ` to a Cartesian product equals its coordinate-wise press sum. -/
-private lemma phi_boxProd_apply
+/-- Applying `Φ` to a Cartesian product gives its coordinate-wise press function. -/
+private lemma phi_boxProd
     {V W : Type*} [Fintype V] [Fintype W] [DecidableEq V] [DecidableEq W]
     (G : SimpleGraph V) (H : SimpleGraph W)
     [DecidableRel G.Adj] [DecidableRel H.Adj]
     [DecidableRel (G □ H).Adj]
-    (x : V × W → ZMod 2) (i : V) (j : W) :
-    (Φ (G □ H) x) (i, j) = gridPress G H x (i, j) := by
+    (x : V × W → ZMod 2) :
+    Φ (G □ H) x = fun p => gridPress G H x p := by
+  funext ⟨i, j⟩
   change x (i, j) + (∑ p, if (G □ H).Adj (i, j) p then x p else 0) = _
   rw [boxProd_adj_sum]
   simp only [gridPress]
@@ -578,23 +584,22 @@ private def firstTile (n k : ℕ) (hk : 0 < k) (i : Fin n) :
     Fin (tiledSize n k) :=
   ⟨i.val, lt_of_lt_of_le i.isLt (le_tiledSize n k hk)⟩
 
+/-- Folding a vertex in the first tile recovers its original coordinate. -/
+private lemma foldIndex_firstTile (n k : ℕ) (hk : 0 < k) (i : Fin n) :
+    MirroredPath.foldIndex n k (firstTile n k hk i) = some i := by
+  simpa [firstTile] using
+    MirroredPath.foldIndex_first n k (firstTile n k hk i)
+      (by simp [firstTile])
+
 /-- The first grid tile retains the input, making the reflected grid map injective. -/
 private lemma mirrorGridMap_injective
     (n m k₁ k₂ : ℕ) (hk₁ : 0 < k₁) (hk₂ : 0 < k₂) :
     Function.Injective (mirrorGridMap n m k₁ k₂) := by
   intro x y h
   funext ⟨i, j⟩
-  have hi : MirroredPath.foldIndex n k₁ (firstTile n k₁ hk₁ i) = some i := by
-    simpa [firstTile] using
-      MirroredPath.foldIndex_first n k₁ (firstTile n k₁ hk₁ i)
-        (by simp [firstTile])
-  have hj : MirroredPath.foldIndex m k₂ (firstTile m k₂ hk₂ j) = some j := by
-    simpa [firstTile] using
-      MirroredPath.foldIndex_first m k₂ (firstTile m k₂ hk₂ j)
-        (by simp [firstTile])
   have hv := congrFun h (firstTile n k₁ hk₁ i, firstTile m k₂ hk₂ j)
-  simpa only [mirrorGridMap, foldedGrid, LinearMap.coe_mk, AddHom.coe_mk, hi, hj,
-    Option.elim_some] using hv
+  simpa only [mirrorGridMap, foldedGrid, LinearMap.coe_mk, AddHom.coe_mk,
+    foldIndex_firstTile, Option.elim_some] using hv
 
 /-- The grid fold commutes with coordinate-wise press sums. -/
 private lemma mirrorGridMap_gridPress
@@ -635,18 +640,11 @@ noncomputable def mirrorGridPressLift
     apply LinearMap.ext
     intro x
     funext ⟨i, j⟩
-    change (Φ ((SimpleGraph.pathGraph (tiledSize n k₁)).boxProd
-        (SimpleGraph.pathGraph (tiledSize m k₂))) (mirrorGridMap n m k₁ k₂ x))
-        (i, j) =
-      (mirrorGridMap n m k₁ k₂
-        (Φ ((SimpleGraph.pathGraph n).boxProd (SimpleGraph.pathGraph m)) x)) (i, j)
-    rw [phi_boxProd_apply]
-    have hsmall :
-        Φ ((SimpleGraph.pathGraph n).boxProd (SimpleGraph.pathGraph m)) x =
-          fun p => gridPress (SimpleGraph.pathGraph n) (SimpleGraph.pathGraph m) x p := by
-      funext ⟨a, b⟩
-      exact phi_boxProd_apply (SimpleGraph.pathGraph n) (SimpleGraph.pathGraph m) x a b
-    rw [hsmall]
+    change (Φ (gridGraph (tiledSize n k₁) (tiledSize m k₂))
+        (mirrorGridMap n m k₁ k₂ x)) (i, j) =
+      (mirrorGridMap n m k₁ k₂ (Φ (gridGraph n m) x)) (i, j)
+    unfold gridGraph
+    rw [phi_boxProd, phi_boxProd]
     exact mirrorGridMap_gridPress n m k₁ k₂ x i j
   injective := mirrorGridMap_injective n m k₁ k₂ hk₁ hk₂
 

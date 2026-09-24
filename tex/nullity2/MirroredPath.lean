@@ -169,30 +169,25 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
           (if h : s + 1 < n then x ⟨s + 1, h⟩ else 0) = _
       rw [hprev, hnext, add_comm]
     · -- At a separator, mirrored neighboring values cancel in characteristic two.
-      have hgap : r = n ∨ r = 2 * n + 1 := by omega
-      rcases hgap with he | he
+      rcases (show r = n ∨ r = 2 * n + 1 by omega) with he | he
       · subst r
         rw [word_gap n (pathAdj n x) n (by omega) (by omega)]
-        have hleft : word n x (n - 1) = x ⟨n - 1, by omega⟩ :=
-          word_front n x _ (by omega)
-        have hright : word n x (n + 1) = x ⟨2 * n - (n + 1), by omega⟩ :=
-          word_back n x _ (by omega)
         simp only [ite_eq_right (by omega : n ≠ 0),
-          ite_eq_right (by omega : n + 1 ≠ 2 * (n + 1)), hleft, hright]
+          ite_eq_right (by omega : n + 1 ≠ 2 * (n + 1))]
+        rw [word_front n x (n - 1) (by omega),
+          word_back n x (n + 1) (by omega)]
         have heq : (⟨2 * n - (n + 1), by omega⟩ : Fin n) =
             ⟨n - 1, by omega⟩ := Fin.ext (by simp; omega)
         rw [heq, CharTwo.add_self_eq_zero]
       · subst r
         rw [word_gap n (pathAdj n x) (2 * n + 1) (by omega) (by omega)]
-        have hleft : word n x (2 * n) = x ⟨2 * n - 2 * n, by omega⟩ :=
-          word_back n x _ (by omega)
-        have hright : word n x 0 = x ⟨0, hp⟩ := word_front n x 0 hp
         simp only [ite_eq_right (by omega : 2 * n + 1 ≠ 0),
-          ite_eq_left (by omega : 2 * n + 1 + 1 = 2 * (n + 1)), hright]
+          ite_eq_left (by omega : 2 * n + 1 + 1 = 2 * (n + 1)),
+          Nat.add_sub_cancel_right]
+        rw [word_back n x (2 * n) (by omega), word_front n x 0 hp]
         have heq : (⟨2 * n - 2 * n, by omega⟩ : Fin n) = ⟨0, hp⟩ :=
           Fin.ext (by simp)
-        have hsub : 2 * n + 1 - 1 = 2 * n := by omega
-        rw [hsub, hleft, heq, CharTwo.add_self_eq_zero]
+        rw [heq, CharTwo.add_self_eq_zero]
 
 /-- Extend the mirrored word periodically to all natural-number positions. -/
 private def mirrorValue (n : ℕ) (x : Fin n → ZMod 2) (i : ℕ) : ZMod 2 :=
@@ -253,8 +248,9 @@ private theorem mirrorValue_step_zero (n : ℕ) (x : Fin n → ZMod 2) :
   simp [hz, show 1 ≠ 2 * (n + 1) by omega]
 
 /-- Repeat `k` copies of a path pattern, reversing every other copy and inserting
-one zero vertex between copies. The output has no trailing separator. -/
-noncomputable def mirrorPathLift (n k : ℕ) (_hk : 0 < k) :
+one zero vertex between copies. The output has no trailing separator; for `k = 0`
+it has no vertices. -/
+def mirrorPathLift (n k : ℕ) :
     (Fin n → ZMod 2) →ₗ[ZMod 2] (Fin (n * k + k - 1) → ZMod 2) where
   toFun x i := mirrorValue n x i.val
   map_add' x y := by
@@ -276,9 +272,9 @@ def foldIndex (n k : ℕ) (i : Fin (n * k + k - 1)) : Option (Fin n) :=
   else none
 
 /-- Evaluating a pattern through `foldIndex` is the mirrored linear lift. -/
-theorem foldIndex_apply (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
+theorem foldIndex_apply (n k : ℕ) (x : Fin n → ZMod 2)
     (i : Fin (n * k + k - 1)) :
-    (foldIndex n k i).elim 0 x = mirrorPathLift n k hk x i := by
+    (foldIndex n k i).elim 0 x = mirrorPathLift n k x i := by
   change (foldIndex n k i).elim 0 x = mirrorValue n x i.val
   dsimp only [foldIndex, mirrorValue, word]
   split_ifs <;> rfl
@@ -289,24 +285,24 @@ theorem foldIndex_first (n k : ℕ) (i : Fin (n * k + k - 1)) (hi : i.val < n) :
   simp [foldIndex, Nat.mod_eq_of_lt (by omega : i.val < 2 * (n + 1)), hi]
 
 /-- On the forward half of each two-tile period, retain the original order. -/
-theorem mirrorPathLift_front (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
+theorem mirrorPathLift_front (n k : ℕ) (x : Fin n → ZMod 2)
     (i : Fin (n * k + k - 1)) (h : i.val % (2 * (n + 1)) < n) :
-    mirrorPathLift n k hk x i = x ⟨i.val % (2 * (n + 1)), h⟩ :=
+    mirrorPathLift n k x i = x ⟨i.val % (2 * (n + 1)), h⟩ :=
   word_front n x _ h
 
 /-- On the backward half of each two-tile period, reverse the original order. -/
-theorem mirrorPathLift_back (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
+theorem mirrorPathLift_back (n k : ℕ) (x : Fin n → ZMod 2)
     (i : Fin (n * k + k - 1))
     (h : n < i.val % (2 * (n + 1)) ∧
       i.val % (2 * (n + 1)) < 2 * n + 1) :
-    mirrorPathLift n k hk x i =
+    mirrorPathLift n k x i =
       x ⟨2 * n - i.val % (2 * (n + 1)), by omega⟩ :=
   word_back n x _ h
 
 /-- The positions immediately following a tile are zero (when in range). -/
-theorem mirrorPathLift_separator (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
+theorem mirrorPathLift_separator (n k : ℕ) (x : Fin n → ZMod 2)
     (i : Fin (n * k + k - 1)) (h : i.val % (n + 1) = n) :
-    mirrorPathLift n k hk x i = 0 := by
+    mirrorPathLift n k x i = 0 := by
   change word n x (i.val % (2 * (n + 1))) = 0
   apply word_gap_mod n x _ (Nat.mod_lt _ (by omega))
   rw [Nat.mod_mod_of_dvd _ (show n + 1 ∣ 2 * (n + 1) from ⟨2, by ring⟩)]
@@ -314,12 +310,11 @@ theorem mirrorPathLift_separator (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
 
 /-- The lift is injective because restriction to the first tile recovers the input. -/
 theorem mirrorPathLift_injective (n k : ℕ) (hk : 0 < k) :
-    Function.Injective (mirrorPathLift n k hk) := by
+    Function.Injective (mirrorPathLift n k) := by
   intro x y hxy
   funext i
   have hsize : n ≤ n * k + k - 1 := by
-    obtain ⟨q, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (by omega : k ≠ 0)
-    simp only [Nat.mul_succ]
+    have hmul : n ≤ n * k := Nat.le_mul_of_pos_right n hk
     omega
   let j : Fin (n * k + k - 1) := ⟨i.val, lt_of_lt_of_le i.isLt hsize⟩
   have hj : foldIndex n k j = some i := by
@@ -327,15 +322,20 @@ theorem mirrorPathLift_injective (n k : ℕ) (hk : 0 < k) :
   have hv := congrFun hxy j
   simpa only [← foldIndex_apply, hj, Option.elim_some] using hv
 
-/-- Mirroring intertwines the adjacency actions of the two path graphs over `ZMod 2`. -/
-theorem mirrorPathLift_pathAdj (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2) :
-    mirrorPathLift n k hk (pathAdj n x) =
-      pathAdj (n * k + k - 1) (mirrorPathLift n k hk x) := by
+/-- Mirroring intertwines path adjacency over `ZMod 2`, including the empty target. -/
+theorem mirrorPathLift_pathAdj (n k : ℕ) (x : Fin n → ZMod 2) :
+    mirrorPathLift n k (pathAdj n x) =
+      pathAdj (n * k + k - 1) (mirrorPathLift n k x) := by
+  by_cases hk0 : k = 0
+  · subst k
+    funext i
+    exact i.elim0
+  have hk : 0 < k := by omega
   funext i
   let N := n * k + k - 1
   have hi : i.val < N := i.isLt
   have hz := mirrorValue_zero n k hk x
-  change mirrorValue n (pathAdj n x) i.val = pathAdj N (mirrorPathLift n k hk x) i
+  change mirrorValue n (pathAdj n x) i.val = pathAdj N (mirrorPathLift n k x) i
   rw [pathAdj_eq]
   by_cases hzero : i.val = 0
   · have hstep : mirrorValue n (pathAdj n x) i.val = mirrorValue n x 1 := by
@@ -365,15 +365,10 @@ theorem foldIndex_pathAdj (n k : ℕ) (x : Fin n → ZMod 2)
     (i : Fin (n * k + k - 1)) :
     pathAdj (n * k + k - 1) (fun j => (foldIndex n k j).elim 0 x) i =
       (foldIndex n k i).elim 0 (pathAdj n x) := by
-  by_cases hk : 0 < k
-  · have heval : (fun j => (foldIndex n k j).elim 0 x) =
-        mirrorPathLift n k hk x := funext fun j => foldIndex_apply n k hk x j
-    rw [heval]
-    simpa only [← foldIndex_apply] using
-      (congrFun (mirrorPathLift_pathAdj n k hk x) i).symm
-  · have hz : k = 0 := by omega
-    subst k
-    simp only [mul_zero, zero_add, Nat.zero_sub] at i
-    exact i.elim0
+  have heval : (fun j => (foldIndex n k j).elim 0 x) =
+    mirrorPathLift n k x := funext fun j => foldIndex_apply n k x j
+  rw [heval]
+  simpa only [← foldIndex_apply] using
+    (congrFun (mirrorPathLift_pathAdj n k x) i).symm
 
 end MirroredPath
