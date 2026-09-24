@@ -384,3 +384,13 @@ theorem mem_ker_iff_evenDominatingSet
     rw [phi_pressedValue_eq_changedValue]
     simp only [funext_iff, Pi.zero_apply, changedValue_eq_closedNeighborhood_card,
       ZMod.natCast_eq_zero_iff_even]
+
+/-- An odd dominating set of G corresponds exactly to patterns that change every vertex. -/
+theorem change_all_iff_oddDominatingSet
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  (S : State V)
+  : phiSet G S = Finset.univ ↔ oddDominatingSet G S
+  := by
+    simp [phiSet, oddDominatingSet,
+      changedValue_eq_closedNeighborhood_card, ZMod.natCast_eq_one_iff_odd]
