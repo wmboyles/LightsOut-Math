@@ -286,39 +286,9 @@ lemma phiSet_singleton
   := by
     -- For every u ∈ V, we'll show u ∈ (phiSet G {v}) iff u ∈ (closedNeighborhood G v)
     ext u
-    -- Our goal is equivalent to "u changes when we press v" iff "u=v or u~v"
-    simp only [phiSet, closedNeighborhood, changedValue, pressedValue,
-      true_and, Finset.mem_univ, Finset.mem_filter, Finset.mem_singleton]
-    -- Need to show ∑ x, [u~v]*[x=v] = u~v
-    have hsum :
-      (∑ x, if G.Adj u x then (if x = v then (1 : ZMod 2) else 0) else 0)
-        = if G.Adj u v then 1 else 0
-      := by
-      -- We'll show only the x=v term in the sum contributes
-      rw [Finset.sum_eq_single v]
-      -- When x=v, our goal is "if u~v then (if v=v then 1 else 0) else 0 = if u~v then 1 else 0"
-      -- Which simplifies the inner if to accomplish our goal
-      · simp only [ite_true]
-      -- When x≠v, our goal is "(if u~x then (if x = v then 1 else 0) else 0) = 0"
-      -- Which simplifies the inner if to accomplish our goal
-      · intro x hx hne
-        simp only [hne, ite_false, ite_self]
-      -- v is actually in the domain being summed over, since the sum is over all v
-      · simp only [Finset.mem_univ, not_true_eq_false, false_implies]
-    -- Goal is now ((u = v then 1 else 0) + (u~v then 1 else 0)) = 1 ↔ (u = v) ∨ (v~u)
-    rw [hsum]
-    -- Need to show u=v and v~u cannot both be true
-    have hdisj : ¬(u = v ∧ G.Adj v u) := by
-      rintro ⟨huv, hadj⟩
-      -- If both are true, then v~v must also be true
-      -- But this contradicts irreflexivity of simple graphs
-      simp only [huv, SimpleGraph.irrefl] at hadj
-    by_cases huv : u = v
-    · have hnotadj : ¬ G.Adj v u := fun hadj => hdisj ⟨huv, hadj⟩
-      simp [huv]
-    · simp only [huv,
-        Decidable.not_not, zero_add, false_or, ite_false, ite_eq_left_iff, zero_ne_one, imp_false]
-      exact G.adj_comm u v
+    simp only [phiSet, Finset.mem_filter, Finset.mem_univ, true_and]
+    rw [changedValue_eq_closedNeighborhood_card, Finset.inter_singleton]
+    split_ifs with h <;> simp_all [closedNeighborhood, eq_comm, G.adj_comm]
 
 /-- Pressing a sequence of verticies is the same as just
 pressing the ones pressed an odd number of times.
