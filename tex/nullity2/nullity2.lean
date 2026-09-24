@@ -8,10 +8,10 @@ import nullity2.MirroredPath
 
 /-! Lights Out transformations on finite graphs and reflected grid tilings. -/
 
-/-- State of a graph: Which verticies are pressed or on, depending on context -/
+/-- A set of vertices, representing pressed buttons or lights that are on. -/
 abbrev State (V : Type*) := Finset V
 
-/-- A vertex v and all its neighbors -/
+/-- The vertex `v` together with every vertex adjacent to it in `G`. -/
 def closedNeighborhood
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -19,7 +19,7 @@ def closedNeighborhood
   : State V
   := Finset.univ.filter (fun u => u = v ∨ G.Adj v u)
 
-/-- Given an initial state and one pressed vertex, give the final state -/
+/-- Toggle the closed neighborhood of `v` in the initial state `S`. -/
 def press
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -28,7 +28,7 @@ def press
   : State V
   := symmDiff S (closedNeighborhood G v)
 
-/-- Pressing a vertex twice in a row does nothing -/
+/-- Pressing the same vertex twice returns to the initial state. -/
 theorem press_press
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -37,7 +37,7 @@ theorem press_press
   : press G (press G S v) v = S
   := by simp only [press, symmDiff_symmDiff_cancel_right]
 
-/-- The order of presses is irrelevant -/
+/-- Two presses commute, regardless of the vertices pressed. -/
 theorem press_comm
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -58,7 +58,7 @@ theorem press_comm
       symmDiff_comm (closedNeighborhood G u) (closedNeighborhood G v)
     ]
 
-/-- A sequence of presses from a starting state gives a resulting state -/
+/-- The state obtained by pressing the vertices of a list in order. -/
 def pressSequence
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -67,14 +67,14 @@ def pressSequence
   | [] => S
   | v :: vs => pressSequence G (press G S v) vs
 
-/-- The unique set of vertices (with cancellation of repeats) pressed -/
+/-- Vertices occurring an odd number of times in the press list. -/
 def pressedSet
   {V : Type*} [DecidableEq V] :
   List V → State V
   | []      => ∅
   | v :: vs => symmDiff {v} (pressedSet vs)
 
-/-- Whether a vertex v was pressed, given a set of pressed vertices -/
+/-- The `ZMod 2` indicator of membership in a set of pressed vertices. -/
 def pressedValue
   {V : Type*} [DecidableEq V]
   (S : State V)
@@ -82,7 +82,7 @@ def pressedValue
   : ZMod 2
   := if v ∈ S then 1 else 0
 
-/-- In 𝔽₂, a value is either 0 or 1 -/
+/-- Every value in `ZMod 2` is either zero or one. -/
 lemma zmod2_cases
   (x : ZMod 2)
   : x = 0 ∨ x = 1
@@ -91,9 +91,7 @@ lemma zmod2_cases
     · exact Or.inl rfl
     · exact Or.inr rfl
 
-/-- pressedValue is linear with respect to symmetric difference.
-pressedValue (S1 ∆ S2) v = (pressedValue S1 v) ∆ (pressedValue S2 v)
--/
+/-- The indicator of a symmetric difference is the sum of its indicators in `ZMod 2`. -/
 lemma pressedValue_symmDiff
   {V : Type*} [DecidableEq V]
   (S1 S2 : State V)
@@ -104,10 +102,7 @@ lemma pressedValue_symmDiff
       by_cases h2 : v ∈ S2 <;>
         simp [pressedValue, Finset.symmDiff_def, h1, h2, CharTwo.add_self_eq_zero]
 
-/-- Whether a vertex v changes state after the vertices in S are pressed.
-Vertex v changes state exactly when and odd number of vertices
-in its closed neighborhood are pressed.
--/
+/-- The parity of presses affecting `v`: its own press plus presses at its neighbors. -/
 def changedValue
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -116,7 +111,7 @@ def changedValue
   : ZMod 2
   := pressedValue S v + ∑ u, if G.Adj v u then pressedValue S u else 0
 
-/-- changedValue is the parity of the pressed vertices in the closed neighborhood. -/
+/-- The change at `v` is the number of pressed vertices in its closed neighborhood modulo two. -/
 lemma changedValue_eq_closedNeighborhood_card
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -157,9 +152,7 @@ lemma changedValue_eq_closedNeighborhood_card
             simp [closedNeighborhood, Finset.mem_filter, Finset.mem_univ, Finset.mem_inter]
           rw [heq]
 
-/-- changedValue is linear with respect to symmetric difference.
-changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
--/
+/-- Changes from the symmetric difference of press sets add in `ZMod 2`. -/
 lemma changedValue_symmDiff
   {V : Type*} [Fintype V] [DecidableEq V]
   {G : SimpleGraph V} [DecidableRel G.Adj]
@@ -179,10 +172,7 @@ lemma changedValue_symmDiff
     rw [hsum]
     abel
 
-/-- Adjacency operator of G, which maps each vector to the vector
-whose values at each vertex is the same of the values at its neighbors.
-It is a linear transformation.
--/
+/-- The linear adjacency operator: at each vertex, sum the values of its neighbors. -/
 def adjVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -197,11 +187,7 @@ def adjVec
     ext v
     simp only [Pi.smul_apply, RingHom.id_apply, Finset.smul_sum, smul_ite, smul_zero]
 
-/-- phiVec G x gives a vector representing the state of the graph after applying the
-Lights Out operation on state vector x.
-For each vertex v, its value is the sum in 𝔽₂ of x at v
-and the values of x at all verticies adjacent to v
--/
+/-- The change vector for a press vector `x`: add `x` to its adjacency image. -/
 def phiVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -209,25 +195,21 @@ def phiVec
   : V → ZMod 2
   := x + adjVec G x
 
-/-- Φ G tells us, for a simple graph G, if some vertices are pressed
-which vertices will change state.
-Φ G is linear because id and adjVec are linear.
--/
+/-- The linear Lights Out operator `I + adjVec`, sending press patterns to changes. -/
 def Φ
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2)
   := LinearMap.id + adjVec G
 
-/-- Φ and id + adjVec are the same function. -/
+/-- Unfold `Φ` as the identity plus the adjacency operator. -/
 theorem phi_eq_id_add_adjVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : Φ G = LinearMap.id + adjVec G
   := by rfl
 
-/-- Φ and changedValue represent the same concept:
-Which vertices change state when some are pressed. -/
+/-- Applying `Φ` to a press-set indicator gives its change values. -/
 theorem phi_pressedValue_eq_changedValue
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -235,7 +217,7 @@ theorem phi_pressedValue_eq_changedValue
   : Φ G (pressedValue S) = changedValue G S
   := by rfl
 
-/-- Φ and phiVec are the same function -/
+/-- Applying `Φ` to a vector agrees with `phiVec`. -/
 theorem phi_phiVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -243,9 +225,7 @@ theorem phi_phiVec
   : Φ G x = phiVec G x
   := by rfl
 
-/-- Given a simple graph G and set of pressed vertices S,
-Give back the set of vertices that change state.
--/
+/-- The vertices whose values change when the press set is `S`. -/
 def phiSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -253,7 +233,7 @@ def phiSet
   : State V
   := Finset.univ.filter (fun v => changedValue G S v = 1)
 
-/-- phiSet is linear with respect to symmetric difference -/
+/-- The changed vertices from two press sets combine by symmetric difference. -/
 lemma phiSet_symmDiff
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -267,8 +247,7 @@ lemma phiSet_symmDiff
     rcases zmod2_cases (changedValue G S2 v) with h2 | h2 <;>
     simp [h1, h2]
 
-/-- Φ and phiSet represent the same concept:
-Which verticies change when some are pressed -/
+/-- The `ZMod 2` indicator of changed vertices equals the output of `Φ`. -/
 theorem phi_pressedValue_eq_phiSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -282,7 +261,7 @@ theorem phi_pressedValue_eq_phiSet
     · simp [h1]
     · simp [h2]
 
-/-- Pressing a single vertex changes everything in the closed neighborhood -/
+/-- Pressing only `v` changes exactly its closed neighborhood. -/
 lemma phiSet_singleton
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -295,10 +274,8 @@ lemma phiSet_singleton
     rw [changedValue_eq_closedNeighborhood_card, Finset.inter_singleton]
     split_ifs with h <;> simp_all [closedNeighborhood, eq_comm, G.adj_comm]
 
-/-- Pressing a sequence of verticies is the same as just
-pressing the ones pressed an odd number of times.
-The order of presses also doesn't matter.
--/
+/-- Pressing a list changes the initial state at exactly the vertices changed
+by pressing those occurring an odd number of times. -/
 theorem pressSequence_eq_phiSet_pressedSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -319,7 +296,7 @@ theorem pressSequence_eq_phiSet_pressedSet
       simp only [pressSequence, pressedSet]
       rw [ih (press G S v), press, phiSet_symmDiff, phiSet_singleton, symmDiff_assoc]
 
-/-- With our theorems so far, we proved the following diagram commutes.
+/- With our theorems so far, we proved the following diagram commutes.
 
         *--------> State V -----pressedValue-----> V → ZMod 2
         |            |                                  |
@@ -347,13 +324,14 @@ theorem pressSequence_eq_phiSet_pressedSet
 Now that we have linear transformations over vectors, we can introduce linear algebra concepts.
 Most importantly, we can look at the kernel and its dimension.
 -/
+/-- The dimension over `ZMod 2` of press patterns producing no changes. -/
 noncomputable def nullity
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   : ℕ
   := Module.finrank (ZMod 2) (Φ G).ker
 
-/-- Another way to think about the nullity is as the kernel of I + Adj_G. -/
+/-- Express graph nullity using the explicit operator `LinearMap.id + adjVec G`. -/
 theorem nullity_eq_finrank_ker_id_add_adjVec
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -361,7 +339,7 @@ theorem nullity_eq_finrank_ker_id_add_adjVec
   := by rfl
 
 /-- An even dominating set meets every closed neighborhood in an even number
-of vertices (possibly zero). -/
+of vertices; the empty set is allowed. -/
 def evenDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -378,7 +356,8 @@ def oddDominatingSet
   : Prop
   := ∀ v : V, Odd (closedNeighborhood G v ∩ S).card
 
-/-- Elements of ker Φ G correspond exactly to even dominating sets of G. -/
+/-- A press-set indicator belongs to the kernel of `Φ` exactly when the set is
+even dominating. -/
 theorem mem_ker_iff_evenDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -390,7 +369,8 @@ theorem mem_ker_iff_evenDominatingSet
     simp only [funext_iff, Pi.zero_apply, changedValue_eq_closedNeighborhood_card,
       ZMod.natCast_eq_zero_iff_even]
 
-/-- If two sets result in the same changes, then their symmetric difference ∈ (Φ G).ker. -/
+/-- Two press sets produce the same changes exactly when the indicator of their
+symmetric difference belongs to the kernel of `Φ`. -/
 theorem mem_ker_symmdiff
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -403,7 +383,7 @@ theorem mem_ker_symmdiff
       simp [pressedValue_symmDiff, sub_eq_add_neg]
     rw [hpressed, LinearMap.sub_mem_ker_iff]
 
-/-- An odd dominating set of G corresponds exactly to patterns that change every vertex. -/
+/-- A press set changes every vertex exactly when it is odd dominating. -/
 theorem change_all_iff_oddDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -413,40 +393,47 @@ theorem change_all_iff_oddDominatingSet
     simp [phiSet, oddDominatingSet,
       changedValue_eq_closedNeighborhood_card, ZMod.natCast_eq_one_iff_odd]
 
-/-- An n x m grid graph -/
+/-- The Cartesian product of paths on `n` and `m` vertices. -/
 def gridGraph (n m : ℕ)
   : SimpleGraph (Fin n × Fin m)
   := (SimpleGraph.pathGraph n).boxProd (SimpleGraph.pathGraph m)
 
+/-- A local decision procedure for path adjacency, used to build grid operators. -/
 private noncomputable instance pathGraph_decidableAdj (n : ℕ) :
     DecidableRel (SimpleGraph.pathGraph n).Adj :=
   Classical.decRel _
 
-/-- The Lights Out operator on an `n` by `m` grid. -/
+/-- The Lights Out operator `Φ` for an `n` by `m` grid. -/
 noncomputable def gridPhi (n m : ℕ) :
     (Fin n × Fin m → ZMod 2) →ₗ[ZMod 2] (Fin n × Fin m → ZMod 2) := by
   classical
   exact Φ (gridGraph n m)
 
-/-- When n is tiled k times with a gap of 1 between each tile -/
+/-- Number of positions in `k` tiles of length `n` with one gap between tiles.
+For `k = 0`, the resulting size is zero. -/
 def tiledSize (n k : ℕ)
   : ℕ
   := n*k + k - 1
 
-/-- Nullity of an n x m grid -/
+/-- Dimension of the kernel of the Lights Out operator on an `n` by `m` grid. -/
 noncomputable def nullityGrid (n m : ℕ)
   : ℕ
   := by
     classical
     exact nullity (gridGraph n m)
 
+/-- An injective linear transfer between vector spaces that intertwines two
+operators. For Lights Out operators, distinct quiet patterns remain quiet and distinct. -/
 structure PressLift
   {V W : Type*}
   (A : (V → ZMod 2) →ₗ[ZMod 2] (V → ZMod 2))
   (B : (W → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2))
   where
+    /-- Transfer a pattern from the source vertices to the target vertices. -/
     map : (V → ZMod 2) →ₗ[ZMod 2] (W → ZMod 2)
+    /-- Transferring then applying `B` equals applying `A` then transferring. -/
     commutes : B.comp map = map.comp A
+    /-- Distinct source patterns remain distinct after transfer. -/
     injective : Function.Injective map
 
 /-- A press lift embeds the kernel of the smaller operator into the larger kernel. -/
@@ -481,6 +468,7 @@ lemma PressLift.finrank_ker_le
     rcases L.exists_injective_kerMap with ⟨f, hf⟩
     exact LinearMap.finrank_le_finrank_of_injective hf
 
+/-- The adjacency sum in a Cartesian product is the sum along its two coordinates. -/
 private lemma boxProd_adj_sum
     {V W : Type*} [Fintype V] [Fintype W]
     (G : SimpleGraph V) (H : SimpleGraph W)
@@ -510,6 +498,7 @@ private lemma boxProd_adj_sum
   rw [Finset.sum_comm]
   simp [Finset.sum_ite_eq]
 
+/-- Coordinate form of the Lights Out operator on a Cartesian product of graphs. -/
 private def gridPress
     {V W : Type*} [Fintype V] [Fintype W]
     (G : SimpleGraph V) (H : SimpleGraph W)
@@ -518,6 +507,7 @@ private def gridPress
   x p + (∑ a, if G.Adj p.1 a then x (a, p.2) else 0) +
     ∑ b, if H.Adj p.2 b then x (p.1, b) else 0
 
+/-- Applying `Φ` to a Cartesian product equals its coordinate-wise press sum. -/
 private lemma phi_boxProd_apply
     {V W : Type*} [Fintype V] [Fintype W] [DecidableEq V] [DecidableEq W]
     (G : SimpleGraph V) (H : SimpleGraph W)
@@ -530,11 +520,13 @@ private lemma phi_boxProd_apply
   simp only [gridPress]
   abel
 
+/-- Pull a pattern back along two optional coordinate maps, with zero at gaps. -/
 private def foldedGrid
     {V V' W W' : Type*} (r : V' → Option V) (c : W' → Option W)
     (x : V × W → ZMod 2) (p : V' × W') : ZMod 2 :=
   (r p.1).elim 0 (fun a => (c p.2).elim 0 (fun b => x (a, b)))
 
+/-- Coordinate-wise adjacency-compatible folds intertwine product press operators. -/
 private lemma foldedGrid_gridPress
     {V V' W W' : Type*}
     [Fintype V] [Fintype V'] [Fintype W] [Fintype W']
@@ -558,7 +550,7 @@ private lemma foldedGrid_gridPress
     simp [gridPress, foldedGrid, hri, hcj] at hrow hcol ⊢ <;>
     simp [hrow, hcol]
 
-/-- Reflect a grid pattern across zero rows and columns, independently in each direction. -/
+/-- Reflect a grid pattern across zero separator rows and columns in each direction. -/
 def mirrorGridMap (n m k₁ k₂ : ℕ) :
     (Fin n × Fin m → ZMod 2) →ₗ[ZMod 2]
       (Fin (tiledSize n k₁) × Fin (tiledSize m k₂) → ZMod 2) where
@@ -575,15 +567,18 @@ def mirrorGridMap (n m k₁ k₂ : ℕ) :
       cases hj : MirroredPath.foldIndex m k₂ j <;>
         simp [foldedGrid, hi, hj]
 
+/-- A positive number of tiles has room for the full first tile. -/
 private lemma le_tiledSize (n k : ℕ) (hk : 0 < k) : n ≤ tiledSize n k := by
   unfold tiledSize
   have hmul : n ≤ n * k := Nat.le_mul_of_pos_right n hk
   omega
 
+/-- Embed a source vertex in the first tile of a positively tiled path. -/
 private def firstTile (n k : ℕ) (hk : 0 < k) (i : Fin n) :
     Fin (tiledSize n k) :=
   ⟨i.val, lt_of_lt_of_le i.isLt (le_tiledSize n k hk)⟩
 
+/-- The first grid tile retains the input, making the reflected grid map injective. -/
 private lemma mirrorGridMap_injective
     (n m k₁ k₂ : ℕ) (hk₁ : 0 < k₁) (hk₂ : 0 < k₂) :
     Function.Injective (mirrorGridMap n m k₁ k₂) := by
@@ -601,6 +596,7 @@ private lemma mirrorGridMap_injective
   simpa only [mirrorGridMap, foldedGrid, LinearMap.coe_mk, AddHom.coe_mk, hi, hj,
     Option.elim_some] using hv
 
+/-- The grid fold commutes with coordinate-wise press sums. -/
 private lemma mirrorGridMap_gridPress
     (n m k₁ k₂ : ℕ) (x : Fin n × Fin m → ZMod 2)
     (i : Fin (tiledSize n k₁)) (j : Fin (tiledSize m k₂)) :
@@ -627,7 +623,8 @@ private lemma mirrorGridMap_gridPress
       (MirroredPath.foldIndex m k₂ t).elim 0 (MirroredPath.pathAdj m f)
     exact MirroredPath.foldIndex_pathAdj m k₂ f t
 
-/-- Reflected tiling embeds grid patterns and commutes with the Lights Out operators. -/
+/-- Package the injective reflected grid tiling and its compatibility with `Φ`
+as a `PressLift`. -/
 noncomputable def mirrorGridPressLift
     (n m k₁ k₂ : ℕ) (hk₁ : 0 < k₁) (hk₂ : 0 < k₂) :
     PressLift (gridPhi n m)
@@ -653,7 +650,7 @@ noncomputable def mirrorGridPressLift
     exact mirrorGridMap_gridPress n m k₁ k₂ x i j
   injective := mirrorGridMap_injective n m k₁ k₂ hk₁ hk₂
 
-/-- Reflected tiling cannot decrease the nullity of a grid. -/
+/-- Reflected tiling cannot decrease grid nullity when both tiling counts are positive. -/
 theorem nullityGrid_le_tiled
     (n m k₁ k₂ : ℕ) (hk₁ : 0 < k₁) (hk₂ : 0 < k₂) :
     nullityGrid n m ≤ nullityGrid (tiledSize n k₁) (tiledSize m k₂) := by

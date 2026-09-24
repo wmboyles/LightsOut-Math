@@ -11,6 +11,7 @@ noncomputable def pathAdj (N : ℕ) (x : Fin N → ZMod 2) (i : Fin N) : ZMod 2 
   classical
   exact ∑ j, if (SimpleGraph.pathGraph N).Adj i j then x j else 0
 
+/-- On a path, the adjacency sum consists of the existing predecessor and successor values. -/
 private theorem pathAdj_eq (N : ℕ) (x : Fin N → ZMod 2) (i : Fin N) :
     pathAdj N x i =
       (if h : 0 < i.val then x ⟨i.val - 1, by omega⟩ else 0) +
@@ -22,12 +23,9 @@ private theorem pathAdj_eq (N : ℕ) (x : Fin N → ZMod 2) (i : Fin N) :
       (if i.val + 1 = j.val ∨ j.val + 1 = i.val then x j else 0) =
         (if i.val + 1 = j.val then x j else 0) +
           (if j.val + 1 = i.val then x j else 0) := by
-    by_cases hp : i.val + 1 = j.val
-    · have hq : j.val + 1 ≠ i.val := by omega
-      simp [hp, hq]
-    · by_cases hq : j.val + 1 = i.val
-      · simp [hp, hq]
-      · simp [hp, hq]
+    by_cases hp : i.val + 1 = j.val <;>
+      by_cases hq : j.val + 1 = i.val <;>
+        simp [hp, hq] ; omega
   simp_rw [hsplit, Finset.sum_add_distrib]
   rw [add_comm (if h : 0 < i.val then x ⟨i.val - 1, by omega⟩ else 0)
     (if h : i.val + 1 < N then x ⟨i.val + 1, h⟩ else 0)]
@@ -51,6 +49,7 @@ private theorem pathAdj_eq (N : ℕ) (x : Fin N → ZMod 2) (i : Fin N) :
     · have heq (j : Fin N) : j.val + 1 ≠ i.val := by omega
       simp [heq, h]
 
+/-- Incrementing a position modulo `T` wraps to zero at the end of the period. -/
 private theorem succ_mod (T i : ℕ) (hT : 1 < T) :
     (i + 1) % T = if i % T + 1 = T then 0 else i % T + 1 := by
   rw [Nat.add_mod]
@@ -61,62 +60,72 @@ private theorem succ_mod (T i : ℕ) (hT : 1 < T) :
   · have hlt : i % T + 1 < T := by omega
     simp [heq, Nat.mod_eq_of_lt hlt]
 
+/-- Decrementing a positive position modulo `T` wraps to `T - 1` at zero. -/
 private theorem pred_mod (T i : ℕ) (hT : 1 < T) (hi : 0 < i) :
     (i - 1) % T = if i % T = 0 then T - 1 else i % T - 1 := by
-  have h := succ_mod T (i - 1) hT
-  have he : i - 1 + 1 = i := by omega
-  rw [he] at h
-  have hlt := Nat.mod_lt (i - 1) (by omega : 0 < T)
-  generalize ha : (i - 1) % T = a at h hlt ⊢
-  generalize hb : i % T = b at h ⊢
-  by_cases hr : a + 1 = T
-  · simp only [hr, ↓reduceIte] at h
-    rw [h, ite_eq_left rfl]
-    omega
-  · simp only [hr, ↓reduceIte] at h
-    have hb0 : b ≠ 0 := by omega
-    rw [ite_eq_right hb0]
-    omega
+  by_cases hz : i % T = 0
+  · simp only [hz, ↓reduceIte]
+    have h := succ_mod T (i - 1) hT
+    rw [show i - 1 + 1 = i by omega, hz] at h
+    have hb := Nat.mod_lt (i - 1) (by omega : 0 < T)
+    split_ifs at h; omega
+  · simp only [hz, ↓reduceIte]
+    exact (Nat.mod_sub_of_le (by omega : 1 ≤ i % T)).symm
 
+/-- One period: a forward tile, a zero, a reflected tile, and another zero. -/
 private def word (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ) : ZMod 2 :=
   if h : r < n then x ⟨r, h⟩
   else if h : n < r ∧ r < 2 * n + 1 then x ⟨2 * n - r, by omega⟩
   else 0
 
+/-- The first tile of `word` reads the input without reflection. -/
 private theorem word_front (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ) (h : r < n) :
     word n x r = x ⟨r, h⟩ := by
   simp [word, h]
 
+/-- The second tile of `word` reads the input in reverse order. -/
 private theorem word_back (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
     (h : n < r ∧ r < 2 * n + 1) :
     word n x r = x ⟨2 * n - r, by omega⟩ := by
   have hn : ¬ r < n := by omega
   simp [word, hn, h]
 
+/-- Positions in neither tile have value zero. -/
 private theorem word_gap (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
     (hn : ¬ r < n) (hb : ¬ (n < r ∧ r < 2 * n + 1)) :
     word n x r = 0 := by
   unfold word
   rw [dite_eq_right hn, dite_eq_right hb]
 
+/-- Applying path adjacency to the source agrees with summing the two adjacent
+positions in a periodic mirrored word; across a zero separator, they cancel. -/
 private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
     (hr : r < 2 * (n + 1)) :
     word n (pathAdj n x) r =
       word n x (if r = 0 then 2 * (n + 1) - 1 else r - 1) +
         word n x (if r + 1 = 2 * (n + 1) then 0 else r + 1) := by
+  by_cases hn : n = 0
+  · subst n
+    have hempty (y : Fin 0 → ZMod 2) (s : ℕ) : word 0 y s = 0 := by
+      by_cases hs : s = 0
+      · subst s
+        simp [word]
+      · have hlt : ¬ s < 1 := by omega
+        simp [word, hlt]
+    simp [hempty]
+  have hp : 0 < n := by omega
+  -- Inside a forward tile, the boundary behaves like a zero-valued neighbor.
   by_cases hfront : r < n
   · rw [word_front n (pathAdj n x) r hfront, pathAdj_eq]
     by_cases hz : r = 0
     · subst r
-      have hn : 0 < n := by omega
       have hgap : word n x (2 * (n + 1) - 1) = 0 :=
         word_gap n x _ (by omega) (by omega)
       simp only [ite_eq_right (by omega : 0 + 1 ≠ 2 * (n + 1)), zero_add]
       by_cases hnext : 1 < n
       · rw [word_front n x 1 hnext]
         simp [hnext, hgap]
-      · have hnext' : 1 = n := by omega
-        rw [word_gap n x 1 (by omega) (by omega)]
+      · rw [word_gap n x 1 (by omega) (by omega)]
         simp [hnext, hgap]
     · have hpos : 0 < r := by omega
       have hprev : r - 1 < n := by omega
@@ -126,10 +135,10 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
       by_cases hnext : r + 1 < n
       · rw [word_front n x (r + 1) hnext]
         simp [hpos, hnext]
-      · have he : r + 1 = n := by omega
-        rw [word_gap n x (r + 1) (by omega) (by omega)]
+      · rw [word_gap n x (r + 1) (by omega) (by omega)]
         simp [hpos, hnext]
-  · by_cases hback : n < r ∧ r < 2 * n + 1
+  · -- A reflected tile reverses the two neighboring positions.
+    by_cases hback : n < r ∧ r < 2 * n + 1
     · rw [word_back n (pathAdj n x) r hback, pathAdj_eq]
       let s := 2 * n - r
       have hs : s < n := by dsimp [s]; omega
@@ -159,42 +168,37 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
       change (if h : 0 < s then x ⟨s - 1, by omega⟩ else 0) +
           (if h : s + 1 < n then x ⟨s + 1, h⟩ else 0) = _
       rw [hprev, hnext, add_comm]
-    · have hgap : r = n ∨ r = 2 * n + 1 := by omega
+    · -- At a separator, mirrored neighboring values cancel in characteristic two.
+      have hgap : r = n ∨ r = 2 * n + 1 := by omega
       rcases hgap with he | he
       · subst r
-        by_cases hn : n = 0
-        · subst n
-          simp [word]
-        · have hp : 0 < n := by omega
-          rw [word_gap n (pathAdj n x) n (by omega) (by omega)]
-          have hleft : word n x (n - 1) = x ⟨n - 1, by omega⟩ :=
-            word_front n x _ (by omega)
-          have hright : word n x (n + 1) = x ⟨2 * n - (n + 1), by omega⟩ :=
-            word_back n x _ (by omega)
-          simp only [ite_eq_right (by omega : n ≠ 0),
-            ite_eq_right (by omega : n + 1 ≠ 2 * (n + 1)), hleft, hright]
-          have heq : (⟨2 * n - (n + 1), by omega⟩ : Fin n) =
-              ⟨n - 1, by omega⟩ := Fin.ext (by simp; omega)
-          rw [heq, CharTwo.add_self_eq_zero]
+        rw [word_gap n (pathAdj n x) n (by omega) (by omega)]
+        have hleft : word n x (n - 1) = x ⟨n - 1, by omega⟩ :=
+          word_front n x _ (by omega)
+        have hright : word n x (n + 1) = x ⟨2 * n - (n + 1), by omega⟩ :=
+          word_back n x _ (by omega)
+        simp only [ite_eq_right (by omega : n ≠ 0),
+          ite_eq_right (by omega : n + 1 ≠ 2 * (n + 1)), hleft, hright]
+        have heq : (⟨2 * n - (n + 1), by omega⟩ : Fin n) =
+            ⟨n - 1, by omega⟩ := Fin.ext (by simp; omega)
+        rw [heq, CharTwo.add_self_eq_zero]
       · subst r
-        by_cases hn : n = 0
-        · subst n
-          simp [word]
-        · have hp : 0 < n := by omega
-          rw [word_gap n (pathAdj n x) (2 * n + 1) (by omega) (by omega)]
-          have hleft : word n x (2 * n) = x ⟨2 * n - 2 * n, by omega⟩ :=
-            word_back n x _ (by omega)
-          have hright : word n x 0 = x ⟨0, hp⟩ := word_front n x 0 hp
-          simp only [ite_eq_right (by omega : 2 * n + 1 ≠ 0),
-            ite_eq_left (by omega : 2 * n + 1 + 1 = 2 * (n + 1)), hright]
-          have heq : (⟨2 * n - 2 * n, by omega⟩ : Fin n) = ⟨0, hp⟩ :=
-            Fin.ext (by simp)
-          have hsub : 2 * n + 1 - 1 = 2 * n := by omega
-          rw [hsub, hleft, heq, CharTwo.add_self_eq_zero]
+        rw [word_gap n (pathAdj n x) (2 * n + 1) (by omega) (by omega)]
+        have hleft : word n x (2 * n) = x ⟨2 * n - 2 * n, by omega⟩ :=
+          word_back n x _ (by omega)
+        have hright : word n x 0 = x ⟨0, hp⟩ := word_front n x 0 hp
+        simp only [ite_eq_right (by omega : 2 * n + 1 ≠ 0),
+          ite_eq_left (by omega : 2 * n + 1 + 1 = 2 * (n + 1)), hright]
+        have heq : (⟨2 * n - 2 * n, by omega⟩ : Fin n) = ⟨0, hp⟩ :=
+          Fin.ext (by simp)
+        have hsub : 2 * n + 1 - 1 = 2 * n := by omega
+        rw [hsub, hleft, heq, CharTwo.add_self_eq_zero]
 
+/-- Extend the mirrored word periodically to all natural-number positions. -/
 private def mirrorValue (n : ℕ) (x : Fin n → ZMod 2) (i : ℕ) : ZMod 2 :=
   word n x (i % (2 * (n + 1)))
 
+/-- Away from position zero, the periodic extension satisfies the path-adjacency rule. -/
 private theorem mirrorValue_step (n : ℕ) (x : Fin n → ZMod 2) (i : ℕ)
     (hi : 0 < i) :
     mirrorValue n (pathAdj n x) i =
@@ -204,6 +208,7 @@ private theorem mirrorValue_step (n : ℕ) (x : Fin n → ZMod 2) (i : ℕ)
   rw [pred_mod _ _ hT hi, succ_mod _ _ hT]
   exact word_step n x _ (Nat.mod_lt _ (by omega))
 
+/-- In one period, residues at the end of either tile are zero separators. -/
 private theorem word_gap_mod (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
     (hr : r < 2 * (n + 1)) (hmod : r % (n + 1) = n) : word n x r = 0 := by
   have hquot : r / (n + 1) < 2 := by
@@ -223,6 +228,7 @@ private theorem word_gap_mod (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
       omega
   rcases he with he | he <;> subst r <;> apply word_gap <;> omega
 
+/-- The position just beyond the last tile is zero, supplying the right boundary. -/
 private theorem mirrorValue_zero (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2) :
     mirrorValue n x (n * k + k - 1) = 0 := by
   let r := (n * k + k - 1) % (2 * (n + 1))
@@ -236,6 +242,7 @@ private theorem mirrorValue_zero (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
       Nat.add_sub_cancel_right] using h
   exact word_gap_mod n x r hr hmod
 
+/-- At the left boundary, the preceding periodic position is a zero separator. -/
 private theorem mirrorValue_step_zero (n : ℕ) (x : Fin n → ZMod 2) :
     mirrorValue n (pathAdj n x) 0 = mirrorValue n x 1 := by
   unfold mirrorValue
@@ -305,7 +312,7 @@ theorem mirrorPathLift_separator (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2)
   rw [Nat.mod_mod_of_dvd _ (show n + 1 ∣ 2 * (n + 1) from ⟨2, by ring⟩)]
   exact h
 
-/-- Restriction to the first tile recovers the input. -/
+/-- The lift is injective because restriction to the first tile recovers the input. -/
 theorem mirrorPathLift_injective (n k : ℕ) (hk : 0 < k) :
     Function.Injective (mirrorPathLift n k hk) := by
   intro x y hxy
@@ -315,14 +322,10 @@ theorem mirrorPathLift_injective (n k : ℕ) (hk : 0 < k) :
     simp only [Nat.mul_succ]
     omega
   let j : Fin (n * k + k - 1) := ⟨i.val, lt_of_lt_of_le i.isLt hsize⟩
-  have hfirst (z : Fin n → ZMod 2) : mirrorPathLift n k hk z j = z i := by
-    change word n z (i.val % (2 * (n + 1))) = z i
-    rw [Nat.mod_eq_of_lt (by omega : i.val < 2 * (n + 1))]
-    rw [word_front n z i.val i.isLt]
-  calc
-    x i = mirrorPathLift n k hk x j := (hfirst x).symm
-    _ = mirrorPathLift n k hk y j := congrFun hxy j
-    _ = y i := hfirst y
+  have hj : foldIndex n k j = some i := by
+    simpa [j] using foldIndex_first n k j (by simp [j])
+  have hv := congrFun hxy j
+  simpa only [← foldIndex_apply, hj, Option.elim_some] using hv
 
 /-- Mirroring intertwines the adjacency actions of the two path graphs over `ZMod 2`. -/
 theorem mirrorPathLift_pathAdj (n k : ℕ) (hk : 0 < k) (x : Fin n → ZMod 2) :
@@ -363,15 +366,11 @@ theorem foldIndex_pathAdj (n k : ℕ) (x : Fin n → ZMod 2)
     pathAdj (n * k + k - 1) (fun j => (foldIndex n k j).elim 0 x) i =
       (foldIndex n k i).elim 0 (pathAdj n x) := by
   by_cases hk : 0 < k
-  · calc
-      pathAdj (n * k + k - 1) (fun j => (foldIndex n k j).elim 0 x) i =
-          pathAdj (n * k + k - 1) (mirrorPathLift n k hk x) i :=
-            congrArg (fun y => pathAdj (n * k + k - 1) y i)
-              (funext fun j => foldIndex_apply n k hk x j)
-      _ = mirrorPathLift n k hk (pathAdj n x) i :=
-        (congrFun (mirrorPathLift_pathAdj n k hk x) i).symm
-      _ = (foldIndex n k i).elim 0 (pathAdj n x) :=
-        (foldIndex_apply n k hk (pathAdj n x) i).symm
+  · have heval : (fun j => (foldIndex n k j).elim 0 x) =
+        mirrorPathLift n k hk x := funext fun j => foldIndex_apply n k hk x j
+    rw [heval]
+    simpa only [← foldIndex_apply] using
+      (congrFun (mirrorPathLift_pathAdj n k hk x) i).symm
   · have hz : k = 0 := by omega
     subst k
     simp only [mul_zero, zero_add, Nat.zero_sub] at i
