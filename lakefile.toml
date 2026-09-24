@@ -11,3 +11,11 @@ maxSynthPendingDepth = 3
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
+
+[[lean_lib]]
+name = "nullity2.MirroredPath"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.nullity2"
+srcDir = "tex"
