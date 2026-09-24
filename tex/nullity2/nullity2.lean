@@ -301,17 +301,16 @@ theorem pressSequence_eq_phiSet_pressedSet
   (xs : List V)
   : pressSequence G S xs = symmDiff S (phiSet G (pressedSet xs))
   := by
+    -- The tail starts from press G S v, so the induction hypothesis must allow any S.
     induction xs generalizing S with
-    -- For an empty list, we have an empty set, and nothing changes
     | nil =>
+      -- Neither an empty press sequence nor an empty pressed set changes the state.
       have hphi : phiSet G (∅ : State V) = ∅ := by
         ext u
         simp [phiSet, changedValue, pressedValue]
       simp [pressSequence, pressedSet, hphi, Finset.symmDiff_def]
-    -- Assume that pressing list vs satisfies our goal (ih).
-    -- If we press v and then vs, our goal is also satisfied
-    -- phiSet_singleton shows what happens for one vertex
     | cons v vs ih =>
+      -- Apply the IH after pressing v; phiSet G {v} accounts for that first press.
       simp only [pressSequence, pressedSet]
       rw [ih (press G S v), press, phiSet_symmDiff, phiSet_singleton, symmDiff_assoc]
 
