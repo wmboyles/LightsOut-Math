@@ -374,30 +374,13 @@ def oddDominatingSet
   := ∀ v : V, Odd (closedNeighborhood G v ∩ S).card
 
 /-- Elements of ker Φ G correspond exactly to even dominating sets of G. -/
--- TODO: Clean this up if possible
 theorem mem_ker_iff_evenDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   (S : State V)
   : pressedValue S ∈ (Φ G).ker ↔ evenDominatingSet G S
   := by
-  constructor
-  · intro hker v
-    have hzero : Φ G (pressedValue S) = 0 := by
-      exact hker
-    have hzero' : changedValue G S = 0 := by
-      rw [← phi_pressedValue_eq_changedValue]
-      exact hzero
-    have hv : changedValue G S v = 0 := by
-      exact congrFun hzero' v
-    rw [changedValue_eq_closedNeighborhood_card] at hv
-    exact (ZMod.natCast_eq_zero_iff_even).mp hv
-  · intro hdom
-    change Φ G (pressedValue S) = 0
+    change Φ G (pressedValue S) = 0 ↔ ∀ v, Even (closedNeighborhood G v ∩ S).card
     rw [phi_pressedValue_eq_changedValue]
-    funext v
-    rw [changedValue_eq_closedNeighborhood_card]
-    simp only [Pi.zero_apply]
-    -- The even-domination condition gives the required zero modulo 2.
-    rw [ZMod.natCast_eq_zero_iff_even]
-    exact hdom v
+    simp only [funext_iff, Pi.zero_apply, changedValue_eq_closedNeighborhood_card,
+      ZMod.natCast_eq_zero_iff_even]
