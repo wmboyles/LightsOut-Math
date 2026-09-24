@@ -86,7 +86,7 @@ lemma zmod2_cases
     · exact Or.inl rfl
     · exact Or.inr rfl
 
-/-- pressedValue is linear with respect to symmetric difference
+/-- pressedValue is linear with respect to symmetric difference.
 pressedValue (S1 ∆ S2) v = (pressedValue S1 v) ∆ (pressedValue S2 v)
 -/
 lemma pressedValue_symmDiff
@@ -95,11 +95,9 @@ lemma pressedValue_symmDiff
   (v : V)
   : pressedValue (symmDiff S1 S2) v = pressedValue S1 v + pressedValue S2 v
   := by
-    -- 1 + 1 = 0 mod 2
-    have h : (1 : ZMod 2) + 1 = 0 := by decide
     by_cases h1 : v ∈ S1 <;>
       by_cases h2 : v ∈ S2 <;>
-        simp [pressedValue, Finset.symmDiff_def, h1, h2, h]
+        simp [pressedValue, Finset.symmDiff_def, h1, h2, CharTwo.add_self_eq_zero]
 
 /-- Whether a vertex v changes state after the vertices in S are pressed.
 Vertex v changes state exactly when and odd number of vertices
@@ -154,7 +152,7 @@ lemma changedValue_eq_closedNeighborhood_card
             simp [closedNeighborhood, Finset.mem_filter, Finset.mem_univ, Finset.mem_inter]
           rw [heq]
 
-/-- changedValue is linear with respect to symmetric difference
+/-- changedValue is linear with respect to symmetric difference.
 changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
 -/
 lemma changedValue_symmDiff
@@ -164,54 +162,19 @@ lemma changedValue_symmDiff
   (v : V)
   : changedValue G (symmDiff S1 S2) v = changedValue G S1 v + changedValue G S2 v
   := by
-    /- Expand our goal using the definition of changedValue
-    pressedValue (S1 ∆ S2) v + ∑ u, if u~v then pressedValue (S1 ∆ S2) u else 0
-      = (pressedValue S1 v + ∑ u, u~v then pressedValue S1 u else 0)
-      + (pressedValue S2 v + ∑ u, u~v then pressedValue S2 u else 0)
-    -/
-    simp only [changedValue]
-    /- Expand the LHS using pressedValue_symmDiff
-    (pressedValue S1 v) + (pressedValue S2 v)
-      + ∑ u, if u~v then (pressedValue S1 u) + (pressedValue S2 u) else 0
-    = (pressedValue S1 v + ∑ u, if u~v then pressedValue S1 u else 0)
-      + (pressedValue S2 v + ∑ u, if u~v then pressedValue S2 u else 0)
-    -/
-    simp only [pressedValue_symmDiff]
-    -- Now we need to show we can break the sum into two for S1 and S2
-    have h :
-      (∑ u, if G.Adj v u then pressedValue S1 u + pressedValue S2 u else 0) =
-        (∑ u, if G.Adj v u then pressedValue S1 u else 0) +
-        (∑ u, if G.Adj v u then pressedValue S2 u else 0)
+    -- Expand changedValue into a sum, apply pressedValue_symmDiff, and rearrange the summands
+    simp only [changedValue, pressedValue_symmDiff]
+    have hsum:
+      (∑ u, if G.Adj v u then pressedValue S1 u + pressedValue S2 u else 0)
+      = (∑ u, if G.Adj v u then pressedValue S1 u else 0)
+      + (∑ u, if G.Adj v u then pressedValue S2 u else 0)
       := by
-      calc
-        (∑ u, if G.Adj v u then pressedValue S1 u + pressedValue S2 u else 0) =
-        ∑ u, (
-          (if G.Adj v u then pressedValue S1 u else 0) +
-          (if G.Adj v u then pressedValue S2 u else 0))
-        := by
-          -- We'll show the sums are equal by showing each term is equal
-          apply Finset.sum_congr rfl
-          -- Let u ∈ V
-          intro u hu
-          -- If u~v, then we have pressedValue S1 u + pressedValue S2 u on both sides
-          -- Otherwise, we have 0 = 0 + 0, which is also true
-          by_cases huv : G.Adj v u <;> simp [huv]
-        -- Now we want to split the LHS into two sums
-        _ = (∑ u, if G.Adj v u then pressedValue S1 u else 0) +
-            (∑ u, if G.Adj v u then pressedValue S2 u else 0)
-          := by
-            -- This is true by distributivity of finite sums over addition
-            rw [Finset.sum_add_distrib]
-    rw [h]
-    /- Expand the LHS using pressedValue_symmDiff
-    (pressedValue S1 v + ∑ u, if u~v then (pressedValue S1 u) else 0)
-      + (pressedValue S2 v + ∑ u, if u~v then (pressedValue S2 u) else 0)
-    = (changedValue G S1 v) + (changedValue G S2 v)
-    By associativity and commutativity of addition
-    -/
+        rw [← Finset.sum_add_distrib]
+        simp only [ite_add_ite, add_zero]
+    rw [hsum]
     abel
 
-/-- Adjaency operator of G, which maps each vector to the vector
+/-- Adjacency operator of G, which maps each vector to the vector
 whose values at each vertex is the same of the values at its neighbors.
 It is a linear transformation.
 -/
