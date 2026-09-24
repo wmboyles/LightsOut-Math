@@ -355,24 +355,31 @@ theorem nullity_eq_finrank_ker_id_add_adjVec
   : nullity G = Module.finrank (ZMod 2) (LinearMap.id + adjVec G).ker
   := by rfl
 
-/-- An even parity cover of a graph G is a subset of verticies S
-such that the closed neighborhood of every vertex in G contains
-an even number of vertices in S.
--/
-def evenParityCover
+/-- An even dominating set meets every closed neighborhood in an even number
+of vertices (possibly zero). -/
+def evenDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   (S : State V)
   : Prop
   := ∀ v : V, Even (closedNeighborhood G v ∩ S).card
 
-/-- Elements of ker Φ G correspond exactly to even parity covers of G -/
--- TODO: Clean this up if possible
-theorem mem_ker_iff_evenParityCover
+/-- An odd dominating set meets every closed neighborhood in an odd number
+of vertices. -/
+def oddDominatingSet
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
   (S : State V)
-  : pressedValue S ∈ (Φ G).ker ↔ evenParityCover G S
+  : Prop
+  := ∀ v : V, Odd (closedNeighborhood G v ∩ S).card
+
+/-- Elements of ker Φ G correspond exactly to even dominating sets of G. -/
+-- TODO: Clean this up if possible
+theorem mem_ker_iff_evenDominatingSet
+  {V : Type*} [Fintype V] [DecidableEq V]
+  (G : SimpleGraph V) [DecidableRel G.Adj]
+  (S : State V)
+  : pressedValue S ∈ (Φ G).ker ↔ evenDominatingSet G S
   := by
   constructor
   · intro hker v
@@ -385,13 +392,12 @@ theorem mem_ker_iff_evenParityCover
       exact congrFun hzero' v
     rw [changedValue_eq_closedNeighborhood_card] at hv
     exact (ZMod.natCast_eq_zero_iff_even).mp hv
-  · intro hcover
+  · intro hdom
     change Φ G (pressedValue S) = 0
     rw [phi_pressedValue_eq_changedValue]
     funext v
     rw [changedValue_eq_closedNeighborhood_card]
     simp only [Pi.zero_apply]
-    -- The even-parity-cover condition gives exactly the required
-    -- zero modulo 2 condition.
+    -- The even-domination condition gives the required zero modulo 2.
     rw [ZMod.natCast_eq_zero_iff_even]
-    exact hcover v
+    exact hdom v
