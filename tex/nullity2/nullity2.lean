@@ -113,9 +113,7 @@ def changedValue
   : ZMod 2
   := pressedValue S v + ∑ u, if G.Adj v u then pressedValue S u else 0
 
-/-- changedValue is really a sum of indicators of the closed neighborhood
--/
--- TODO: Please simplify this
+/-- changedValue is the parity of the pressed vertices in the closed neighborhood. -/
 lemma changedValue_eq_closedNeighborhood_card
   {V : Type*} [Fintype V] [DecidableEq V]
   (G : SimpleGraph V) [DecidableRel G.Adj]
@@ -123,112 +121,38 @@ lemma changedValue_eq_closedNeighborhood_card
   (v : V)
   : changedValue G S v = ((closedNeighborhood G v ∩ S).card : ZMod 2)
   := by
-    simp only [closedNeighborhood, changedValue, pressedValue]
-    rw [Finset.card_eq_sum_ones]
-    -- rw [Finset.sum_filter]
-    have hfinset :
-      ({u | u = v ∨ G.Adj v u} : Finset V) ∩ S
-        =
-      ({x | (x = v ∨ G.Adj v x) ∧ x ∈ S} : Finset V) := by
-        ext x
-        simp
-    have hsum
-      : (∑ x ∈ ({u | u = v ∨ G.Adj v u} : Finset V) ∩ S, (1 : ZMod 2))
-      = ∑ x, if (x = v ∨ G.Adj v x) ∧ x ∈ S then (1 : ZMod 2) else 0
-      := by
-        simp only [Finset.sum_const, nsmul_eq_mul, mul_one, Finset.sum_boole]
-        rw [hfinset]
-    simp only [Nat.cast_sum, Nat.cast_one]
-    rw [hsum]
-    have hpoint :
-        ∀ x,
-          (if (x = v ∨ G.Adj v x) ∧ x ∈ S
-            then (1 : ZMod 2) else 0)
-          =
-          (if x = v ∧ x ∈ S
-            then (1 : ZMod 2) else 0)
-          +
-          (if G.Adj v x ∧ x ∈ S
-            then (1 : ZMod 2) else 0) := by
-      intro x
-      by_cases hx : x = v
-      · subst x
-        simp [SimpleGraph.irrefl]
-      · by_cases ha : G.Adj v x
-        · simp [hx, ha]
-        · simp [hx, ha]
-    have hsplit :
-        (∑ x, if (x = v ∨ G.Adj v x) ∧ x ∈ S
-          then (1 : ZMod 2) else 0)
-        =
-        (∑ x, if x = v ∧ x ∈ S
-          then (1 : ZMod 2) else 0)
-        +
-        ∑ x, if G.Adj v x ∧ x ∈ S
-          then (1 : ZMod 2) else 0 := by
-      rw [← Finset.sum_add_distrib]
-      apply Finset.sum_congr rfl
-      intro x hx
-      exact hpoint x
-    rw [hsplit]
-    simp only [Finset.sum_boole]
-    have hvcard :
-        (({x | x = v ∧ x ∈ S} : Finset V).card : ZMod 2)
-          = if v ∈ S then 1 else 0 := by
-      by_cases h : v ∈ S
-      · have hset :
-          ({x | x = v ∧ x ∈ S} : Finset V) = {v} := by
-          apply Finset.ext
-          intro x
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and,
-            Finset.mem_singleton]
-          constructor
-          · intro hx
-            exact hx.1
-          · intro hx
-            subst x
-            exact ⟨rfl, h⟩
-        rw [hset]
-        simp [h]
-      · have hset :
-          ({x | x = v ∧ x ∈ S} : Finset V) = ∅ := by
-          apply Finset.ext
-          intro x
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and,
-            Finset.notMem_empty]
-          constructor
-          · intro hx
-            exact h (hx.1 ▸ hx.2)
-          · intro hx
-            exact False.elim hx
-        rw [hset]
-        simp [h]
-    have hneigh :
-        (∑ u, if G.Adj v u then
-          if u ∈ S then (1 : ZMod 2) else 0
-        else 0)
-          =
-        (({x | G.Adj v x ∧ x ∈ S} : Finset V).card : ZMod 2) := by
-      have hpoint :
-          ∀ u : V,
-            (if G.Adj v u then
-              if u ∈ S then (1 : ZMod 2) else 0
-            else 0)
-            =
-            (if G.Adj v u ∧ u ∈ S then (1 : ZMod 2) else 0) := by
-        intro u
-        by_cases h₁ : G.Adj v u <;> by_cases h₂ : u ∈ S <;> simp [h₁, h₂]
-      rw [show
-        (∑ u, if G.Adj v u then
-          if u ∈ S then (1 : ZMod 2) else 0
-        else 0)
-          =
-        ∑ u, if G.Adj v u ∧ u ∈ S then (1 : ZMod 2) else 0 by
-            apply Finset.sum_congr rfl
-            intro u hu
-            exact hpoint u]
-      rw [Finset.sum_boole]
-    rw [hvcard, hneigh]
+    -- (u is pressed AND u=v) + (u is pressed AND u~v) = u is pressed AND u ∈ N[v]
+    -- These cases are disjoint because G has no self-loops.
+    have hpoint (u : V) :
+      (if u = v ∧ u ∈ S then (1 : ZMod 2) else 0) + (if G.Adj v u ∧ u ∈ S then 1 else 0)
+      = if (u = v ∨ G.Adj v u) ∧ u ∈ S then 1 else 0 := by
+        by_cases huv : u = v
+        · subst u
+          simp [SimpleGraph.irrefl]
+        · simp [huv]
+    calc
+      changedValue G S v =
+        ∑ u, ((if u = v ∧ u ∈ S then (1 : ZMod 2) else 0) + (if G.Adj v u ∧ u ∈ S then 1 else 0))
+        := by
+          -- Break out the sum into two sums.
+          -- The first sum only contributes only at u=v, yielding pressedValue S v.
+          -- The second sum simplifies to ∑ u, if G.Adj v u then pressedValue S u else 0.
+          rw [Finset.sum_add_distrib]
+          simp [changedValue, pressedValue, ite_and, Finset.sum_ite_eq', Finset.mem_univ]
+        _ = ∑ u, if (u = v ∨ G.Adj v u) ∧ u ∈ S then (1 : ZMod 2) else 0 := by
+          -- Both sides sum over the same vertices, and hpoint equates their summands
+          apply Finset.sum_congr rfl
+          intro u _
+          exact hpoint u
+        _ = (closedNeighborhood G v ∩ S).card := by
+          -- The sum is the number of vertices (mod 2) satisfying the combined condition.
+          rw [Finset.sum_boole]
+          -- The vertices satisfying that condition are the ones in closedNeighborhood G v ∩ S
+          have heq : (Finset.univ.filter (fun u => (u = v ∨ G.Adj v u) ∧ u ∈ S))
+          = closedNeighborhood G v ∩ S := by
+            ext u
+            simp [closedNeighborhood, Finset.mem_filter, Finset.mem_univ, Finset.mem_inter]
+          rw [heq]
 
 /-- changedValue is linear with respect to symmetric difference
 changedValue G (S1 ∆ S2) v = (changedValue G S1 v) ∆ (changedValue G S2 v)
