@@ -104,6 +104,9 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
     word n (pathAdj n x) r =
       word n x (if r = 0 then 2 * (n + 1) - 1 else r - 1) +
         word n x (if r + 1 = 2 * (n + 1) then 0 else r + 1) := by
+  -- Along either axis of the board, one period looks like x, 0, reverse x, 0.
+  -- The two terms on the right are the neighboring positions in that axis.
+  -- With no source vertices, every tile and every separator is zero.
   by_cases hn : n = 0
   · subst n
     have hempty (y : Fin 0 → ZMod 2) (s : ℕ) : word 0 y s = 0 := by
@@ -114,11 +117,13 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
         simp [word, hlt]
     simp [hempty]
   have hp : 0 < n := by omega
-  -- Inside a forward tile, the boundary behaves like a zero-valued neighbor.
+  -- A forward tile has the same neighbors as the original path; a missing
+  -- neighbor at its edge is supplied by a zero separator.
   by_cases hfront : r < n
   · rw [word_front n (pathAdj n x) r hfront, pathAdj_eq]
     by_cases hz : r = 0
     · subst r
+      -- The position before the first tile is the trailing zero of the period.
       have hgap : word n x (2 * (n + 1) - 1) = 0 :=
         word_gap n x _ (by omega) (by omega)
       simp only [ite_eq_right (by omega : 0 + 1 ≠ 2 * (n + 1)), zero_add]
@@ -132,16 +137,19 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
       simp only [ite_eq_right hz,
         ite_eq_right (by omega : r + 1 ≠ 2 * (n + 1))]
       rw [word_front n x (r - 1) hprev]
+      -- The right neighbor is either in this tile or the separator after it.
       by_cases hnext : r + 1 < n
       · rw [word_front n x (r + 1) hnext]
         simp [hpos, hnext]
       · rw [word_gap n x (r + 1) (by omega) (by omega)]
         simp [hpos, hnext]
-  · -- A reflected tile reverses the two neighboring positions.
+  · -- On a reflected tile, movement along the new path reverses direction
+    -- along the original path.
     by_cases hback : n < r ∧ r < 2 * n + 1
     · rw [word_back n (pathAdj n x) r hback, pathAdj_eq]
       let s := 2 * n - r
       have hs : s < n := by dsimp [s]; omega
+      -- The left neighbor of r comes from s + 1, unless it is a zero separator.
       have hprev :
           word n x (if r = 0 then 2 * (n + 1) - 1 else r - 1) =
             (if h : s + 1 < n then x ⟨s + 1, h⟩ else 0) := by
@@ -155,6 +163,7 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
           omega
         · rw [word_gap n x (r - 1) (by omega) (by dsimp [s] at h; omega),
             dite_eq_right h]
+      -- The right neighbor of r comes from s - 1, or is zero at the other edge.
       have hnext :
           word n x (if r + 1 = 2 * (n + 1) then 0 else r + 1) =
             (if h : 0 < s then x ⟨s - 1, by omega⟩ else 0) := by
@@ -168,9 +177,11 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
       change (if h : 0 < s then x ⟨s - 1, by omega⟩ else 0) +
           (if h : s + 1 < n then x ⟨s + 1, h⟩ else 0) = _
       rw [hprev, hnext, add_comm]
-    · -- At a separator, mirrored neighboring values cancel in characteristic two.
+    · -- The remaining positions are the two zero separators of the period.
+      -- Their adjacent mirrored tiles contribute equal values, which cancel.
       rcases (show r = n ∨ r = 2 * n + 1 by omega) with he | he
       · subst r
+        -- Between the tiles, both adjacent vertices represent x (n - 1).
         rw [word_gap n (pathAdj n x) n (by omega) (by omega)]
         simp only [ite_eq_right (by omega : n ≠ 0),
           ite_eq_right (by omega : n + 1 ≠ 2 * (n + 1))]
@@ -180,6 +191,7 @@ private theorem word_step (n : ℕ) (x : Fin n → ZMod 2) (r : ℕ)
             ⟨n - 1, by omega⟩ := Fin.ext (by simp; omega)
         rw [heq, CharTwo.add_self_eq_zero]
       · subst r
+        -- Between periods, both adjacent vertices represent x 0.
         rw [word_gap n (pathAdj n x) (2 * n + 1) (by omega) (by omega)]
         simp only [ite_eq_right (by omega : 2 * n + 1 ≠ 0),
           ite_eq_left (by omega : 2 * n + 1 + 1 = 2 * (n + 1)),
