@@ -186,21 +186,11 @@ def adjVec
   -- adjVec (x + y) = adjVec x + adjVec y
   map_add' x y := by
     ext v
-    simp only [Pi.add_apply]
-    rw [←Finset.sum_add_distrib]
-    apply Finset.sum_congr rfl
-    intro u hu
-    by_cases huv : G.Adj v u <;>
-      simp [huv]
+    simp only [Pi.add_apply, ← Finset.sum_add_distrib, ite_add_ite, add_zero]
   -- adjVec (a*x) = a * adjVec x
   map_smul' a x := by
     ext v
-    simp only [Pi.smul_apply]
-    rw [Finset.smul_sum]
-    apply Finset.sum_congr rfl
-    intro u hu
-    by_cases huv : G.Adj v u <;>
-      simp [huv]
+    simp only [Pi.smul_apply, RingHom.id_apply, Finset.smul_sum, smul_ite, smul_zero]
 
 /-- phiVec G x gives a vector representing the state of the graph after applying the
 Lights Out operation on state vector x.
