@@ -1,6 +1,7 @@
 name = "LightsOut-Math"
 version = "0.1.0"
 keywords = ["math"]
+defaultTargets = ["nullity2.nullity2"]
 
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
@@ -13,7 +14,19 @@ name = "mathlib"
 scope = "leanprover-community"
 
 [[lean_lib]]
+name = "nullity2.Core"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.MirroredPath"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.Grid"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridFive"
 srcDir = "tex"
 
 [[lean_lib]]
