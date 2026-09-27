@@ -31,6 +31,8 @@ def tiledSize (n k : ℕ)
 noncomputable def nullityGrid (n m : ℕ) : ℕ :=
   Module.finrank (ZMod 2) (gridPhi n m).ker
 
+noncomputable def nullitySquare (n : ℕ) : ℕ := nullityGrid n n
+
 /-- An injective linear transfer between vector spaces that intertwines two
 operators. For Lights Out operators, distinct quiet patterns remain quiet and distinct. -/
 structure PressLift
@@ -266,3 +268,7 @@ theorem nullityGrid_le_tiled
     nullityGrid n m ≤ nullityGrid (tiledSize n k₁) (tiledSize m k₂) := by
   exact (mirrorGridPressLift n m k₁ k₂ hk₁ hk₂).finrank_ker_le
 
+theorem nullitySquare_le_tiled
+  (n k₁ : ℕ) (hk₁ : 0 < k₁) :
+  nullitySquare n ≤ nullitySquare (tiledSize n k₁) := by
+  simp only [nullitySquare, nullityGrid_le_tiled n n k₁ k₁ hk₁ hk₁]

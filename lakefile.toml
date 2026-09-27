@@ -30,5 +30,13 @@ name = "nullity2.GridFive"
 srcDir = "tex"
 
 [[lean_lib]]
+name = "nullity2.MostClicks"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridClicks"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.nullity2"
 srcDir = "tex"

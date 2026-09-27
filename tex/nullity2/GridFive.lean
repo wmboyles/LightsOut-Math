@@ -33,7 +33,7 @@ private def grid5Reduction : Matrix Grid5 Grid5 (ZMod 2) := fun v w =>
 /-- Two quiet patterns, encoded row-major as bits. Their rows are
 `01110, 10101, 11011, 10101, 01110` and
 `10101, 10101, 00000, 10101, 10101`, respectively. -/
-private def grid5KernelBasis : Matrix Grid5 (Fin 2) (ZMod 2) := fun v j =>
+def grid5KernelBasis : Matrix Grid5 (Fin 2) (ZMod 2) := fun v j =>
   if (if j = 0 then 15396526 else 22708917).testBit (grid5Index v).val then 1 else 0
 
 /-- Read the two free coordinates at positions `(4,3)` and `(4,4)`. -/
@@ -82,7 +82,7 @@ private theorem grid5_reconstruct (x : Grid5 → ZMod 2) :
   simpa only [Matrix.add_mulVec, ← Matrix.mulVec_mulVec, Matrix.one_mulVec] using h.symm
 
 /-- The two quiet patterns are linearly independent. -/
-private theorem grid5_basis_injective :
+theorem grid5_basis_injective :
     Function.Injective grid5KernelBasis.mulVecLin := by
   intro x y h
   have heq := congrArg grid5FreeCoords.mulVec h
@@ -93,7 +93,7 @@ private theorem grid5_basis_injective :
   simpa only [Matrix.one_mulVec] using heq
 
 /-- Every quiet pattern is a combination of the two certified patterns. -/
-private theorem grid5_kernel_eq_range :
+theorem grid5_kernel_eq_range :
     (gridPhi 5 5).ker = grid5KernelBasis.mulVecLin.range := by
   ext x
   rw [LinearMap.mem_ker, LinearMap.mem_range]
@@ -111,17 +111,17 @@ private theorem grid5_kernel_eq_range :
     rw [Matrix.mulVec_mulVec, grid5_basis_quiet, Matrix.zero_mulVec]
 
 /-- The five-by-five grid has exactly two independent quiet press patterns. -/
-theorem nullityGrid_five : nullityGrid 5 5 = 2 := by
+theorem nullitySquare_five : nullitySquare 5 = 2 := by
   classical
   change Module.finrank (ZMod 2) (gridPhi 5 5).ker = 2
   rw [grid5_kernel_eq_range, LinearMap.finrank_range_of_inj grid5_basis_injective]
   simp
 
 /-- Every positive tiling of the five-by-five grid has nullity at least two. -/
-theorem nullityGrid_6k_sub_one_ge_two (k : ℕ) (hk : 0 < k) :
-    2 ≤ nullityGrid (6 * k - 1) (6 * k - 1) := by
-  have h := nullityGrid_le_tiled 5 5 k k hk hk
+theorem nullitySquare_6k_sub_one_ge_two (k : ℕ) (hk : 0 < k) :
+    2 ≤ nullitySquare (6 * k - 1) := by
+  have h := nullitySquare_le_tiled 5 k hk
   have hsize : tiledSize 5 k = 6 * k - 1 := by
     unfold tiledSize
     omega
-  simpa only [nullityGrid_five, hsize] using h
+  simpa only [nullitySquare_five, hsize] using h
