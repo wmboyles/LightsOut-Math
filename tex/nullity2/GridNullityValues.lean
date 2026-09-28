@@ -165,4 +165,29 @@ theorem nullitySquare_eq_two_imp_six_mul_sub_one (n : ℕ)
     obtain ⟨j, hj⟩ := nullitySquare_even m
     omega
 
+/-- Corollary 4.2.1 of `nullity2.tex`: nullity two requires
+`n ≡ -7 (mod 12)`. Equivalently, `n % 12 = 5`. -/
+theorem nullitySquare_eq_two_mod_twelve (n : ℕ)
+    (h : nullitySquare n = 2) : 12 ∣ n + 7 := by
+  obtain ⟨k, hk, hn⟩ := nullitySquare_eq_two_imp_six_mul_sub_one n h
+  have hkodd : Odd k := (Nat.not_even_iff_odd).mp (by
+    intro heven
+    obtain ⟨j, hj⟩ := even_iff_exists_two_mul.mp heven
+    have hjpos : 0 < j := by omega
+    have houter := nullitySquare_odd_recurrence (6 * j - 1)
+    have hinner := nullitySquare_odd_recurrence (3 * j - 1)
+    have houterIndex : 2 * (6 * j - 1) + 1 = n := by omega
+    have hinnerIndex : 2 * (3 * j - 1) + 1 = 6 * j - 1 := by omega
+    have houterDiv : 3 ∣ (6 * j - 1) + 1 := ⟨2 * j, by omega⟩
+    have hinnerDiv : 3 ∣ (3 * j - 1) + 1 := ⟨j, by omega⟩
+    rw [houterIndex, h] at houter
+    rw [hinnerIndex] at hinner
+    simp only [ite_eq_left houterDiv] at houter
+    simp only [ite_eq_left hinnerDiv] at hinner
+    rw [hinner] at houter
+    omega)
+  obtain ⟨j, hj⟩ := hkodd
+  refine ⟨j + 1, ?_⟩
+  omega
+
 end GridNullityValues

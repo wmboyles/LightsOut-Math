@@ -1,6 +1,7 @@
 import nullity2.GridFive
 import nullity2.GridClicks
 import nullity2.GridFibonacci
+import nullity2.GridNullityClicks
 import nullity2.GridNullityRecurrence
 import nullity2.GridNullityValues
 import nullity2.MostClicks

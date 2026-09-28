@@ -54,5 +54,9 @@ name = "nullity2.GridNullityValues"
 srcDir = "tex"
 
 [[lean_lib]]
+name = "nullity2.GridNullityClicks"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.nullity2"
 srcDir = "tex"
