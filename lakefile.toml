@@ -42,6 +42,14 @@ name = "nullity2.GridFibonacci"
 srcDir = "tex"
 
 [[lean_lib]]
+name = "nullity2.GridFibonacciRoots"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridFibonacciRank"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.OreGCD"
 srcDir = "tex"
 
@@ -51,6 +59,10 @@ srcDir = "tex"
 
 [[lean_lib]]
 name = "nullity2.GridNullityValues"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridNullityTwentySix"
 srcDir = "tex"
 
 [[lean_lib]]

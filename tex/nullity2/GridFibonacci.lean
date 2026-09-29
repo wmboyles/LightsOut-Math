@@ -1,13 +1,15 @@
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
+import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.RingTheory.Polynomial.Content
 import nullity2.Grid
 
 /-! Fibonacci-polynomial prediction of Lights Out grid nullity.
 
 The recurrence, four divisibility tests, and power-of-two factorization
-are proved below. The Fibonacci gcd identity and its identification with
-grid nullity are explicitly cited external assumptions, not Lean proofs.
+are proved below. The square-free root result, Fibonacci gcd identity,
+and identification of gcd degree with grid nullity are explicitly cited
+external assumptions, not Lean proofs.
 -/
 
 namespace GridFibonacci
@@ -157,6 +159,65 @@ theorem fib_odd_square (n : ℕ) :
     fib (2 * n + 1) = (fib (n + 1) + fib n) ^ 2 := by
   rw [(fib_double_pair n).2, add_sq]
   simp [CharTwo.two_eq_zero]
+
+/-- **External assumption (not proved in Lean):** the explicit square root
+of an odd-indexed Fibonacci polynomial is square-free.
+
+Hunziker, Machiavelo, and Park, "Chebyshev polynomials over finite fields
+and reversibility of σ-automata on square grids", *Theoretical Computer
+Science* 320 (2004), Proposition 2.11; see also `finite_fields.tex`,
+Lemma `SquareSquareFree`. The square identity itself is proved in
+`fib_odd_square`. -/
+axiom fib_odd_square_root_squarefree (n : ℕ) :
+    Squarefree (fib (n + 1) + fib n)
+
+/-- Lemma 1.5 of `finite_fields.tex`: every odd-indexed Fibonacci polynomial
+is the square of a square-free polynomial. The square-freeness is cited. -/
+theorem fib_odd_square_squarefree (n : ℕ) :
+    ∃ p : (ZMod 2)[X], Squarefree p ∧ fib (2 * n + 1) = p ^ 2 :=
+  ⟨_, fib_odd_square_root_squarefree n, fib_odd_square n⟩
+
+/-- The square-free square decomposition at any odd index. -/
+theorem fib_square_of_odd (n : ℕ) (hn : Odd n) :
+    ∃ p : (ZMod 2)[X], Squarefree p ∧ fib n = p ^ 2 := by
+  obtain ⟨k, hk⟩ := hn
+  have he : n = 2 * k + 1 := by omega
+  rw [he]
+  exact fib_odd_square_squarefree k
+
+/-- The powers `tⁿ + t⁻ⁿ` obey the Fibonacci recurrence after substituting
+`X = t + t⁻¹` in a field of characteristic two. -/
+private theorem laurent_step {K : Type*} [Field K] [CharP K 2]
+    (t : K) (ht : t ≠ 0) (n : ℕ) :
+    (t + t⁻¹) * (t ^ (n + 1) + (t⁻¹) ^ (n + 1)) +
+      (t ^ n + (t⁻¹) ^ n) = t ^ (n + 2) + (t⁻¹) ^ (n + 2) := by
+  have hmul : t * t⁻¹ = 1 := mul_inv_cancel₀ ht
+  rw [show n + 2 = (n + 1) + 1 by omega]
+  simp only [pow_succ]
+  calc
+    _ = t ^ n * t * t + (t⁻¹) ^ n * t⁻¹ * t⁻¹ +
+          (t ^ n + (t⁻¹) ^ n) * (t * t⁻¹ + 1) := by ring
+    _ = t ^ n * t * t + (t⁻¹) ^ n * t⁻¹ * t⁻¹ := by
+      rw [hmul, show (1 : K) + 1 = 0 by simp [CharTwo.add_self_eq_zero]]
+      ring
+
+/-- Lemma 1.9 of `finite_fields.tex`: for `x = t + t⁻¹` and `t ≠ 0`,
+`x * fₙ(x) = tⁿ + t⁻ⁿ`. Evaluation extends the coefficients from `ZMod 2`
+to any field of characteristic two. -/
+theorem mul_eval₂_fib_eq_pow_add_inv_pow {K : Type*} [Field K] [CharP K 2]
+    (t : K) (ht : t ≠ 0) (n : ℕ) :
+    (t + t⁻¹) * eval₂ (ZMod.castHom (dvd_refl 2) K) (t + t⁻¹) (fib n) =
+      t ^ n + (t⁻¹) ^ n := by
+  let x := t + t⁻¹
+  let f : ZMod 2 →+* K := ZMod.castHom (dvd_refl 2) K
+  change x * eval₂ f x (fib n) = t ^ n + (t⁻¹) ^ n
+  induction n using Nat.twoStepInduction with
+  | zero => simp [fib_zero, CharTwo.add_self_eq_zero]
+  | one => simp [fib_one, x]
+  | more n ih ih1 =>
+      rw [fib_add_two, eval₂_add, eval₂_mul, eval₂_X]
+      rw [mul_add, ih1, ih]
+      exact laurent_step t ht n
 
 /-- Power-of-two factorization of Fibonacci polynomials over `ZMod 2`.
 This holds for any `b`, in particular for odd `b` as in Hunziker,

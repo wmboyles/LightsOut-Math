@@ -1,12 +1,17 @@
 import nullity2.GridNullityRecurrence
 
-/-! Divisibility and small-value restrictions for square-grid nullity. -/
+/-! Translation-invariant polynomials, divisibility, and small-value
+restrictions for square-grid nullity. -/
 
 namespace GridNullityValues
 
 open Polynomial
 
 private noncomputable def quadratic : (ZMod 2)[X] := X * (X + 1)
+
+private theorem quadratic_eq : quadratic = X ^ 2 + X := by
+  dsimp [quadratic]
+  ring
 
 private theorem quadratic_shift : quadratic.comp (X + 1) = quadratic := by
   dsimp [quadratic]
@@ -41,18 +46,23 @@ private theorem quadratic_dvd_invariant (p : (ZMod 2)[X])
     rw [hxone, dvd_iff_isRoot, IsRoot.def]
     exact hrone
 
-/-- A polynomial fixed by `X ↦ X + 1` has even degree. Subtract its constant
-term, divide by the shift-invariant `X(X+1)`, and repeat. -/
-private theorem even_natDegree_of_shift_invariant (p : (ZMod 2)[X])
-    (hp : p.comp (X + 1) = p) : Even p.natDegree := by
+/-- Lemma 1.6 of `finite_fields.tex`: a polynomial fixed by `X ↦ X + 1`
+is a polynomial in `X² + X`. -/
+theorem exists_comp_quadratic_of_shift_invariant (p : (ZMod 2)[X])
+    (hp : p.comp (X + 1) = p) :
+    ∃ H : (ZMod 2)[X], p = H.comp (X ^ 2 + X) := by
   suffices h : ∀ n : ℕ, ∀ p : (ZMod 2)[X], p.natDegree = n →
-      p.comp (X + 1) = p → Even n from h p.natDegree p rfl hp
+      p.comp (X + 1) = p → ∃ H : (ZMod 2)[X], p = H.comp quadratic by
+    obtain ⟨H, hH⟩ := h p.natDegree p rfl hp
+    rw [quadratic_eq] at hH
+    exact ⟨H, hH⟩
   intro n
   induction n using Nat.strong_induction_on with
   | h n ih =>
     intro p hn hp
     by_cases hn0 : n = 0
-    · simp [hn0]
+    · refine ⟨C (p.coeff 0), ?_⟩
+      simpa only [C_comp] using (eq_C_of_natDegree_eq_zero (hn.trans hn0))
     let r := p - C (eval 0 p)
     let q := r / quadratic
     have hrdeg : r.natDegree = n := by rw [natDegree_sub_C, hn]
@@ -80,11 +90,30 @@ private theorem even_natDegree_of_shift_invariant (p : (ZMod 2)[X])
     have hdeg : n = 2 + q.natDegree := by
       rw [← hrdeg, ← hfactor, natDegree_mul quadratic_ne_zero hqzero,
         quadratic_natDegree]
-    obtain ⟨k, hk⟩ := ih q.natDegree (by omega) q rfl hqshift
-    rw [hdeg, hk]
-    exact ⟨k + 1, by omega⟩
+    obtain ⟨H, hH⟩ := ih q.natDegree (by omega) q rfl hqshift
+    have hcomp : (X * H + C (eval 0 p)).comp quadratic =
+        quadratic * (H.comp quadratic) + C (eval 0 p) := by
+      simp only [add_comp, mul_comp, X_comp, C_comp]
+    refine ⟨X * H + C (eval 0 p), ?_⟩
+    calc
+      p = r + C (eval 0 p) := by dsimp [r]; ring
+      _ = quadratic * q + C (eval 0 p) := by rw [hfactor]
+      _ = quadratic * (H.comp quadratic) + C (eval 0 p) := by rw [hH]
+      _ = (X * H + C (eval 0 p)).comp quadratic := hcomp.symm
+    rfl
 
-private theorem shift_twice (p : (ZMod 2)[X]) :
+private theorem even_natDegree_of_shift_invariant (p : (ZMod 2)[X])
+    (hp : p.comp (X + 1) = p) : Even p.natDegree := by
+  obtain ⟨H, hH⟩ := exists_comp_quadratic_of_shift_invariant p hp
+  rw [hH, natDegree_comp]
+  have hdeg : (X ^ 2 + X : (ZMod 2)[X]).natDegree = 2 := by
+    rw [← quadratic_eq]
+    exact quadratic_natDegree
+  rw [hdeg]
+  exact ⟨H.natDegree, by omega⟩
+
+/-- Translation by one is an involution over `ZMod 2`. -/
+theorem shift_twice (p : (ZMod 2)[X]) :
     (p.comp (X + 1)).comp (X + 1) = p := by
   rw [comp_assoc]
   have htwo : (2 : (ZMod 2)[X]) = 0 := CharTwo.two_eq_zero
@@ -95,7 +124,8 @@ private theorem shift_twice (p : (ZMod 2)[X]) :
       _ = X := by rw [htwo, add_zero]
   rw [hshift, comp_X]
 
-private theorem gcd_shift_invariant (p : (ZMod 2)[X]) :
+/-- The gcd of a polynomial and its translate is fixed by translation. -/
+theorem gcd_shift_invariant (p : (ZMod 2)[X]) :
     (gcd p (p.comp (X + 1))).comp (X + 1) =
       gcd p (p.comp (X + 1)) := by
   let g := gcd p (p.comp (X + 1))
@@ -189,5 +219,60 @@ theorem nullitySquare_eq_two_mod_twelve (n : ℕ)
   obtain ⟨j, hj⟩ := hkodd
   refine ⟨j + 1, ?_⟩
   omega
+
+/-- Corollary 3.8 of `finite_fields.tex`: an unattained even nullity `a`
+gives another unattained nullity `2a + 2`. -/
+theorem unattained_two_mul_add_two (a : ℕ) (ha : Even a)
+    (hunattained : ∀ n : ℕ, nullitySquare n ≠ a) :
+    ∀ n : ℕ, nullitySquare n ≠ 2 * a + 2 := by
+  intro n hn
+  have hnodd : Odd n := (Nat.not_even_iff_odd).mp (by
+    intro heven
+    have hfour : 4 ∣ 2 * a + 2 :=
+      hn ▸ nullitySquare_even_side_dvd_four n heven
+    obtain ⟨j, hj⟩ := ha
+    omega)
+  obtain ⟨m, hm⟩ := hnodd
+  have hindex : n = 2 * m + 1 := by omega
+  have hrec := nullitySquare_odd_recurrence m
+  rw [← hindex, hn] at hrec
+  by_cases h3 : 3 ∣ m + 1
+  · simp only [ite_eq_left h3] at hrec
+    exact hunattained m (by omega)
+  · simp only [ite_eq_right h3] at hrec
+    obtain ⟨j, hj⟩ := nullitySquare_even m
+    obtain ⟨k, hk⟩ := ha
+    omega
+
+/-- Repeated Corollary 3.8: if `a` is an unattained even nullity, then so is
+`2^t (a + 2) - 2` for every `t`. -/
+theorem unattained_two_pow_family (a : ℕ) (ha : Even a)
+    (hunattained : ∀ n : ℕ, nullitySquare n ≠ a) (t : ℕ) :
+    ∀ n : ℕ, nullitySquare n ≠ 2 ^ t * (a + 2) - 2 := by
+  induction t with
+  | zero =>
+      simpa using hunattained
+  | succ t ih =>
+      have hpos : 0 < 2 ^ t := pow_pos (by decide : 0 < 2) t
+      have hbound : 2 ≤ 2 ^ t * (a + 2) := by nlinarith
+      have heven : Even (2 ^ t * (a + 2) - 2) := by
+        obtain ⟨k, hk⟩ := ha
+        have hmul : 2 ^ t * (a + 2) = 2 * (2 ^ t * (k + 1)) := by
+          rw [hk]
+          ring
+        rw [hmul]
+        have hp : 0 < 2 ^ t * (k + 1) :=
+          mul_pos hpos (by omega)
+        refine ⟨2 ^ t * (k + 1) - 1, ?_⟩
+        omega
+      have hstep :
+          2 ^ (t + 1) * (a + 2) - 2 =
+            2 * (2 ^ t * (a + 2) - 2) + 2 := by
+        have hmul : 2 ^ (t + 1) * (a + 2) =
+            2 * (2 ^ t * (a + 2)) := by rw [pow_succ]; ring
+        rw [hmul]
+        omega
+      rw [hstep]
+      exact unattained_two_mul_add_two _ heven ih
 
 end GridNullityValues
