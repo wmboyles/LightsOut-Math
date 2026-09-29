@@ -30,9 +30,8 @@ private theorem grid5Quiet_supportCard :
 /-- Each of the certified patterns changes no lights. -/
 private theorem grid5Quiet_mem_ker (j : Fin 2) :
     grid5Quiet j ∈ (gridPhi 5 5).ker := by
-  rw [grid5_kernel_eq_range]
-  refine ⟨Pi.single j 1, ?_⟩
-  simp [Matrix.mulVec_single, grid5Quiet]
+  exact (LinearMap.mem_ker).mpr (by
+    simpa only [grid5Quiet] using grid5_basis_quiet j)
 
 /-- Fifteen clicks suffice for every reachable five-by-five configuration. -/
 theorem MCP_grid5_le : MCP (gridGraph 5 5) ≤ 15 := by
@@ -338,8 +337,7 @@ private theorem grid5TiledBasis_range_eq_ker (k : ℕ) (hk : 0 < k)
     change mirrorGridMap 5 5 k k (grid5KernelBasis.mulVec z) ∈
       (gridPhi (tiledSize 5 k) (tiledSize 5 k)).ker
     have hz : grid5KernelBasis.mulVec z ∈ (gridPhi 5 5).ker := by
-      rw [grid5_kernel_eq_range]
-      exact ⟨z, rfl⟩
+      exact grid5_basis_range_le_ker ⟨z, rfl⟩
     exact ((mirrorGridPressLift 5 5 k k hk hk).kerMap ⟨_, hz⟩).property
   · have hinj : Function.Injective (grid5TiledBasis k) :=
       (mirrorGridPressLift 5 5 k k hk hk).injective.comp grid5_basis_injective

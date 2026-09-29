@@ -42,6 +42,22 @@ name = "nullity2.GridFibonacci"
 srcDir = "tex"
 
 [[lean_lib]]
+name = "nullity2.GridSmallFibonacci"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridFibonacciCertificates"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridFibonacciFiniteGCD"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.GridFibonacciFiniteRank"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.GridFibonacciRoots"
 srcDir = "tex"
 
