@@ -70,6 +70,42 @@ name = "nullity2.OreGCD"
 srcDir = "tex"
 
 [[lean_lib]]
+name = "nullity2.LiftingTheExponent"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.PrimePowerOrder"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.SignedOrder"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.SignedOrderPrimePower"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.FieldExtensionDegree"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.FieldTrace"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.FieldTraceRoots"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.RamanujanSum"
+srcDir = "tex"
+
+[[lean_lib]]
+name = "nullity2.FieldTraceMoebius"
+srcDir = "tex"
+
+[[lean_lib]]
 name = "nullity2.GridNullityRecurrence"
 srcDir = "tex"
 
